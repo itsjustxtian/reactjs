@@ -1,4 +1,8 @@
+@import 'fonts.css';
+
 .App {
+  background-color: #282c34;
+  /*font-family: 'Inter', sans-serif;*/
   text-align: center;
 }
 
@@ -13,14 +17,79 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
+.sign-in-container {
+  background-color: #e1eceb;
   min-height: 100vh;
   display: flex;
+  /*font-family: 'Inter', sans-serif;*/
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  /*color: white;*/
+}
+
+.buttontext{
+  padding: 10px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  align-items: center;
+  margin-left: 400px;
+  font-size: calc(4px + 2vmin);
+  color: black;
+}
+
+.space{
+  height: 20px;
+}
+
+
+.content label {
+  min-height: 5vh;
+  margin-right: 10px;
+  /*display: flex;*/
+  font-family: 'Inter', sans-serif;
+  /*flex-direction: column;*/
+  /*align-items: center;
+  justify-content: center;*/
+  position: relative;
+  margin-right: 10px;
+  font-size: calc(4px + 2vmin);
+  color: black;
+}
+
+.content input {
+  height: calc(15px + 2vmin);
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-left: 10px;
+  justify-content: center;
+  padding: 1px;
+}
+
+.forgotpasswordlink{
+  font-family: 'Inter', sans-serif;
+  align-items: center;
+  margin-left: 250px;
+  font-size: calc(1px + 2vmin);
+  color: black;
+}
+
+.newuser {
+  min-height: 100vh;
+  /*display: flex;*/
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(1px + 1.5vmin);
   color: white;
 }
 
