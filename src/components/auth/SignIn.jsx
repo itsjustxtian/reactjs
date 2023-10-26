@@ -15,6 +15,7 @@ const SignIn = () => {
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredentials) => {
             console.log(userCredentials);
+            
         })
         .catch((error) => {
             console.log(error);
