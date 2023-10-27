@@ -4,7 +4,15 @@
   width: 100vw;
   height: 100vh;
   background-color: #e1eceb;
-  /*font-family: 'Inter', sans-serif;*/
+  display: flex; /* Use flex to create a horizontal layout */
+}
+
+.container {
+  display: flex; /* Use flex to create a horizontal layout */
+  justify-content: space-between; /* Space evenly between the children */
+  align-items: center; /* Center the content vertically */
+  width: 100%; /* Take the full width of the parent */
+  max-width: 1200px; /* You can adjust the maximum width as needed */
 }
 
 .Sidebar {
