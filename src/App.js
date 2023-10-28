@@ -7,9 +7,10 @@ import './fonts.css';
 import Sidebar from './components/sidebar'
 /*import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';*/
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import inbox from './components/inbox'
+import Inbox from './components/inbox'
 import Dashboard from './components/Dashboard'
-import usermanagement from './components/usermanagement'
+import Usermanagement from './components/usermanagement'
+import Viewapplications from './components/ViewApplications'
 
 function App() {
   return (
@@ -17,14 +18,14 @@ function App() {
       <div className="App">
         <div className='container'>
         <Sidebar/>
-        <Dashboard></Dashboard> {/* Change this line to your component */}
+        <Routes>
+          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/inbox' element={<Inbox/>}/>
+          <Route path='/usermanagement' element={<Usermanagement/>}/>
+        </Routes>
         </div>
         
-        <Routes>
-          <Route path='/dashboard' element={Dashboard}/>
-          <Route path='/inbox' element={inbox}/>
-          <Route path='/usermanagement' element={usermanagement}/>
-        </Routes>
+        
       </div>
     </Router>
   );

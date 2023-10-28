@@ -1,9 +1,24 @@
 import React from 'react'
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
 
 const dashboard = () => {
   return (
-    <div>
-      <h1>Dashboard sample</h1>
+    <div className='dashboard'>
+      <div className='buttoncontainer'>
+        <button className='rectangle' id='text'>
+          <NoteAddIcon id='icon'/>
+          <div id='text'>Create New...</div>
+        </button>
+      </div>
+      
+      <div className='space'></div>
+      
+      <div className='table'>
+        <div className='rectangle'>
+
+        </div>
+      </div>
+
     </div>
   )
 }
