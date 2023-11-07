@@ -18,7 +18,7 @@ import Viewallusers from './components/UserMng/ViewAllUsers'
 import Settings from './components/Settings'
 import { Auth } from './components/auth/auth'
 import ViewApplications from './components/ViewApplications'
-
+import AddApplications from './components/UserMng/AddApplications';
 
 function App() {
   return (
@@ -34,13 +34,13 @@ function App() {
           <Route path='/registration' element={<SignIn/>}/>
           <Route path='/create-edit' element={<Dashboard/>}/>
           <Route path='/showticket' element={<Viewticket/>}/>
-          <Route path='/applications' element={<Viewapplications/>}/>
+          <Route path='/applications' element={<ViewApplications/>}/>
           <Route path='/profile' element={<Viewprofile/>}/>
           <Route path='/edit-profile' element={<Editprofile/>}/>
           <Route path='/view-all-users' element={<Viewallusers/>}/>
           <Route path='/view-all-applications' element={<Viewapplications/>}/>
           <Route path='/settings' element={<Settings/>}/>
-          <Route path='/add-applications' element={<ViewApplications/>}/>
+          <Route path='/add-applications' element={<AddApplications/>}/>
 
 
 
