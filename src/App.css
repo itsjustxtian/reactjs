@@ -198,10 +198,34 @@
   flex-direction: column;
 }
 
-.table {
-  
+.UserProfile{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.table .rectangle {
+.UserImage {
+  flex: 20%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
 
+.ProfileImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.UserInfo {
+  flex: 60%;
+  min-height: 5vh;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  margin-right: 10px;
+  color: white;
+}
+
+.UserInfo #email {
+  font-size: 14px;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 //continue 12:33
-import { auth } from '../../firebase';
+import { auth } from '../../config/firebase-config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import BugHunterLogo from '../../icons/BugHunterLogo.png'; // Adjust the path based on your directory structure
 
