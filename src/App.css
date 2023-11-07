@@ -4,7 +4,15 @@
   width: 100vw;
   height: 100vh;
   background-color: #e1eceb;
-  /*font-family: 'Inter', sans-serif;*/
+  display: flex; /* Use flex to create a horizontal layout */
+}
+
+.container {
+  display: flex; /* Use flex to create a horizontal layout */
+  justify-content: space-between; /* Space evenly between the children */
+  align-items: center; /* Center the content vertically */
+  width: 100%; /* Take the full width of the parent */
+  max-width: 1200px; /* You can adjust the maximum width as needed */
 }
 
 .Sidebar {
@@ -51,17 +59,6 @@
 
 .row #title {
   flex: 70%;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 }
 
 .sign-in-container {
@@ -151,4 +148,84 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.buttoncontainer {
+  height: 61px;
+  width: 262px;
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+}
+
+.buttoncontainer .rectangle {
+  background-color: #18b3a7;
+  border-radius: 20px;
+  width: 100%;
+  height: 100%;
+  border-color: transparent;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(8px + 2vmin);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0%;
+}
+
+.buttoncontainer .rectangle:hover {
+  cursor: pointer;
+  color: black;
+}
+
+.rectangle #text {
+  flex: 80%;
+}
+
+.rectangle #icon{
+  flex: 20%;
+  font-size: calc(10px + 2vmin);
+}
+
+.dashboard {
+  height: 100vh;
+  background-color: #e1eceb;
+  display: flex; /* Use flex to create a horizontal layout */
+  flex-direction: column;
+}
+
+.UserProfile{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.UserImage {
+  flex: 20%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+.ProfileImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.UserInfo {
+  flex: 60%;
+  min-height: 5vh;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  margin-right: 10px;
+  color: white;
+}
+
+.UserInfo #email {
+  font-size: 14px;
 }
