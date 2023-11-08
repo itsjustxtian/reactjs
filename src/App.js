@@ -41,9 +41,6 @@ function App() {
           <Route path='/view-all-applications' element={<Viewapplications/>}/>
           <Route path='/settings' element={<Settings/>}/>
           <Route path='/add-applications' element={<AddApplications/>}/>
-
-
-
         </Routes>
         </div>
         

@@ -36,10 +36,8 @@ const SignIn = () => {
               onChange = {(e) => setEmail(e.target.value)}>
           </input>
         
-        
         <br/>
-
-
+        
         <div className="space"></div>
 
         <label htmlFor='password'>Password: </label>
