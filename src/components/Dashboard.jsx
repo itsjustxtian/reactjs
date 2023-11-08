@@ -7,7 +7,7 @@ const dashboard = () => {
       <div className='buttoncontainer'>
         <button className='rectangle' id='text'>
           <NoteAddIcon id='icon'/>
-          <div id='text'>Create New...</div>
+          <div id='text'>Create New..a.</div>
         </button>
       </div>
       

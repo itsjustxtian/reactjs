@@ -20,6 +20,7 @@ import { Auth } from './components/auth/auth'
 import ViewApplications from './components/ViewApplications'
 import AddApplications from './components/UserMng/AddApplications';
 import Createticket from './components/CreateTicket'
+import Registration from './components/auth/registration';
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
           <Route path='/inbox' element={<Inbox/>}/>
           <Route path='/usermanagement' element={<Usermanagement/>}/>
           <Route path='/loginscreen' element={<SignIn/>}/>
-          <Route path='/registration' element={<SignIn/>}/>
+          <Route path='/registration' element={<Registration/>}/>
           <Route path='/create-edit' element={<Createticket/>}/>
           <Route path='/showticket' element={<Viewticket/>}/>
           <Route path='/applications' element={<ViewApplications/>}/>
