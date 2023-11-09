@@ -63,7 +63,7 @@ const Registration = () => {
                 onChange={date => setSelectedDate(date)}
                 dateFormat="yyyy/MM/dd" 
             />
-
+        <br/>
         <label>Profile Picture:</label>
         {profilePicture ? (
           <img src={URL.createObjectURL(profilePicture)} alt="Profile" />
