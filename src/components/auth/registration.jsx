@@ -34,13 +34,13 @@ const Registration = () => {
           <Avatar 
             src={URL.createObjectURL(profilePicture)} 
             alt="Profile Picture" 
-            sx={{width:100, height:100}}
+            sx={{width:200, height:200}}
             
             />
         ) : (
           <Avatar
             alt="Profile Picture"
-            sx={{width: 100, height: 100}}
+            sx={{width: 200, height: 200}}
           />
         )}
         
@@ -103,16 +103,17 @@ const Registration = () => {
                 dateFormat="yyyy/MM/dd" 
                 placeholderText='Birthdate'
             />
-        <br/>
 
-            <button>
+        <br/>
+        <div className='register-cancel-container'>
+            <button id='register'>
                 Register
             </button>
 
-            <button>
+            <button id='cancel'>
                 Cancel
             </button>
-        
+        </div>
 
         </div>
     );

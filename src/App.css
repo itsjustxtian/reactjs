@@ -136,8 +136,6 @@
 .sign-up-container label {
   /*display: inline-block;
   flex-direction: row;*/
-  justify-content: center;
-  align-items: center;
   margin: 5px;
 }
 
@@ -271,6 +269,31 @@
 
 .profile-picture-component > * {
   margin-bottom: 10px;
+}
+
+.register-cancel-container {
+  margin-top: 50px;
+}
+
+.register-cancel-container * {
+  padding: 10px;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  border-color: transparent;
+  box-shadow: black;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.register-cancel-container #register {
+  color: white;
+  background-color: #18B3A7;
+}
+
+.register-cancel-container #cancel {
+  color: black;
+  background-color: #CADFDE;
 }
 
 /* create ticket dapit*/
