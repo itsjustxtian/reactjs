@@ -88,6 +88,11 @@
   margin-left: 400px;
   font-size: calc(4px + 2vmin);
   color: black;
+  cursor: pointer;
+}
+
+#upload{
+  font-size: 15px;
 }
 
 .space{
@@ -115,6 +120,35 @@
   font-size: calc(1px + 2vmin);
   text-align: center;
   margin: 5px; /* Optional: Add some margin for spacing */
+}
+
+.sign-up-container {
+  height: calc(15px + 2vmin);
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sign-up-container label {
+  /*display: inline-block;
+  flex-direction: row;*/
+  justify-content: center;
+  align-items: center;
+  margin: 5px;
+}
+
+.sign-up-container input {
+  height: calc(15px + 2vmin);
+  /*background-color: #d9d9d9;*/
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
 }
 
 .forgotpasswordlink{
@@ -228,5 +262,15 @@
   font-size: 14px;
 }
 
+.profile-picture-component {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 50px;
+}
+
+.profile-picture-component > * {
+  margin-bottom: 10px;
+}
 
 /* create ticket dapit*/

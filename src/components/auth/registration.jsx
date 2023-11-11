@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Avatar } from '@mui/material';
+
 
 const Registration = () => {
     const [selectedDate, setSelectedDate] = useState(null); // Provide an initial value
@@ -22,9 +24,46 @@ const Registration = () => {
         setProfilePicture(file);
     };
 
-
     return (
-        <div>
+        <div className='sign-up-container'>
+            <h1 >Register New User</h1>
+
+            {/*Profile Picture Module */}
+        <div className='profile-picture-component'>
+        {profilePicture ? (
+          <Avatar 
+            src={URL.createObjectURL(profilePicture)} 
+            alt="Profile Picture" 
+            sx={{width:100, height:100}}
+            
+            />
+        ) : (
+          <Avatar
+            alt="Profile Picture"
+            sx={{width: 100, height: 100}}
+          />
+        )}
+        
+        {/* Button to trigger file input */}
+        <button 
+            onClick={handleFileInputChange}
+            className='buttontext'
+            id='upload'
+            >
+          Upload
+        </button>
+        
+        {/* Hidden file input */}
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleFileSelected}
+          style={{ display: 'none' }}
+        />
+        </div>
+
+            <br/>
             <label>Company ID: </label>
             <input
                 type="text" 
@@ -62,28 +101,18 @@ const Registration = () => {
                 selected={selectedDate}
                 onChange={date => setSelectedDate(date)}
                 dateFormat="yyyy/MM/dd" 
+                placeholderText='Birthdate'
             />
         <br/>
-        <label>Profile Picture:</label>
-        {profilePicture ? (
-          <img src={URL.createObjectURL(profilePicture)} alt="Profile" />
-        ) : (
-          <p>No profile picture selected</p>
-        )}
+
+            <button>
+                Register
+            </button>
+
+            <button>
+                Cancel
+            </button>
         
-        {/* Button to trigger file input */}
-        <button onClick={handleFileInputChange}>
-          Upload Profile Picture
-        </button>
-        
-        {/* Hidden file input */}
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleFileSelected}
-          style={{ display: 'none' }}
-        />
 
         </div>
     );
