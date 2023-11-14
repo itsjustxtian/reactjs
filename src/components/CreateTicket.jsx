@@ -42,25 +42,27 @@ const CreateTicket = () => {
     />
     <br/>
     <label>Severity/Priority: </label>
+      <input type="checkbox"/>
       <label> Critical </label>
-      
+      <input type="checkbox"/>
       <label> High </label>
-      
+      <input type="checkbox"/>
       <label> Medium </label>
-      
+      <input type="checkbox"/>
       <label> Low </label>
 
 
       <br/>
       <label>Type: </label>
+      <input type="checkbox"/>
         <label> Functional </label>
-        
+        <input type="checkbox"/>
         <label> Performance </label>
-        
+        <input type="checkbox" />
         <label> Usability </label>
-        
+        <input type="checkbox"/>
         <label> Compatibility </label>
-
+        <input type="checkbox"/>
         <label> Security </label>
 
         <br/>
@@ -72,8 +74,13 @@ const CreateTicket = () => {
         <br/>
         <Tab></Tab><Tab></Tab><Tab></Tab><Tab></Tab>
         <button className='rectangle' id='text'>
-          <div id='text'> Submit </div>
+          <div id='text'>
+            
+            
+             Submit </div>
         </button>
+
+        
         <button className='rectangle' id='text'>
           <div id='text'> Cancel </div>
         </button>
