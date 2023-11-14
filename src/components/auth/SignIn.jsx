@@ -32,7 +32,7 @@ const SignIn = ({ onLogin }) => {
         <img src={BugHunterLogo} alt="BugHunterLogo" />
         <h1 className='content'>Log In</h1>
         <div className="content">
-          <label htmlFor='email'>Employee ID:</label>
+          <label htmlFor='email'>Email:</label>
           <input
               type="email" 
               placeholder="Enter your email" 
