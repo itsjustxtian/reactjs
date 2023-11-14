@@ -52,7 +52,6 @@ const CreateTicket = () => {
       <label> Low </label>
 
 
-      <br/>
       <label>Type: </label>
       <input type="checkbox"/>
         <label> Functional </label>
@@ -72,11 +71,8 @@ const CreateTicket = () => {
 
         <br/>
         <br/>
-        <Tab></Tab><Tab></Tab><Tab></Tab><Tab></Tab>
         <button className='rectangle' id='text'>
           <div id='text'>
-            
-            
              Submit </div>
         </button>
 
@@ -86,6 +82,7 @@ const CreateTicket = () => {
         </button>
 
     </div>
+    
     
   )
 }
