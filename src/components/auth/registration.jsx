@@ -31,17 +31,17 @@ const Registration = () => {
             {/*Profile Picture Module */}
         <div className='profile-picture-component'>
         {profilePicture ? (
-          <Avatar 
+        <Avatar 
             src={URL.createObjectURL(profilePicture)} 
             alt="Profile Picture" 
             sx={{width:200, height:200}}
             
             />
         ) : (
-          <Avatar
+        <Avatar
             alt="Profile Picture"
             sx={{width: 200, height: 200}}
-          />
+        />
         )}
         
         {/* Button to trigger file input */}
@@ -50,59 +50,67 @@ const Registration = () => {
             className='buttontext'
             id='upload'
             >
-          Upload
+        Upload
         </button>
         
-        {/* Hidden file input */}
         <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleFileSelected}
-          style={{ display: 'none' }}
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleFileSelected}
+        style={{ display: 'none' }}
         />
         </div>
 
             <br/>
-            <label>Company ID: </label>
-            <input
-                type="text" 
-                placeholder="Enter your Company ID" 
-            />
+            <div>
+                <div className='sign-up-left'>
+                    <label>Company ID: </label>
+                    <input
+                        type="text" 
+                        placeholder="Company ID"
+                    />
+                </div>
+                
+                <div className='sign-up-left'>
+                    <label>Email: </label>
+                    <input
+                        type="email" 
+                        placeholder="Email" 
+                    />
 
-            <label>Username: </label>
-            <input
-                type="text" 
-                placeholder="Enter your Username" 
-            />
+                    <label>Contact Number: </label>
+                    <input
+                        type="tel" 
+                        pattern='[0-9]*'
+                        placeholder="Contact Number" 
+                    />
+                </div>
 
-            <br/>
-            <label>Email: </label>
-            <input
-                type="email" 
-                placeholder="Enter your Email" 
-            />
+                <div className='sign-up-left'>
+                    <label>First Name: </label>
+                    <input
+                        type="text" 
+                        placeholder="First name" 
+                    />
+                    <label>Last Name: </label>
+                    <input
+                        type="text" 
+                        placeholder="Last Name" 
+                    />
+                </div>
 
-            <br/>
-            <label>First Name: </label>
-            <input
-                type="text" 
-                placeholder="First name" 
-            />
-            <label>Last Name: </label>
-            <input
-                type="text" 
-                placeholder="Last Name" 
-            />
+                <div className='sign-up-left'>
+                    <label>Date of Birth: </label>
+                    <DatePicker
+                        selected={selectedDate}
+                        onChange={date => setSelectedDate(date)}
+                        dateFormat="yyyy/MM/dd" 
+                        placeholderText='Birthdate'
+                    />
+                </div>
 
-            <br/>
-            <label>Date of Birth: </label>
-            <DatePicker
-                selected={selectedDate}
-                onChange={date => setSelectedDate(date)}
-                dateFormat="yyyy/MM/dd" 
-                placeholderText='Birthdate'
-            />
+            </div>
 
         <br/>
         <div className='register-cancel-container'>
