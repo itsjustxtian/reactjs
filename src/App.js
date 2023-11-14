@@ -1,11 +1,7 @@
-import logo from './logo.svg';
 import './App.css';
 import SignIn from './components/auth/SignIn';
-/*import SignUp from './components/auth/SignUp';
-import AuthDetails from './components/auth/AuthDetails';*/
 import './fonts.css';
 import Sidebar from './components/sidebar'
-/*import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';*/
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Inbox from './components/inbox'
 import Dashboard from './components/Dashboard'
@@ -21,13 +17,42 @@ import ViewApplications from './components/ViewApplications'
 import AddApplications from './components/UserMng/AddApplications';
 import Createticket from './components/CreateTicket'
 import Registration from './components/auth/registration';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { NavigateBeforeOutlined } from '@mui/icons-material';
 
 function App() {
+  const navigate = useNavigate();
+  const [authenticated, setAuthenticated] = useState(
+    sessionStorage.getItem('authenticated') === 'true'
+  );
+  
+
+  // Function to handle login and update the authenticated state
+  const handleLogin = () => {
+    console.log("Login Successful!");
+    setAuthenticated(true);
+    sessionStorage.setItem('authenticated', 'true');
+
+  };
+  
+  // Function to handle logout and update the authenticated state
+  const handleLogout = () => {
+    console.log("Logout Successful!");
+    setAuthenticated(false);
+    sessionStorage.removeItem('authenticated');
+    navigate('/loginscreen');
+  };
+
+  // If not authenticated, show the login component
+  if (!authenticated) {
+    return <SignIn onLogin={handleLogin} />;
+  }
+
   return (
-    <Router>
       <div className="App">
         <div className='container'>
-        <Sidebar/>
+        <Sidebar onLogout={handleLogout} />
         <Routes>
           <Route path='/dashboard' element={<Dashboard/>}/>
           <Route path='/inbox' element={<Inbox/>}/>
@@ -48,7 +73,6 @@ function App() {
         
         
       </div>
-    </Router>
   );
 }
 
