@@ -4,7 +4,7 @@ import React from 'react'
 const CreateTicket = () => {
   
   return (
-    <div>
+    <div className='CreateTicket'>
       Create Ticket
       <br/>
     <label>Application: </label>
