@@ -16,7 +16,7 @@ const CreateTicket = () => {
     <br/>
     <label>Subject: </label>
     <input
-        type="text" 
+        type="sub" 
         placeholder="" 
     />
 
@@ -30,14 +30,12 @@ const CreateTicket = () => {
     <br/>
     <label>Description: </label>
     <br/>
-    <input
-        type="text" 
-        placeholder="" 
-    />
+    <textarea description="" id="" cols="30" rows="10"></textarea>
+    
     <br/>
     <label>Tags: </label>
     <input
-        type="text" 
+        type="tags" 
         placeholder="" 
     />
     <br/>
@@ -52,6 +50,7 @@ const CreateTicket = () => {
       <label> Low </label>
 
 
+    <br/>
       <label>Type: </label>
       <input type="checkbox"/>
         <label> Functional </label>
@@ -65,19 +64,18 @@ const CreateTicket = () => {
         <label> Security </label>
 
         <br/>
-        <button className='rectangle' id='text'>
+        <button className='attach' id='text'>
           <div id='text'> Add Attachments </div>
         </button>
 
         <br/>
         <br/>
-        <button className='rectangle' id='text'>
+        <button className='submit' id='text'>
           <div id='text'>
              Submit </div>
         </button>
-
-        
-        <button className='rectangle' id='text'>
+  
+        <button className='cancel' id='text'>
           <div id='text'> Cancel </div>
         </button>
 
