@@ -3,19 +3,23 @@ import React, { useState } from 'react'
 import { auth } from '../../config/firebase-config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import BugHunterLogo from '../../icons/BugHunterLogo.png'; // Adjust the path based on your directory structure
+import { useNavigate } from 'react-router-dom';
 
-
-const SignIn = () => {
-    const [email, setEmail] = useState('');
+const SignIn = ({ onLogin }) => {
+  const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const navigate = useNavigate();
+    
     const signIn = (e) => {
         //sign in
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredentials) => {
-            console.log(userCredentials);
-            
+          console.log(userCredentials);
+          // Call the onLogin prop passed from the parent component
+          onLogin();
+          // Use navigate to redirect to the dashboard
+          navigate('/dashboard');
         })
         .catch((error) => {
             console.log(error);
@@ -28,7 +32,7 @@ const SignIn = () => {
         <img src={BugHunterLogo} alt="BugHunterLogo" />
         <h1 className='content'>Log In</h1>
         <div className="content">
-          <label htmlFor='email'>Employee ID:</label>
+          <label htmlFor='email'>Email:</label>
           <input
               type="email" 
               placeholder="Enter your email" 

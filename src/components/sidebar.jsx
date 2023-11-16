@@ -20,9 +20,16 @@ function UserProfile(props) {
 }
 
 
-function Sidebar() {
+function Sidebar(props) {
   const name = "Your Name";
   const email = "your.email@example.com"
+
+  const handleLogout = () => {
+    // Clear the session storage and navigate to the login screen
+    sessionStorage.removeItem('authenticated');
+    props.onLogout(); // Call the onLogout function passed as a prop
+  };
+
 
   return (
     <div className='Sidebar'>
@@ -47,6 +54,9 @@ function Sidebar() {
           )
         })}
       </ul>
+      <button onClick={handleLogout} className='logout-button'>
+        Logout
+      </button>
       </div>
   )
 }
