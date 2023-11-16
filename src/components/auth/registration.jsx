@@ -3,12 +3,14 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/storage';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
-
+import 'firebase/auth';
+import 'firebase/firestore';
 
 // Your Firebase configuration here
 const firebaseConfig = {
@@ -45,6 +47,15 @@ const Registration = () => {
             return file;
         });    
     };
+    
+    const handleDateChange = (date) => {
+        // Handle the date change from DatePicker
+        setSelectedDate(date);
+    
+        // If you have an input field for the date
+        // setInputFieldValue(date); // Replace with your actual function
+    };
+    
 
     const [companyId, setCompanyId] = useState('');
     const [email, setEmail] = useState('');
@@ -56,11 +67,18 @@ const Registration = () => {
 
     const handleRegister = () => {
         // Get other input values
-        const companyId = document.getElementById('companyId').value;
-        const email = document.getElementById('email').value;
-        const contactNumber = document.getElementById('contactNumber').value;
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
+        const companyIdElement = document.getElementById('companyId');
+        const emailElement = document.getElementById('email');
+        const contactNumberElement = document.getElementById('contactNumber');
+        const firstNameElement = document.getElementById('firstName');
+        const lastNameElement = document.getElementById('lastName');
+
+        const companyId = companyIdElement ? companyIdElement.value : '';
+        const email = emailElement ? emailElement.value : '';
+        const contactNumber = contactNumberElement ? contactNumberElement.value : '';
+        const firstName = firstNameElement ? firstNameElement.value : '';
+        const lastName = lastNameElement ? lastNameElement.value : '';
+
     
         // Firebase storage reference
         const storageRef = firebase.storage().ref(`profilePictures/${profilePicture.name}`);
@@ -172,12 +190,15 @@ const Registration = () => {
                     <input
                         type="text" 
                         placeholder="First name" 
-                        
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
                     />
                     <label>Last Name: </label>
                     <input
                         type="text" 
                         placeholder="Last Name" 
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                     />
                 </div>
 
@@ -185,10 +206,10 @@ const Registration = () => {
                     <label>Date of Birth: </label>
                     <DatePicker
                         selected={selectedDate}
-                        onChange={date => setSelectedDate(date)}
+                        onChange={date => handleDateChange(date)}
                         dateFormat="yyyy/MM/dd" 
                         placeholderText='Birthdate'
-                    />
+                        value={selectedDate}                    />
                 </div>
 
             </div>
