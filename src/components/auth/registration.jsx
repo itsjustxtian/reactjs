@@ -28,7 +28,6 @@ const firebaseApp = initializeApp(firebaseConfig);
 const database = getDatabase(firebaseApp);
 const storage = getStorage(firebaseApp);
 
-
 const Registration = () => {
     const fileInputRef = useRef(null);
 
