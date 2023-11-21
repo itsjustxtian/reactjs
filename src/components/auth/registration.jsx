@@ -10,7 +10,7 @@ const Registration = () => {
    
     const [input, setInput] = useState("");
 
-    const emailHandler = (e) =>{
+    const inputHandler = (e) =>{
         setInput(e.target.value);
     }
 
