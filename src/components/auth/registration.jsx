@@ -1,107 +1,169 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
 import { db } from '../../config/firebase-config';
 import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
-
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../config/firebase-config';
 
 const Registration = () => {
-   
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState({
+        companyid: '',
+        email: '',
+        contactnumber: '',
+        firstname: '',
+        lastname: '',
+        birthdate: null,
+        password: '123456',
+    });
 
-    const inputHandler = (e) =>{
-        setInput(e.target.value);
-    }
+    const inputHandler = (e) => {
+        const { name, value } = e.target;
 
-    const submitHandler = async (e) =>{
+        setInput((prevInput) => ({
+            ...prevInput,
+            [name]: value,
+        }));
+    };
+
+    const dateHandler = (date) => {
+        setInput((prevInput) => ({
+            ...prevInput,
+            birthdate: date,
+        }));
+    };
+
+    const submitHandler = async (e) => {
         e.preventDefault();
-        if(input){
-            await addDoc(collection(db, "users"), {
-                email: input,
-                datecreated: serverTimestamp(),
-            })
-            setInput("");
+
+        try {
+            if (input) {
+                const userCredential = await createUserWithEmailAndPassword(
+                    auth,
+                    input.email,
+                    input.password
+                );
+                const user = userCredential.user;
+
+                await addDoc(collection(db, "users"), {
+                    companyid: input.companyid,
+                    email: input.email,
+                    contactnumber: input.contactnumber,
+                    firstname: input.firstname,
+                    lastname: input.lastname,
+                    birthdate: input.birthdate,
+                    password: input.password,
+                    datecreated: serverTimestamp(),
+                });
+
+                setInput({
+                    companyid: '',
+                    email: '',
+                    contactnumber: '',
+                    firstname: '',
+                    lastname: '',
+                    birthdate: null,
+                    password: '123456',
+                });
+
+                // console.log('Registration successful! User registered and data stored:', user)
+            }
+        } catch (error) {
+            console.error('Registration error:', error.code, error.message);
         }
-    }
+    };
 
     return (
         <div className='sign-up-container'>
-        <form onSubmit={submitHandler}>
-            <h1 >Register New User</h1>
+            <form onSubmit={submitHandler}>
+                <h1>Register New User</h1>
 
-            {/*Profile Picture Module */}
-        <div className='profile-picture-component'>
-            <Avatar 
-            alt="Profile Picture" 
-            sx={{width:200, height:200}}
-            
-            />
-        </div>
-
-            <br/>
-            <div>
-                <div className='sign-up-left'>
-                    <label>Company ID: </label>
-                    <input
-                        type="text" 
-                        placeholder="Company ID"
-                    />
-                </div>
-                
-                <div className='sign-up-left'>
-                    <label>Email: </label>
-                    <input
-                        type="email" 
-                        placeholder="Email" 
-                        value={input}
-                        onChange={inputHandler}
-                    />
-
-                    <label>Contact Number: </label>
-                    <input
-                        type="tel" 
-                        pattern='[0-9]*'
-                        placeholder="Contact Number"
+                {/*Profile Picture Module */}
+                <div className='profile-picture-component'>
+                    <Avatar
+                        alt="Profile Picture"
+                        sx={{ width: 200, height: 200 }}
                     />
                 </div>
 
-                <div className='sign-up-left'>
-                    <label>First Name: </label>
-                    <input
-                        type="text" 
-                        placeholder="First name" 
-                    />
-                    <label>Last Name: </label>
-                    <input
-                        type="text" 
-                        placeholder="Last Name" 
-                    />
-                </div>
-
-                <div className='sign-up-left'>
-                    <label>Date of Birth: </label>
-                    <DatePicker
-                        dateFormat="yyyy/MM/dd" 
-                        placeholderText='Birthdate'
+                <br />
+                <div>
+                    <div className='sign-up-left'>
+                        <label>Company ID: </label>
+                        <input
+                            type="text"
+                            placeholder="Company ID"
+                            value={input.companyid}
+                            onChange={(e) => inputHandler(e)}
+                            name="companyid"
                         />
+                    </div>
+
+                    <div className='sign-up-left'>
+                        <label>Email: </label>
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={input.email}
+                            onChange={(e) => inputHandler(e)}
+                            name="email"
+                        />
+
+                        <label>Contact Number: </label>
+                        <input
+                            type="tel"
+                            pattern='[0-9]*'
+                            placeholder="Contact Number"
+                            value={input.contactnumber}
+                            onChange={(e) => inputHandler(e)}
+                            name="contactnumber"
+                        />
+                    </div>
+
+                    <div className='sign-up-left'>
+                        <label>First Name: </label>
+                        <input
+                            type="text"
+                            placeholder="First name"
+                            value={input.firstname}
+                            onChange={(e) => inputHandler(e)}
+                            name="firstname"
+                        />
+                        <label>Last Name: </label>
+                        <input
+                            type="text"
+                            placeholder="Last Name"
+                            value={input.lastname}
+                            onChange={(e) => inputHandler(e)}
+                            name="lastname"
+                        />
+                    </div>
+
+                    <div className='sign-up-left'>
+                        <label>Date of Birth: </label>
+                        <DatePicker
+                            dateFormat="yyyy/MM/dd"
+                            placeholderText='Birthdate'
+                            selected={input.birthdate}
+                            onChange={(date) => dateHandler(date)}
+                        />
+                    </div>
                 </div>
 
-            </div>
+                <br />
+                <div className='register-cancel-container'>
+                    <button id='register' type='submit'>
+                        Register
+                    </button>
 
-        <br/>
-            <div className='register-cancel-container'>
-                <button id='register' type='submit'>
-                    Register
-                </button>
-
-                <button id='cancel'>
-                    Cancel
-                </button>
-            </div>
-        </form>
+                    <button id='cancel'>
+                        Cancel
+                    </button>
+                </div>
+            </form>
         </div>
     );
-}
+};
 
 export default Registration;
