@@ -5,7 +5,7 @@ import { Avatar } from '@mui/material';
 import { db } from '../../config/firebase-config';
 import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../config/firebase-config';
+import { auth } from '../../config/firebase-config'; // Import only necessary modules
 
 const Registration = () => {
     const [input, setInput] = useState({
@@ -46,7 +46,7 @@ const Registration = () => {
                 );
                 const user = userCredential.user;
 
-                await addDoc(collection(db, "users"), {
+                await addDoc(collection(db, 'users'), {
                     companyid: input.companyid,
                     email: input.email,
                     contactnumber: input.contactnumber,
@@ -70,7 +70,7 @@ const Registration = () => {
                 // console.log('Registration successful! User registered and data stored:', user)
             }
         } catch (error) {
-            console.error('Registration error:', error.code, error.message);
+            console.error('Registration error:', error);
         }
     };
 
@@ -79,71 +79,65 @@ const Registration = () => {
             <form onSubmit={submitHandler}>
                 <h1>Register New User</h1>
 
-                {/*Profile Picture Module */}
-                <div className='profile-picture-component'>
-                    <Avatar
-                        alt="Profile Picture"
-                        sx={{ width: 200, height: 200 }}
-                    />
-                </div>
+                {/* Removed Profile Picture Module */}
 
                 <br />
                 <div>
                     <div className='sign-up-left'>
                         <label>Company ID: </label>
                         <input
-                            type="text"
-                            placeholder="Company ID"
+                            type='text'
+                            placeholder='Company ID'
                             value={input.companyid}
                             onChange={(e) => inputHandler(e)}
-                            name="companyid"
+                            name='companyid'
                         />
                     </div>
 
                     <div className='sign-up-left'>
                         <label>Email: </label>
                         <input
-                            type="email"
-                            placeholder="Email"
+                            type='email'
+                            placeholder='Email'
                             value={input.email}
                             onChange={(e) => inputHandler(e)}
-                            name="email"
+                            name='email'
                         />
 
                         <label>Contact Number: </label>
                         <input
-                            type="tel"
+                            type='tel'
                             pattern='[0-9]*'
-                            placeholder="Contact Number"
+                            placeholder='Contact Number'
                             value={input.contactnumber}
                             onChange={(e) => inputHandler(e)}
-                            name="contactnumber"
+                            name='contactnumber'
                         />
                     </div>
 
                     <div className='sign-up-left'>
                         <label>First Name: </label>
                         <input
-                            type="text"
-                            placeholder="First name"
+                            type='text'
+                            placeholder='First name'
                             value={input.firstname}
                             onChange={(e) => inputHandler(e)}
-                            name="firstname"
+                            name='firstname'
                         />
                         <label>Last Name: </label>
                         <input
-                            type="text"
-                            placeholder="Last Name"
+                            type='text'
+                            placeholder='Last Name'
                             value={input.lastname}
                             onChange={(e) => inputHandler(e)}
-                            name="lastname"
+                            name='lastname'
                         />
                     </div>
 
                     <div className='sign-up-left'>
                         <label>Date of Birth: </label>
                         <DatePicker
-                            dateFormat="yyyy/MM/dd"
+                            dateFormat='yyyy/MM/dd'
                             placeholderText='Birthdate'
                             selected={input.birthdate}
                             onChange={(date) => dateHandler(date)}
@@ -157,9 +151,7 @@ const Registration = () => {
                         Register
                     </button>
 
-                    <button id='cancel'>
-                        Cancel
-                    </button>
+                    <button id='cancel'>Cancel</button>
                 </div>
             </form>
         </div>
