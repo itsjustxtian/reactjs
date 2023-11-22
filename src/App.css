@@ -4,13 +4,13 @@
   width: 100%;
   height: 100%;
   background-color: #e1eceb;
-  display: flex; /* Use flex to create a horizontal layout */
+  /*display: flex; /* Use flex to create a horizontal layout */
 }
 
 .container {
   display: flex; /* Use flex to create a horizontal layout */
-  justify-content: space-between; /* Space evenly between the children */
-  align-items: center; /* Center the content vertically */
+  /*justify-content: center; /* Space evenly between the children */
+  /*align-items: center; /* Center the content vertically */
   width: 100%; /* Take the full width of the parent */
   max-width: 1200px; /* You can adjust the maximum width as needed */
 }
@@ -19,12 +19,16 @@
   height: 100%;
   width: 300px;
   background-color: #3d5654;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .SidebarList {
   height: auto;
   padding: 0;
   width: 100%;
+  flex-grow: 1; 
 }
 .SidebarList .row {
   width: 100%;
@@ -65,12 +69,19 @@
   background-color: #e1eceb;
   min-height: 100vh;
   display: flex;
-  /*font-family: 'Inter', sans-serif;*/
-  flex-direction: column;
+  flex-direction:column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   margin: 0 auto;
+}
+
+.sign-in-container .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 10px;
 }
 
 .buttontext{
@@ -81,6 +92,11 @@
   margin-left: 400px;
   font-size: calc(4px + 2vmin);
   color: black;
+  cursor: pointer;
+}
+
+#upload{
+  font-size: 15px;
 }
 
 .space{
@@ -88,35 +104,22 @@
 }
 
 
-.content label {
-  min-height: 5vh;
-  margin-right: 10px;
-  /*display: flex;*/
-  font-family: 'Inter', sans-serif;
-  /*flex-direction: column;*/
-  /*align-items: center;
-  justify-content: center;*/
-  position: relative;
-  margin-right: 10px;
-  font-size: calc(4px + 2vmin);
-  color: black;
+.sign-in-container label {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 5px; /* Optional: Add some margin for spacing */
 }
 
-.content input {
+.sign-in-container input {
   height: calc(15px + 2vmin);
   background-color: #d9d9d9;
   border-radius: 10px;
-  display: inline-block;
-  vertical-align: middle;
   font-family: 'Inter', sans-serif;
   font-size: calc(1px + 2vmin);
   text-align: center;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  margin-left: 10px;
-  justify-content: center;
-  padding: 1px;
+  margin: 5px; /* Optional: Add some margin for spacing */
 }
 
 .forgotpasswordlink{
@@ -229,3 +232,256 @@
 .UserInfo #email {
   font-size: 14px;
 }
+
+.sign-up-container {
+  height: calc(15px + 2vmin);
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+}
+
+.sign-up-container label {
+  margin: 5px;
+}
+
+.sign-up-container input {
+  height: calc(15px + 2vmin);
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  border-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+}
+
+.sign-up-left {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: center;
+}
+
+.profile-picture-component {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 50px;
+}
+
+.profile-picture-component > * {
+  margin-bottom: 10px;
+}
+
+.register-cancel-container {
+  margin-top: 50px;
+}
+
+.register-cancel-container * {
+  padding: 10px;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  border-color: transparent;
+  box-shadow: black;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.register-cancel-container #register {
+  color: white;
+  background-color: #18B3A7;
+}
+
+.register-cancel-container #cancel {
+  color: black;
+  background-color: #CADFDE;
+}
+
+/* create ticket dapit*/
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.display-block {
+  display: block;
+}
+
+.display-none {
+  display: none;
+}
+
+.modal-main {
+  background-color: #fefefe;
+  border-radius: 35px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  width: 80%; /* Adjust the width as needed */
+  max-width: 1215px; /* Set a maximum width if desired */
+  height: 80%;
+  max-height: 860px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.CreateTicket input {
+  height: 30px;
+  width: 800px;
+  margin-top: 15px;
+  font-size: 16px; /* Adjust the font size of the placeholder text */
+  border-radius: 8px; /* Adjust the border radius to make the edges curve */
+  padding: 4px;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.5); /* Adjust the scale factor to make the checkbox larger */
+  margin-right: 5px; /* Add some spacing between the checkbox and label */
+  margin-top: auto;
+  width: auto;
+}
+
+
+.CreateTicket textarea {
+  height: 30px;
+  width: 800px;
+  margin-top: 15px;
+  font-size: 16px; /* Adjust the font size of the placeholder text */
+  border-radius: 8px; /* Adjust the border radius to make the edges curve */
+  padding: 4px;
+}
+
+.checkbox-label {
+  margin-right: 10px; /* Adjust the spacing between the checkbox and label as needed */
+}
+
+.CreateTicket .submit{
+  text-align: center;
+  border-radius: 10px;
+  margin-left: 500px;
+  max-width: 200px;
+  
+  width: 50%;
+  padding: 10px;
+  background-color: rgb(26, 186, 167);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.CreateTicket .cancel{
+  text-align: center;
+  border-radius: 10px;
+  background-color: #b3b7b3;
+  color: white;
+  border: none;
+  margin-left: 10px;
+  max-width: 200px;
+  
+  width: 50%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.CreateTicket .attach{
+  margin-top: 10px;
+  text-align: center;
+  max-width: 200px;
+  border-radius: 10px; /* Optional: Add border-radius for rounded corners */
+  margin-right: 450px;
+  width: 50%;
+  padding: 10px;
+  background-color: rgb(26, 186, 167);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.CreateTicket {
+  text-align: left;
+  max-width: 1000px; /* Adjust the max-width according to your design */
+  border-radius: 10px; /* Optional: Add border-radius for rounded corners */
+  margin: auto;
+  padding: 20px;
+}
+
+.CreateTicket button:hover {
+  background-color: rgb(49, 114, 205);
+}
+
+/* logout*/
+.logout-button {
+  padding: 10px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(4px + 2vmin);
+  color: black;
+  cursor: pointer;
+  align-self: center; 
+}
+
+/* View Application dapit */
+.viewApplications {
+  margin: 20px;
+  margin-left: 10px;
+  font-weight: bold;
+  
+}
+
+h1 {
+  color: #333;
+}
+
+.viewApplications .rectangle {
+  width: 150px;
+  height: 150px;
+  top: 0;
+  background-color: #7ea2ba;
+}
+
+.label{
+  height: 24px;
+}
+.label .text2{
+  margin-left: 180px;
+  top: 50;
+}
+.label .text1 {
+  margin-left: 180px;
+  top: 50px;
+}
+.label2{
+  left: 0;
+  margin-top: 20px;
+  line-height: normal;
+  margin-left: 180px;
+}
+
+.rectangle2 {
+  width: 800px;
+  height: 300px;
+  background-color: #b3b2b2;
+  margin-top: 20px;
+}
+
+
