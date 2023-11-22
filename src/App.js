@@ -25,8 +25,8 @@ function App() {
     <Router>
       <div className="App">
         <div className='container'>
-        <Sidebar/>
-        <Routes>
+
+<Routes>
           <Route path='/dashboard' element={<Dashboard/>}/>
           <Route path='/inbox' element={<Inbox/>}/>
           <Route path='/usermanagement' element={<Usermanagement/>}/>
@@ -41,15 +41,13 @@ function App() {
           <Route path='/view-all-applications' element={<Viewapplications/>}/>
           <Route path='/settings' element={<Settings/>}/>
           <Route path='/add-applications' element={<AddApplications/>}/>
+  
 
 
-
-        </Routes>
+  </Routes>
         </div>
-        
-        
       </div>
-    </Router>
+ </Router>
   );
 }
 
