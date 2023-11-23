@@ -367,7 +367,7 @@ body, html {
   width: 1000px;
 }
 
-input[type="checkbox"] {
+.CreateTicket [type="checkbox"] {
   transform: scale(1.5); /* Adjust the scale factor to make the checkbox larger */
   margin-right: 2px;
   margin-left: 25px;
