@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
-import { db } from '../../config/firebase-config';
+import { storage, db } from '../../config/firebase-config';
 import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../config/firebase-config'; // Import only necessary modules
+import { auth } from '../../config/firebase-config';
+import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
+
 
 const Registration = () => {
     const [input, setInput] = useState({
@@ -15,6 +17,7 @@ const Registration = () => {
         firstname: '',
         lastname: '',
         birthdate: null,
+        profilePicture: '',
         password: '123456',
     });
 
@@ -34,6 +37,16 @@ const Registration = () => {
         }));
     };
 
+    //const [profilePicture, setProfilePicture] = useState(null);
+    const [avatar, setAvatar] = useState(null); // Changed from 'profilePicture' to 'avatar' for consistency
+    const [file, setFile] = useState(null);
+
+    const changeProfilePicture = (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        setAvatar(URL.createObjectURL(selectedFile));
+    };
+
     const submitHandler = async (e) => {
         e.preventDefault();
 
@@ -46,7 +59,7 @@ const Registration = () => {
                 );
                 const user = userCredential.user;
 
-                await addDoc(collection(db, 'users'), {
+                let userData = {
                     companyid: input.companyid,
                     email: input.email,
                     contactnumber: input.contactnumber,
@@ -55,7 +68,26 @@ const Registration = () => {
                     birthdate: input.birthdate,
                     password: input.password,
                     datecreated: serverTimestamp(),
-                });
+                  };
+                
+                // Upload avatar to storage
+                if (file) {
+                    const storageRef = storage;
+                    const fileRef = ref(storageRef, `avatars/${file.name}`);
+                    await uploadBytes(fileRef, file); // You might need to import uploadBytes from 'firebase/storage'
+                    console.log('File uploaded successfully!');
+                                
+                    // Get the download URL
+                    const url = await getDownloadURL(fileRef);
+                    
+                    // Add the avatar URL to the userData
+                    userData = {
+                    ...userData,
+                    profilePicture: url,
+                    };
+                }
+                
+                await addDoc(collection(db, 'users'), userData);
 
                 setInput({
                     companyid: '',
@@ -64,10 +96,13 @@ const Registration = () => {
                     firstname: '',
                     lastname: '',
                     birthdate: null,
+                    profilePicture: '',
                     password: '123456',
                 });
 
-                // console.log('Registration successful! User registered and data stored:', user)
+                setAvatar(null);
+
+                console.log('Registration successful! User registered and data stored:', user)
             }
         } catch (error) {
             console.error('Registration error:', error);
@@ -79,7 +114,23 @@ const Registration = () => {
             <form onSubmit={submitHandler}>
                 <h1>Register New User</h1>
 
-                {/* Removed Profile Picture Module */}
+                {/* Profile Picture Module */}
+                <div className='profile-picture-component'>
+                    <Avatar
+                        alt="Profile Picture"
+                        src={avatar}
+                        sx={{ width: 200, height: 200 }}
+                        onClick = {() => document.getElementById('profilePicture').click()}
+                    />
+                    <input
+                        type="file"
+                        id="profilePicture"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={changeProfilePicture}
+                    />
+                </div>
+
 
                 <br />
                 <div>
