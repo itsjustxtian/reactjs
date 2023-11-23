@@ -1,3 +1,4 @@
+import { SpaceBar } from '@mui/icons-material'
 import { Tab } from '@mui/material'
 import React from 'react'
 
@@ -7,7 +8,8 @@ const CreateTicket = () => {
     <div className='CreateTicket'>
       Create Ticket
       <br/>
-    <label>Application: </label>
+      <div className='typanan'>
+      <label>Application: </label>
     <input
         type="text" 
         placeholder="" 
@@ -38,7 +40,9 @@ const CreateTicket = () => {
         type="tags" 
         placeholder="" 
     />
-    <br/>
+      </div>
+    
+
     <label>Severity/Priority: </label>
       <input type="checkbox"/>
       <label> Critical </label>
@@ -64,8 +68,8 @@ const CreateTicket = () => {
         <label> Security </label>
 
         <br/>
-        <button className='attach' id='text'>
-          <div id='text'> Add Attachments </div>
+        <button className='addAtt' id='text'>
+          <div id='addAtt'> Add Attachments </div>
         </button>
 
         <br/>
