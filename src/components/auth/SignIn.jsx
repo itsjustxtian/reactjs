@@ -4,6 +4,8 @@ import { auth } from '../../config/firebase-config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import BugHunterLogo from '../../icons/BugHunterLogo.png'; // Adjust the path based on your directory structure
 import { useNavigate } from 'react-router-dom';
+import Registration from './registration';
+import PopUp from '../../components/PopUp';
 
 const SignIn = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -26,12 +28,23 @@ const SignIn = ({ onLogin }) => {
         });
     }
 
+    const [showPopup, setShowPopup] = useState(false);
+
+    const togglePopup = () => {
+      setShowPopup(!showPopup);
+    };
+
+    const closePopup = () => {
+      setShowPopup(false);
+    };
+
   return (
     <div className='sign-in-container'>
-      <form onSubmit={signIn}>
+      
         <img src={BugHunterLogo} alt="BugHunterLogo" />
         <h1 className='content'>Log In</h1>
         <div className="content">
+          <form onSubmit={signIn}>
           <label htmlFor='email'>Email:</label>
           <input
               type="email" 
@@ -51,15 +64,33 @@ const SignIn = ({ onLogin }) => {
             value={password}
             onChange = {(e) => setPassword(e.target.value)}>
         </input>
-        <br/>
         <div>
           <a href="/forgot-password" className='forgotpasswordlink'>Forgot Password</a>
         </div>
         <br/>
         <div className='space'></div>
-        <button type = "submit" className='buttontext'>Log In</button>
+        
+        <button 
+          type = "submit" 
+          className='buttontext' 
+          id='logIn'>
+            Log In
+        </button>
+        </form>
+
+        <button 
+          className='buttontext' 
+          id='createNewAccount'
+          onClick={togglePopup}>
+            Create New Account
+        </button>
+
+        <PopUp show={showPopup} handleClose={closePopup}>
+          <Registration handleClose={closePopup}/>
+        </PopUp>
+
         </div>
-      </form>
+      
     </div>
   )
 }

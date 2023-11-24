@@ -4,13 +4,17 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
 import { storage, db } from '../../config/firebase-config';
 import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase-config';
 import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 
+const Registration = ({handleClose}) => {
+    const handleCancel = () => {
+        handleClose();
+    };
 
-const Registration = () => {
     const [input, setInput] = useState({
+        uid: '',
         companyid: '',
         email: '',
         contactnumber: '',
@@ -18,17 +22,39 @@ const Registration = () => {
         lastname: '',
         birthdate: null,
         profilePicture: '',
-        password: '123456',
+        password: '',
+        confirmpassword: '',
     });
+
+    const message = '';
 
     const inputHandler = (e) => {
         const { name, value } = e.target;
+        
+        if (name === 'companyid') {
+            // Format the Company ID as "00-0000-00"
+                const formattedValue = value
+                .replace(/[^\d]/g, '') // Remove non-numeric characters
+                .replace(/^(\d{2})(\d{0,4})?(\d{0,4})?$/, (match, p1, p2, p3) => {
+                let result = p1;
+                if (p2) result += `-${p2}`;
+                if (p3) result += `-${p3}`;
+                return result;
+                })
+                .slice(0,11);
+              
 
-        setInput((prevInput) => ({
-            ...prevInput,
-            [name]: value,
-        }));
-    };
+            setInput((prevInput) => ({
+                ...prevInput,
+                [name]: formattedValue,
+            }));
+        } else {
+            setInput((prevInput) => ({
+                ...prevInput,
+                [name]: value,
+            }));
+        }
+    } ;
 
     const dateHandler = (date) => {
         setInput((prevInput) => ({
@@ -51,67 +77,105 @@ const Registration = () => {
         e.preventDefault();
 
         try {
-            if (input) {
-                const userCredential = await createUserWithEmailAndPassword(
-                    auth,
-                    input.email,
-                    input.password
-                );
-                const user = userCredential.user;
-
-                let userData = {
-                    companyid: input.companyid,
-                    email: input.email,
-                    contactnumber: input.contactnumber,
-                    firstname: input.firstname,
-                    lastname: input.lastname,
-                    birthdate: input.birthdate,
-                    password: input.password,
-                    datecreated: serverTimestamp(),
-                  };
-                
-                // Upload avatar to storage
-                if (file) {
-                    const storageRef = storage;
-                    const fileRef = ref(storageRef, `avatars/${file.name}`);
-                    await uploadBytes(fileRef, file); // You might need to import uploadBytes from 'firebase/storage'
-                    console.log('File uploaded successfully!');
-                                
-                    // Get the download URL
-                    const url = await getDownloadURL(fileRef);
+            if(input.password != input.confirmpassword){
+                console.log("Password and Confirm Password do not match.");
+                return;
+            } else {
+                if (input) {
+                    const userCredential = await createUserWithEmailAndPassword(
+                        auth,
+                        input.email,
+                        input.password
+                    );
+                    const user = userCredential.user;
+                    const uid = userCredential.user.uid;
+    
+                    let userData = {
+                        uid: uid,
+                        companyid: input.companyid,
+                        email: input.email,
+                        contactnumber: input.contactnumber,
+                        firstname: input.firstname,
+                        lastname: input.lastname,
+                        birthdate: input.birthdate,
+                        password: input.password,
+                        confirmpassword: input.confirmpassword,
+                        datecreated: serverTimestamp(),
+                      };
                     
-                    // Add the avatar URL to the userData
-                    userData = {
-                    ...userData,
-                    profilePicture: url,
-                    };
+                    // Upload avatar to storage
+                    if (file) {
+                        const storageRef = storage;
+                        const fileRef = ref(storageRef, `avatars/${file.name}`);
+                        await uploadBytes(fileRef, file); // You might need to import uploadBytes from 'firebase/storage'
+                        console.log('File uploaded successfully!');
+                                    
+                        // Get the download URL
+                        const url = await getDownloadURL(fileRef);
+                        
+                        // Add the avatar URL to the userData
+                        userData = {
+                        ...userData,
+                        profilePicture: url,
+                        };
+                    }
+                    
+                    await addDoc(collection(db, 'users'), userData);
+    
+                    setInput({
+                        uid: '',
+                        companyid: '',
+                        email: '',
+                        contactnumber: '',
+                        firstname: '',
+                        lastname: '',
+                        birthdate: null,
+                        profilePicture: '',
+                        password: '',
+                        confirmpassword: '',
+                    });
+    
+                    setAvatar(null);
+    
+                    console.log('Registration successful! User registered and data stored:', user, uid)
+    
+                    // Automatically log in the user after successful registration
+                    const signInCredential = await signInWithEmailAndPassword(
+                        auth,
+                        input.email,
+                        input.password
+                    );
+            
+                    // Check if the user is successfully logged in
+                    if (signInCredential.user) {
+                        console.log('User logged in after registration:', signInCredential.user);
+                        handleClose(); // Close the registration popup
+                    }
                 }
-                
-                await addDoc(collection(db, 'users'), userData);
-
-                setInput({
-                    companyid: '',
-                    email: '',
-                    contactnumber: '',
-                    firstname: '',
-                    lastname: '',
-                    birthdate: null,
-                    profilePicture: '',
-                    password: '123456',
-                });
-
-                setAvatar(null);
-
-                console.log('Registration successful! User registered and data stored:', user)
             }
         } catch (error) {
             console.error('Registration error:', error);
         }
     };
 
+    const validKeyForPayment = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "-",
+        "Backspace",
+      ];
+
     return (
         <div className='sign-up-container'>
-            <form onSubmit={submitHandler}>
+            <form onSubmit={submitHandler} autoComplete="off">
                 <h1>Register New User</h1>
 
                 {/* Profile Picture Module */}
@@ -131,8 +195,6 @@ const Registration = () => {
                     />
                 </div>
 
-
-                <br />
                 <div>
                     <div className='sign-up-left'>
                         <label>Company ID: </label>
@@ -142,6 +204,13 @@ const Registration = () => {
                             value={input.companyid}
                             onChange={(e) => inputHandler(e)}
                             name='companyid'
+                            pattern="[0-9-]*"
+                            title="Only numbers are allowed"
+                            onKeyDown={(e) => {
+                                if (!validKeyForPayment.includes(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}                
                         />
                     </div>
 
@@ -194,15 +263,40 @@ const Registration = () => {
                             onChange={(date) => dateHandler(date)}
                         />
                     </div>
+
+                    <div className='sign-up-right'>
+                        <label>Password:</label>
+                        <input
+                            autoComplete='off'
+                            type='password'
+                            placeholder='Password'
+                            value={input.password}
+                            onChange={(e) => inputHandler(e)}
+                            name='password'
+                        />
+                    </div>
+                    <div className='sign-up-right'>
+                        <label>Confirm Password:</label>
+                        <input
+                            type='password'
+                            placeholder='Confirm Password'
+                            value={input.confirmpassword}
+                            onChange={(e) => inputHandler(e)}
+                            name='confirmpassword'
+                        />
+                    </div>
                 </div>
 
-                <br />
+                <div className='message-show'>
+                    Message: {message}
+                </div>
+                
                 <div className='register-cancel-container'>
                     <button id='register' type='submit'>
                         Register
                     </button>
 
-                    <button id='cancel'>Cancel</button>
+                    <button id='cancel' onClick={handleCancel}>Cancel</button>
                 </div>
             </form>
         </div>
