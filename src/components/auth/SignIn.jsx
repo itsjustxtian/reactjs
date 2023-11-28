@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-//continue 12:33
 import { auth } from '../../config/firebase-config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import BugHunterLogo from '../../icons/BugHunterLogo.png'; // Adjust the path based on your directory structure
@@ -10,6 +9,7 @@ import PopUp from '../../components/PopUp';
 const SignIn = ({ onLogin }) => {
   const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState(''); // New state for error message
     const navigate = useNavigate();
     
     const signIn = (e) => {
@@ -25,7 +25,16 @@ const SignIn = ({ onLogin }) => {
         })
         .catch((error) => {
             console.log(error);
-        });
+            let customErrorMessage = 'Invalid Login Credentials';
+
+            if (error.code === 'auth/user-not-found') {
+              customErrorMessage = 'User not found. Please check your email.';
+            } else if (error.code === 'auth/wrong-password') {
+              customErrorMessage = 'Incorrect password. Please try again.';
+            }
+            setErrorMessage(customErrorMessage);
+
+              });
     }
 
     const [showPopup, setShowPopup] = useState(false);
@@ -69,7 +78,10 @@ const SignIn = ({ onLogin }) => {
         </div>
         <br/>
         <div className='space'></div>
-        
+
+        {/* Display error message if present */}
+        {errorMessage && <div className='error-message'>{errorMessage}</div>}
+
         <button 
           type = "submit" 
           className='buttontext' 

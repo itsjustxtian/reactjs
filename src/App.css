@@ -313,7 +313,8 @@
 .message-show {
   margin-top: 20px;
   display: flex;
-  color: black;
+  color: red;
+  justify-content: center;
 }
 
 .register-cancel-container * {
@@ -515,4 +516,9 @@ h1 {
   width: 150px;
   height: 150px;
   background-color: #7ea2ba;
+}
+
+.error-message {
+  font-size: 20px;
+  color: red;
 }

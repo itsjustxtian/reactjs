@@ -7,6 +7,7 @@ import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase-config';
 import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
+import { query, getDocs, where } from 'firebase/firestore';
 
 const Registration = ({handleClose}) => {
     const handleCancel = () => {
@@ -25,8 +26,6 @@ const Registration = ({handleClose}) => {
         password: '',
         confirmpassword: '',
     });
-
-    const message = '';
 
     const inputHandler = (e) => {
         const { name, value } = e.target;
@@ -73,15 +72,44 @@ const Registration = ({handleClose}) => {
         setAvatar(URL.createObjectURL(selectedFile));
     };
 
+    const[errormessage, setErrorMessage] = useState('');
+
     const submitHandler = async (e) => {
         e.preventDefault();
 
         try {
-            if(input.password != input.confirmpassword){
+            setErrorMessage('');
+            if(input.password !== input.confirmpassword){
                 console.log("Password and Confirm Password do not match.");
+                setErrorMessage("Password and Confirm Password do not match.");
                 return;
             } else {
                 if (input) {
+                    // Check if the email or Company ID already exists
+                    console.log('Checking if email exists:', input.email);
+                    console.log('Checking if Company ID exists:', input.companyid);
+
+                    const companyIdExists = await checkIfFieldExists('companyid', input.companyid);
+                    
+                    if (companyIdExists) {
+                        setErrorMessage('Company ID already exists. Please choose another Company ID.');
+                        console.log('Company ID exists?', companyIdExists);
+                        console.log('Component Rendered! Company ID.');                        
+                        return;
+                    }
+                    
+                    const emailExists = await checkIfFieldExists('email', input.email);
+
+                    if (emailExists) {
+                        setErrorMessage('Email is already in use. Please choose another Company ID.');
+                        console.log(errormessage);
+                        console.log('Email exists?', emailExists);
+                        console.log('Component Rendered! Company ID.');
+                        return;
+                    }
+                    
+                    
+
                     const userCredential = await createUserWithEmailAndPassword(
                         auth,
                         input.email,
@@ -138,7 +166,8 @@ const Registration = ({handleClose}) => {
                     setAvatar(null);
     
                     console.log('Registration successful! User registered and data stored:', user, uid)
-    
+                    setErrorMessage("Registration successful! User registered and data stored.");
+
                     // Automatically log in the user after successful registration
                     const signInCredential = await signInWithEmailAndPassword(
                         auth,
@@ -155,8 +184,29 @@ const Registration = ({handleClose}) => {
             }
         } catch (error) {
             console.error('Registration error:', error);
+            setErrorMessage(error.message);
         }
     };
+
+    const checkIfFieldExists = async (fieldName, value) => {
+        try {
+          const q = query(collection(db, 'users'), where(fieldName, '==', value));
+          const querySnapshot = await getDocs(q);
+          const exists = querySnapshot.size > 0;
+          
+          console.log(`Checking if ${fieldName} (${value}) exists: ${exists}`);
+          console.log('Data retrieved:', querySnapshot.docs.map(doc => doc.data()));
+          
+          return exists;
+        } catch (error) {
+          console.error(`Error checking if ${fieldName} exists:`, error);
+          return false;
+        }
+      };
+      
+      
+      
+    
 
     const validKeyForPayment = [
         "0",
@@ -288,7 +338,7 @@ const Registration = ({handleClose}) => {
                 </div>
 
                 <div className='message-show'>
-                    Message: {message}
+                    {errormessage}
                 </div>
                 
                 <div className='register-cancel-container'>
