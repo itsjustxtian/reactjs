@@ -578,3 +578,37 @@ h1 {
   font-size: 20px;
   color: red;
 }
+
+.user-management{
+  background-color: white;
+  width: 80%;
+  margin: 30px;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.1); 
+}
+
+.user-management .user-management-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: scroll;
+}
+
+.user-management .user-management-table th,
+.user-management .user-management-table td {
+  padding: 10px;
+  text-align: center;
+}
+
+.user-management .user-management-table th {
+  padding: 30px;
+}
+
+.user-management .user-management-table th:nth-child(1) { width: 30%; }
+.user-management .user-management-table th:nth-child(2) { width: 40%; }
+.user-management .user-management-table th:nth-child(3) { width: 20%; }
+.user-management .user-management-table th:nth-child(4) { width: 10%; }
+
+.user-management .user-management-table tr#rows:hover {
+  background-color: #f5f5f5;
+}
