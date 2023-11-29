@@ -160,7 +160,6 @@ const Registration = ({handleClose}) => {
                         birthdate: null,
                         profilePicture: '',
                         password: '',
-                        confirmpassword: '',
                     });
     
                     setAvatar(null);

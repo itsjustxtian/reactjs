@@ -28,11 +28,6 @@ export const SidebarData = [
         link: "/usermanagement"
     },
     {
-        title: "Registration Screen",
-        icon: <HowToRegIcon />,
-        link: "/registration"
-    },
-    {
         title: "Create/Edit Ticket Screen",
         icon: <EditIcon />,
         link: "/create-edit"

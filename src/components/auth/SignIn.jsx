@@ -20,6 +20,8 @@ const SignIn = ({ onLogin }) => {
           console.log(userCredentials);
           // Call the onLogin prop passed from the parent component
           onLogin();
+          sessionStorage.setItem('uid', userCredentials.user.uid);
+          console.log("UID stored for this session: ", sessionStorage.getItem('uid'));
           // Use navigate to redirect to the dashboard
           navigate('/dashboard');
         })
@@ -35,7 +37,7 @@ const SignIn = ({ onLogin }) => {
             setErrorMessage(customErrorMessage);
 
               });
-    }
+        }
 
     const [showPopup, setShowPopup] = useState(false);
 

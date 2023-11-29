@@ -221,7 +221,7 @@
 }
 
 .UserImage {
-  flex: 20%;
+  flex: 40%;
   display: grid;
   justify-content: center;
   align-items: center;
@@ -239,6 +239,7 @@
   font-family: 'Inter', sans-serif;
   position: relative;
   margin-right: 10px;
+  margin-left: 10px;
   color: white;
 }
 
