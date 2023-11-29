@@ -2,8 +2,11 @@ import { SpaceBar } from '@mui/icons-material'
 import { Tab } from '@mui/material'
 import React from 'react'
 
-const CreateTicket = () => {
-  
+const CreateTicket = ({handleClose}) => {
+  const handleCancel = () => {
+    handleClose();
+  };
+
   return (
     <div className='CreateTicket'>
       Create Ticket
@@ -80,7 +83,7 @@ const CreateTicket = () => {
         </button>
   
         <button className='cancel' id='text'>
-          <div id='text'> Cancel </div>
+          <div id='text' onClick={handleCancel}> Cancel </div>
         </button>
 
     </div>

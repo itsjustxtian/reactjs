@@ -26,7 +26,7 @@ const Dashboard = () => {
         
       </div>
       <Popup show={showPopup} handleClose={closePopup}>
-          <CreateTicket />
+          <CreateTicket handleClose={closePopup}/>
         </Popup>
       <div className='space'></div>
 
