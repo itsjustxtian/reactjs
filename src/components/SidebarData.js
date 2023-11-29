@@ -28,11 +28,6 @@ export const SidebarData = [
         link: "/usermanagement"
     },
     {
-        title: "Create/Edit Ticket Screen",
-        icon: <EditIcon />,
-        link: "/create-edit"
-    },
-    {
         title: "Ticket Screen",
         icon: <BugReportIcon />,
         link: "/showticket"

@@ -53,32 +53,37 @@ const SignIn = ({ onLogin }) => {
     <div className='sign-in-container'>
       
         <img src={BugHunterLogo} alt="BugHunterLogo" />
-        <h1 className='content'>Log In</h1>
         <div className="content">
           <form onSubmit={signIn}>
-          <label htmlFor='email'>Email:</label>
-          <input
-              type="email" 
-              placeholder="Enter your email" 
-              value={email}
-              onChange = {(e) => setEmail(e.target.value)}>
-          </input>
-        
-        <br/>
+          <div id='new-line'>
+            <label htmlFor='email'>Email:</label>
+            <input
+                type="email" 
+                placeholder="Enter your email" 
+                value={email}
+                onChange = {(e) => setEmail(e.target.value)}>
+            </input>
+          </div>
         
         <div className="space"></div>
 
-        <label htmlFor='password'>Password: </label>
-        <input
-            type="password" 
-            placeholder="Enter your password" 
-            value={password}
-            onChange = {(e) => setPassword(e.target.value)}>
-        </input>
-        <div>
-          <a href="/forgot-password" className='forgotpasswordlink'>Forgot Password</a>
+        <div id='new-line'>
+          <label htmlFor='password'>Password: </label>
+          <input
+              type="password" 
+              placeholder="Enter your password" 
+              value={password}
+              onChange = {(e) => setPassword(e.target.value)}>
+          </input>
         </div>
-        <br/>
+        
+        <div>
+          <a href="/forgot-password" 
+          className='forgotpasswordlink'>
+            Forgot Password
+          </a>
+        </div>
+
         <div className='space'></div>
 
         {/* Display error message if present */}
@@ -89,15 +94,17 @@ const SignIn = ({ onLogin }) => {
           className='buttontext' 
           id='logIn'>
             Log In
-        </button>
+        </button> <br/>
+        
         </form>
 
         <button 
           className='buttontext' 
-          id='createNewAccount'
+          id='register'
           onClick={togglePopup}>
-            Create New Account
+            Register
         </button>
+        
 
         <PopUp show={showPopup} handleClose={closePopup}>
           <Registration handleClose={closePopup}/>

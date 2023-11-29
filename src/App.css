@@ -1,18 +1,24 @@
 @import 'fonts.css';
 
 .App {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: #e1eceb;
-  /*display: flex; /* Use flex to create a horizontal layout */
+  margin: 0;
+  overflow: hidden;
 }
 
 .container {
-  display: flex; /* Use flex to create a horizontal layout */
-  /*justify-content: center; /* Space evenly between the children */
-  /*align-items: center; /* Center the content vertically */
-  width: 100%; /* Take the full width of the parent */
-  max-width: 1200px; /* You can adjust the maximum width as needed */
+  display: flex;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0;
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
 }
 
 .Sidebar {
@@ -21,7 +27,6 @@
   background-color: #3d5654;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .SidebarList {
@@ -29,13 +34,13 @@
   padding: 0;
   width: 100%;
   flex-grow: 1; 
+  overflow-y: auto;
 }
 .SidebarList .row {
   width: 100%;
   height: 60px;
   /*border: 1px solid black;*/
   list-style-type: none;
-  margin: 0%;
   display: flex;
   flex-direction: row;
   color: white;
@@ -65,6 +70,16 @@
   flex: 70%;
 }
 
+.logout-button {
+  padding: 10px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(4px + 2vmin);
+  color: black;
+  cursor: pointer;
+  align-self: center; 
+}
+
 .sign-in-container {
   background-color: #e1eceb;
   min-height: 100vh;
@@ -84,24 +99,39 @@
   margin: 10px;
 }
 
+.sign-in-container .content #new-line {
+  display: flex;
+}
+
+.sign-in-container .content #new-line input{
+  border: none;
+  width: 100%;
+  height: 40px;
+  align-items: flex-end;
+}
+
 .buttontext{
-  padding: 10px;
+  width: 150px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   padding-left: 20px;
   padding-right: 20px;
   border-radius: 20px;
+  border: none;
   font-family: 'Inter', sans-serif;
-  font-size: calc(4px + 2vmin);
+  font-size: 28px;
   cursor: pointer;
   margin: 10px;
 }
 
 #logIn {
-  background-color: #18B3A7;
+  background-color: #3D5654;
   color: white;
 }
 
-#createNewAccount {
-
+#register {
+  background-color: #CADFDE;
+  color: black;
 }
 
 #upload{
@@ -137,9 +167,11 @@
 
 .forgotpasswordlink{
   font-family: 'Inter', sans-serif;
-  align-items: center;
-  /*margin-left: 250px;*/
-  font-size: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  margin-left: auto;
+  font-size: 15px;
   color: black;
 }
 
@@ -393,11 +425,6 @@
   background-color: transparent; /* Color of the scrollbar track */
 }
 
-body, html {
-  height: 100%;
-  margin: 0;
-}
-
 .CreateTicket input[type="checkbox"] {
   transform: scale(1.75); /* Adjust the scale factor to make the checkbox larger */
   margin: 10px;
@@ -527,17 +554,6 @@ body, html {
 
 .CreateTicket button:hover {
   background-color: rgb(49, 114, 205);
-}
-
-/* logout*/
-.logout-button {
-  padding: 10px;
-  border-radius: 10px;
-  font-family: 'Inter', sans-serif;
-  font-size: calc(4px + 2vmin);
-  color: black;
-  cursor: pointer;
-  align-self: center; 
 }
 
 /* View Application dapit */

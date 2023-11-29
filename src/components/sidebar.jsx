@@ -63,8 +63,10 @@ function Sidebar(props) {
   return (
     <div className='Sidebar'>
       <div>
-        <UserProfile profileSrc = {userData.profilePicture} name = {userData.firstname + " " + userData.lastname} email={userData.email}/>
-        
+        <UserProfile 
+          profileSrc = {userData.profilePicture} 
+          name = {userData.firstname + " " + userData.lastname} 
+          email={userData.email}/>
       </div>
       <ul className='SidebarList'>
         {SidebarData.map((val, key) => {
@@ -87,7 +89,7 @@ function Sidebar(props) {
       <button onClick={handleLogout} className='logout-button'>
         Logout
       </button>
-      </div>
+    </div>
   )
 }
 
