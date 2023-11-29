@@ -367,8 +367,8 @@
   box-shadow: 5px 10px 10px 5px #00000040;
   width: 80%; /* Adjust the width as needed */
   max-width: 1215px; /* Set a maximum width if desired */
-  height: 80%;
-  max-height: 860px;
+  max-height: 80%;
+  /*max-height: 860px;*/
   position: fixed;
   top: 50%;
   left: 50%;
@@ -398,92 +398,131 @@ body, html {
   margin: 0;
 }
 
-.CreateTicket input {
-  height: auto;
-  width: 800px;
-  margin-top: 10px;
-  font-size: 16px; /* Adjust the font size of the placeholder text */
-  border-radius: 8px; /* Adjust the border radius to make the edges curve */
+.CreateTicket input[type="checkbox"] {
+  transform: scale(1.75); /* Adjust the scale factor to make the checkbox larger */
+  margin: 10px;
+  width: auto;
 }
 
-.typanan input{
-  height: 30px;
-  width: 1000px;
-}
-
-.CreateTicket [type="checkbox"] {
-  transform: scale(1.5); /* Adjust the scale factor to make the checkbox larger */
-  margin-right: 2px;
-  margin-left: 25px;
+.CreateTicket input[type="radio"] {
+  transform: scale(1.75);
+  margin-right: 10px;
+  margin: 10px;
   width: auto;
 }
 
 
 .CreateTicket textarea {
-  height: 30px;
-  width: 1000px;
-  margin-top: 15px;
-  font-size: 16px; /* Adjust the font size of the placeholder text */
-  border-radius: 8px; /* Adjust the border radius to make the edges curve */
-  padding: 4px;
+  width: calc(100% - 20px);
+  border-radius: 20px;
+  background-color: #D9D9D9;
+  border-color: transparent;
+  margin-top: 10px;
+  resize: none;
+  padding: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
 }
 
 .checkbox-label {
   margin-right: 10px; /* Adjust the spacing between the checkbox and label as needed */
 }
 
+.CreateTicket .formbuttons {
+  display: flex;
+}
+
 .CreateTicket .submit{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
   text-align: center;
-  border-radius: 10px;
-  margin-left: 590px;
-  max-width: 200px;
-  
-  width: 50%;
-  padding: 10px;
-  background-color: rgb(26, 186, 167);
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: #18B3A7;
   color: white;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
 }
 
 .CreateTicket .cancel{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
   text-align: center;
-  border-radius: 10px;
-  background-color: #b3b7b3;
-  color: white;
-  border: none;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
   margin-left: 10px;
-  max-width: 200px;
-  
-  width: 50%;
-  padding: 10px;
+
+  padding: 20px;
+  background-color: #CADFDE;
+  color: black;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
 }
 
 .CreateTicket .addAtt{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   margin-top: 10px;
-  text-align: center;
+  justify-content: center;
   max-width: 200px;
-  border-radius: 10px; /* Optional: Add border-radius for rounded corners */
-  margin-right: 450px;
-  width: 50%;
+  width: 100%;
   padding: 10px;
-  background-color: rgb(26, 186, 167);
+  background-color: #18B3A7;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
 .CreateTicket {
   text-align: left;
-  max-width: 1000px; /* Adjust the max-width according to your design */
+  max-width: 100%; /* Adjust the max-width according to your design */
   border-radius: 10px; /* Optional: Add border-radius for rounded corners */
-  margin: auto;
-  padding: 20px;
+  margin: 10px;
+  font-size: 18px;
+  font-family: 'Inter', sans-serif;
+}
+
+.CreateTicket input {
+  width: 100%;
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 18px; /* Adjust the font size of the placeholder text */
+  border-radius: 20px; /* Adjust the border radius to make the edges curve */
+  background-color: #D9D9D9;
+  border-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.CreateTicket label {
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+#new-line input {
+  vertical-align: middle;
+}
+
+.typanan input{
+  height: 30px;
+}
+
+.CreateTicket .typanan #new-line {
+  display: flex;
+  align-items: center;
 }
 
 .CreateTicket button:hover {
