@@ -248,9 +248,9 @@
 }
 
 .sign-up-container {
-  height: calc(15px + 2vmin);
+  height: 100%;
   font-family: 'Inter', sans-serif;
-  font-size: calc(1px + 2vmin);
+  font-size: 18px;
   text-align: center;
   margin: 5px;
 }
@@ -319,7 +319,7 @@
 }
 
 .register-cancel-container * {
-  padding: 10px;
+  padding: 20px;
   border-radius: 20px;
   font-family: 'Inter', sans-serif;
   font-size: 20px;
