@@ -601,7 +601,7 @@ h1 {
 }
 
 .user-management .user-management-table th {
-  padding: 30px;
+  padding: 20px;
 }
 
 .user-management .user-management-table th:nth-child(1) { width: 30%; }
