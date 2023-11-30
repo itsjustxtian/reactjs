@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 
 const Usermanagement = () => {
   const [data, setData] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,19 +22,71 @@ const Usermanagement = () => {
     fetchData();
   }, []);
 
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getClassNamesFor = (name) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const sortedData = () => {
+    const sortableData = [...data];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  };
+
+
   return (
     <div className='user-management'>
       <table className='user-management-table'>
       <thead>
         <tr>
-          <th>Company ID</th>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Status</th>
+          <th 
+            onClick={() => requestSort('companyid')} 
+            id='table-head'
+            className={getClassNamesFor('companyid')}>
+              Company ID
+          </th>
+          <th 
+            onClick={() => requestSort('lastname')} 
+            id='table-head'
+            className={getClassNamesFor('lastname')}>
+              Name
+          </th>
+          <th 
+            onClick={() => requestSort('role')} 
+            id='table-head'
+            className={getClassNamesFor('role')}>
+              Role
+          </th>
+          <th 
+            onClick={() => requestSort('status')} 
+            id='table-head'
+            className={getClassNamesFor('status')}>
+              Status
+          </th>
         </tr>
       </thead>
       <tbody>
-       {data.map((row) => (
+       {sortedData().map((row) => (
           <tr id='rows' key={row.id}>
             <td>{row.companyid}</td>
             <td>{row.lastname + ', ' + row.firstname}</td>
