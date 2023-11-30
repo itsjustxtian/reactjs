@@ -80,7 +80,7 @@ const CreateTicket = ({handleClose}) => {
         <div>
           <button className='addAtt'>
             <AttachFileIcon/>
-            <div id='addAtt'> Add Attachments </div>
+            <div id='addAtt' onClick = {() => document.getElementById('profilePicture').click()}> Add Attachments </div>
           </button>
         </div>
             
