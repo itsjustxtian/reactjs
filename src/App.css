@@ -310,6 +310,10 @@ body, html {
   align-items: center;
 }
 
+.sign-up-left label{
+  white-space: nowrap;
+}
+
 .sign-up-right {
   display: flex;
   justify-content: flex-end;
@@ -618,6 +622,18 @@ h1 {
 
 .user-management .user-management-table tr#rows:hover {
   background-color: #f5f5f5;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-management .user-management-table tr#inactive-rows {
+  color: #8D99AE;
+  cursor: pointer;
+}
+
+.user-management .user-management-table tr#inactive-rows:hover {
+  color: #8D99AE;
+  font-weight: bold;
   cursor: pointer;
 }
 
@@ -701,8 +717,8 @@ h1 {
   flex-direction:row;
   align-content: flex-start;
   align-items: center;
-  column-gap: 20px;  
-  border-radius: 100px;
+  column-gap: 35px;  
+
 }
 
 /*View all users*/
@@ -746,4 +762,68 @@ h1 {
 #table-head {
   cursor: pointer;
   align-self: center;
+}
+
+.sign-up-containerr .formbuttons {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: auto;
+  align-items: center;
+}
+
+.sign-up-containerr .submit{
+  font-family: 'Inter', sans-serif;
+  font-size: medium;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 10px;
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.sign-up-containerr .cancel{
+  font-family: 'Inter', sans-serif;
+  font-size: medium;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 10px;
+  background-color: #CADFDE;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+.sign-up-containerr {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  text-align: center;
+  margin: 5px;
+
+}
+
+.sign-up-containerr label {
+  margin: 5px;
+}
+
+.sign-up-containerr input {
+  height: calc(15px + 2vmin);
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  border-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
 }
