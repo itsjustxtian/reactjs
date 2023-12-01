@@ -3,6 +3,9 @@ import { db } from '../config/firebase-config'
 import { collection, getDocs } from 'firebase/firestore'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import Popup from './PopUp'
+import ViewProfile from './UserMng/ViewProfile'
+import EditProfile from './UserMng/EditProfile'
 
 const Usermanagement = () => {
   const [data, setData] = useState([]);
@@ -53,6 +56,15 @@ const Usermanagement = () => {
     return sortableData;
   };
 
+  const [showPopup, setShowPopup] = useState(false);
+
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+  };
 
   return (
     <div className='user-management'>
@@ -87,15 +99,23 @@ const Usermanagement = () => {
       </thead>
       <tbody>
        {sortedData().map((row) => (
-          <tr id='rows' key={row.id}>
-            <td>{row.companyid}</td>
-            <td>{row.lastname + ', ' + row.firstname}</td>
-            <td>{row.role}</td>
-            <td>{row.status}</td>
+          <tr
+            id={row.status === 'Inactive' ? 'inactive-rows' : 'rows'}
+            key={row.id} 
+            onClick={togglePopup}>
+              <td>{row.companyid}</td>
+              <td>{row.lastname + ', ' + row.firstname}</td>
+              <td>{row.role}</td>
+              <td>{row.status}</td>
           </tr>
         ))}
       </tbody>
     </table>
+
+        <Popup show={showPopup} handleClose={closePopup}>
+          <EditProfile handleClose={closePopup}/>
+        </Popup>
+
     </div>
   )
 }
