@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
 import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { storage, db } from '../../config/firebase-config';
-import { updateDoc, where, getDocs, collection } from '@firebase/firestore';
-
+import { doc, updateDoc, collection, query, where, getDocs, getDoc } from "firebase/firestore";
 
 const EditProfile = ({ handleClose }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [file, setFile] = useState(null);
+
+  const [userData, setUserData] = useState({
+    companyid: '',
+    role: '',
+    firstName: '',
+    lastName: '',
+    birthdate: null,
+    email: '',
+    contactNumber: '',
+  });
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -34,9 +43,28 @@ const EditProfile = ({ handleClose }) => {
     handleClose();
   };
 
-  // Define userData or input as needed
-  let userData = {}; // Replace with your actual userData structure
+  useEffect(() => {
+    const fetchUserData = async () => {
+      // Replace 'userUid' with the actual UID of the logged-in user
+      const userUid = sessionStorage.getItem('uid');
 
+      if (userUid) {
+        const userDocRef = doc(db, 'users', userUid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userDataFromFirestore = userDocSnap.data();
+
+          // Update state with existing user data
+          setUserData(userDataFromFirestore);
+          setSelectedDate(userDataFromFirestore.birthdate.toDate()); // Assuming birthdate is a Firestore Timestamp
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
+  
   const submitHandler = async (e) => {
     e.preventDefault();
   
@@ -82,6 +110,32 @@ const EditProfile = ({ handleClose }) => {
       console.error('Error updating user document:', error.message);
       // Handle the error (e.g., show an error message to the user)
     }
+    const usersCollection = collection(db, 'users');
+
+// Find the document based on the current email
+const userQuery = query(usersCollection, where('email', '==', 'currentEmail@example.com'));
+const userQuerySnapshot = await getDocs(userQuery);
+
+if (!userQuerySnapshot.empty) {
+  const userDoc = userQuerySnapshot.docs[0];
+  const userId = userDoc.id;
+
+  // Construct the user document reference
+  const userDocRef = doc(usersCollection, userId);
+
+  // Update multiple fields
+  await updateDoc(userDocRef, {
+    email: 'newEmail@example.com',
+    firstname: 'NewFirstName',
+    lastname: 'NewLastName',
+    contactNumber: 'NewContactNumber'
+    // Add more fields as needed
+  });
+
+  console.log('User information updated successfully!');
+    } else {
+        console.error('User document not found for the current email');
+            }
   };
 
   return (
@@ -125,6 +179,7 @@ const EditProfile = ({ handleClose }) => {
             <input
               type="text"
               placeholder="First name"
+              value={userData.firstName}
               // ... (other props)
             />
             <label>Last Name: </label>
