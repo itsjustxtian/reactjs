@@ -70,8 +70,6 @@ function App() {
           <Route path='/add-applications' element={<AddApplications/>}/>
         </Routes>
         </div>
-        
-        
       </div>
   );
 }

@@ -1,231 +1,351 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/storage';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-import { initializeApp } from 'firebase/app';
-import { getDatabase } from 'firebase/database';
-import { getStorage } from 'firebase/storage';
-import 'firebase/auth';
-import 'firebase/firestore';
+import { storage, db } from '../../config/firebase-config';
+import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../config/firebase-config';
+import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
+import { query, getDocs, where } from 'firebase/firestore';
 
-// Your Firebase configuration here
-const firebaseConfig = {
-  apiKey: "AIzaSyCRGvyQQPBjUmVL5InySmsRfulJ6eT4zmE",
-  authDomain: "bughunter-e397c.firebaseapp.com",
-  databaseURL: "https://bughunter-e397c-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "bughunter-e397c",
-  storageBucket: "bughunter-e397c.appspot.com",
-  messagingSenderId: "619778835660",
-  appId: "1:619778835660:web:08339a4fd8fc3b79e86e69",
-  measurementId: "G-LGK9LNEFKR"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const database = getDatabase(firebaseApp);
-const storage = getStorage(firebaseApp);
-
-const Registration = () => {
-    const fileInputRef = useRef(null);
-
-    // Function to handle the file input change
-    const handleFileInputChange = () => {
-        fileInputRef.current.click();
+const Registration = ({handleClose}) => {
+    const handleCancel = () => {
+        handleClose();
     };
 
-    // Function to handle the file input change
-    const handleFileSelected  = (e) => {
-        const file = e.target.files[0];
-        // You can add validation for file type and size here if needed.
-        // For now, we'll simply set the selected file as the profile picture.
-        setProfilePicture((prevProfilePicture) => {
-            // Ensure that the state is updated based on the previous state
-            return file;
-        });    
-    };
-    
-    const handleDateChange = (date) => {
-        // Handle the date change from DatePicker
-        setSelectedDate(date);
-    
-        // If you have an input field for the date
-        // setInputFieldValue(date); // Replace with your actual function
-    };
-    
+    const [input, setInput] = useState({
+        uid: '',
+        companyid: '',
+        email: '',
+        contactnumber: '',
+        firstname: '',
+        lastname: '',
+        birthdate: null,
+        profilePicture: '',
+        password: '',
+        confirmpassword: '',
+    });
 
-    const [companyId, setCompanyId] = useState('');
-    const [email, setEmail] = useState('');
-    const [contactNumber, setContactNumber] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [selectedDate, setSelectedDate] = useState(''); // Provide an initial value
-    const [profilePicture, setProfilePicture] = useState('');
-
-    const handleRegister = () => {
-        // Get other input values
-        const companyIdElement = document.getElementById('companyId');
-        const emailElement = document.getElementById('email');
-        const contactNumberElement = document.getElementById('contactNumber');
-        const firstNameElement = document.getElementById('firstName');
-        const lastNameElement = document.getElementById('lastName');
-
-        const companyId = companyIdElement ? companyIdElement.value : '';
-        const email = emailElement ? emailElement.value : '';
-        const contactNumber = contactNumberElement ? contactNumberElement.value : '';
-        const firstName = firstNameElement ? firstNameElement.value : '';
-        const lastName = lastNameElement ? lastNameElement.value : '';
-
-    
-        // Firebase storage reference
-        const storageRef = firebase.storage().ref(`profilePictures/${profilePicture.name}`);
+    const inputHandler = (e) => {
+        const { name, value } = e.target;
         
-        // Upload profile picture to Firebase Storage
-        const uploadTask = storageRef.put(profilePicture);
+        if (name === 'companyid') {
+            // Format the Company ID as "00-0000-00"
+                const formattedValue = value
+                .replace(/[^\d]/g, '') // Remove non-numeric characters
+                .replace(/^(\d{2})(\d{0,4})?(\d{0,4})?$/, (match, p1, p2, p3) => {
+                let result = p1;
+                if (p2) result += `-${p2}`;
+                if (p3) result += `-${p3}`;
+                return result;
+                })
+                .slice(0,11);
+              
+
+            setInput((prevInput) => ({
+                ...prevInput,
+                [name]: formattedValue,
+            }));
+        } else {
+            setInput((prevInput) => ({
+                ...prevInput,
+                [name]: value,
+            }));
+        }
+    } ;
+
+    const dateHandler = (date) => {
+        setInput((prevInput) => ({
+            ...prevInput,
+            birthdate: date,
+        }));
+    };
+
+    //const [profilePicture, setProfilePicture] = useState(null);
+    const [avatar, setAvatar] = useState(null); // Changed from 'profilePicture' to 'avatar' for consistency
+    const [file, setFile] = useState(null);
+
+    const changeProfilePicture = (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        setAvatar(URL.createObjectURL(selectedFile));
+    };
+
+    const[errormessage, setErrorMessage] = useState('');
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+
+        try {
+            setErrorMessage('');
+            if(input.password !== input.confirmpassword){
+                console.log("Password and Confirm Password do not match.");
+                setErrorMessage("Password and Confirm Password do not match.");
+                return;
+            } else {
+                if (input) {
+                    // Check if the email or Company ID already exists
+                    console.log('Checking if email exists:', input.email);
+                    console.log('Checking if Company ID exists:', input.companyid);
+
+                    const companyIdExists = await checkIfFieldExists('companyid', input.companyid);
+                    
+                    if (companyIdExists) {
+                        setErrorMessage('Company ID already exists. Please choose another Company ID.');
+                        console.log('Company ID exists?', companyIdExists);
+                        console.log('Component Rendered! Company ID.');                        
+                        return;
+                    }
+                    
+                    const emailExists = await checkIfFieldExists('email', input.email);
+
+                    if (emailExists) {
+                        setErrorMessage('Email is already in use. Please choose another Company ID.');
+                        console.log(errormessage);
+                        console.log('Email exists?', emailExists);
+                        console.log('Component Rendered! Company ID.');
+                        return;
+                    }
+                    
+                    
+
+                    const userCredential = await createUserWithEmailAndPassword(
+                        auth,
+                        input.email,
+                        input.password
+                    );
+                    const user = userCredential.user;
+                    const uid = userCredential.user.uid;
     
-        // Handle successful upload
-        uploadTask.on('state_changed', 
-          (snapshot) => {
-            // Progress monitoring
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(`Upload is ${progress}% done`);
-          },
-          (error) => {
-            // Handle errors during upload
-            console.error('Error uploading profile picture:', error);
-          },
-          () => {
-            // Handle successful upload completion
-            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-              // Create an entry in Firebase Database
-              firebase.database().ref('users').push({
-                companyId,
-                email,
-                contactNumber,
-                firstName,
-                lastName,
-                profilePicture: downloadURL,
-                dateOfBirth: selectedDate.toISOString(),
-              });
-            });
-          }
-        );
+                    let userData = {
+                        uid: uid,
+                        companyid: input.companyid,
+                        email: input.email,
+                        contactnumber: input.contactnumber,
+                        firstname: input.firstname,
+                        lastname: input.lastname,
+                        birthdate: input.birthdate,
+                        password: input.password,
+                        confirmpassword: input.confirmpassword,
+                        datecreated: serverTimestamp(),
+                      };
+                    
+                    // Upload avatar to storage
+                    if (file) {
+                        const storageRef = storage;
+                        const fileRef = ref(storageRef, `avatars/${file.name}`);
+                        await uploadBytes(fileRef, file); // You might need to import uploadBytes from 'firebase/storage'
+                        console.log('File uploaded successfully!');
+                                    
+                        // Get the download URL
+                        const url = await getDownloadURL(fileRef);
+                        
+                        // Add the avatar URL to the userData
+                        userData = {
+                        ...userData,
+                        profilePicture: url,
+                        };
+                    }
+                    
+                    await addDoc(collection(db, 'users'), userData);
+    
+                    setInput({
+                        uid: '',
+                        companyid: '',
+                        email: '',
+                        contactnumber: '',
+                        firstname: '',
+                        lastname: '',
+                        birthdate: null,
+                        profilePicture: '',
+                        password: '',
+                    });
+    
+                    setAvatar(null);
+    
+                    console.log('Registration successful! User registered and data stored:', user, uid)
+                    setErrorMessage("Registration successful! User registered and data stored.");
+
+                    // Automatically log in the user after successful registration
+                    const signInCredential = await signInWithEmailAndPassword(
+                        auth,
+                        input.email,
+                        input.password
+                    );
+            
+                    // Check if the user is successfully logged in
+                    if (signInCredential.user) {
+                        console.log('User logged in after registration:', signInCredential.user);
+                        handleClose(); // Close the registration popup
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            setErrorMessage(error.message);
+        }
+    };
+
+    const checkIfFieldExists = async (fieldName, value) => {
+        try {
+          const q = query(collection(db, 'users'), where(fieldName, '==', value));
+          const querySnapshot = await getDocs(q);
+          const exists = querySnapshot.size > 0;
+          
+          console.log(`Checking if ${fieldName} (${value}) exists: ${exists}`);
+          console.log('Data retrieved:', querySnapshot.docs.map(doc => doc.data()));
+          
+          return exists;
+        } catch (error) {
+          console.error(`Error checking if ${fieldName} exists:`, error);
+          return false;
+        }
       };
-    
+      
+    const validKeyForPayment = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "-",
+        "Backspace",
+      ];
 
     return (
         <div className='sign-up-container'>
-            <h1 >Register New User</h1>
+            <form onSubmit={submitHandler} autoComplete="off">
+                <h1>REGISTER NEW USER</h1>
 
-            {/*Profile Picture Module */}
-        <div className='profile-picture-component'>
-        {profilePicture ? (
-        <Avatar 
-            src={URL.createObjectURL(profilePicture)} 
-            alt="Profile Picture" 
-            sx={{width:200, height:200}}
-            
-            />
-        ) : (
-        <Avatar
-            alt="Profile Picture"
-            sx={{width: 200, height: 200}}
-        />
-        )}
-        
-        {/* Button to trigger file input */}
-        <button 
-            onClick={handleFileInputChange}
-            className='buttontext'
-            id='upload'
-            >
-        Upload
-        </button>
-        
-        <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        onChange={handleFileSelected}
-        style={{ display: 'none' }}
-        />
-        </div>
-
-            <br/>
-            <div>
-                <div className='sign-up-left'>
-                    <label>Company ID: </label>
-                    <input
-                        type="text" 
-                        placeholder="Company ID"
-                        value={companyId}
-                        onChange={(e) => setCompanyId(e.target.value)}
+                {/* Profile Picture Module */}
+                <div className='profile-picture-component'>
+                    <Avatar
+                        alt="Profile Picture"
+                        src={avatar}
+                        sx={{ width: 200, height: 200 }}
+                        onClick = {() => document.getElementById('profilePicture').click()}
                     />
+                    <input
+                        type="file"
+                        id="profilePicture"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={changeProfilePicture}
+                    />
+                </div>
+
+                <div>
+                    <div className='sign-up-left'>
+                        <label>Company ID: </label>
+                        <input
+                            type='text'
+                            placeholder='Company ID'
+                            value={input.companyid}
+                            onChange={(e) => inputHandler(e)}
+                            name='companyid'
+                            pattern="[0-9-]*"
+                            title="Only numbers are allowed"
+                            onKeyDown={(e) => {
+                                if (!validKeyForPayment.includes(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}                
+                        />
+                    </div>
+
+                    <div className='sign-up-left'>
+                        <label>Email: </label>
+                        <input
+                            type='email'
+                            placeholder='Email'
+                            value={input.email}
+                            onChange={(e) => inputHandler(e)}
+                            name='email'
+                        />
+
+                        <label>Contact Number: </label>
+                        <input
+                            type='tel'
+                            pattern='[0-9]*'
+                            placeholder='Contact Number'
+                            value={input.contactnumber}
+                            onChange={(e) => inputHandler(e)}
+                            name='contactnumber'
+                        />
+                    </div>
+
+                    <div className='sign-up-left'>
+                        <label>First Name: </label>
+                        <input
+                            type='text'
+                            placeholder='First name'
+                            value={input.firstname}
+                            onChange={(e) => inputHandler(e)}
+                            name='firstname'
+                        />
+                        <label>Last Name: </label>
+                        <input
+                            type='text'
+                            placeholder='Last Name'
+                            value={input.lastname}
+                            onChange={(e) => inputHandler(e)}
+                            name='lastname'
+                        />
+                    </div>
+
+                    <div className='sign-up-left'>
+                        <label>Date of Birth: </label>
+                        <DatePicker
+                            dateFormat='yyyy/MM/dd'
+                            placeholderText='Birthdate'
+                            selected={input.birthdate}
+                            onChange={(date) => dateHandler(date)}
+                        />
+                    </div>
+
+                    <div className='sign-up-right'>
+                        <label>Password:</label>
+                        <input
+                            autoComplete='off'
+                            type='password'
+                            placeholder='Password'
+                            value={input.password}
+                            onChange={(e) => inputHandler(e)}
+                            name='password'
+                        />
+                    </div>
+                    <div className='sign-up-right'>
+                        <label>Confirm Password:</label>
+                        <input
+                            type='password'
+                            placeholder='Confirm Password'
+                            value={input.confirmpassword}
+                            onChange={(e) => inputHandler(e)}
+                            name='confirmpassword'
+                        />
+                    </div>
+                </div>
+
+                <div className='message-show'>
+                    {errormessage}
                 </div>
                 
-                <div className='sign-up-left'>
-                    <label>Email: </label>
-                    <input
-                        type="email" 
-                        placeholder="Email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                <div className='register-cancel-container'>
+                    <button id='register' type='submit'>
+                        Register
+                    </button>
 
-                    <label>Contact Number: </label>
-                    <input
-                        type="tel" 
-                        pattern='[0-9]*'
-                        placeholder="Contact Number"
-                        value={contactNumber}
-                        onChange={(e) => setContactNumber(e.target.value)}
-                    />
+                    <button id='cancel' onClick={handleCancel}>Cancel</button>
                 </div>
-
-                <div className='sign-up-left'>
-                    <label>First Name: </label>
-                    <input
-                        type="text" 
-                        placeholder="First name" 
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                    />
-                    <label>Last Name: </label>
-                    <input
-                        type="text" 
-                        placeholder="Last Name" 
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                    />
-                </div>
-
-                <div className='sign-up-left'>
-                    <label>Date of Birth: </label>
-                    <DatePicker
-                        selected={selectedDate}
-                        onChange={date => handleDateChange(date)}
-                        dateFormat="yyyy/MM/dd" 
-                        placeholderText='Birthdate'
-                        value={selectedDate}                    />
-                </div>
-
-            </div>
-
-        <br/>
-        <div className='register-cancel-container'>
-            <button id='register' onClick={handleRegister}>
-                Register
-            </button>
-
-            <button id='cancel'>
-                Cancel
-            </button>
-        </div>
-
+            </form>
         </div>
     );
-}
+};
 
 export default Registration;
