@@ -517,5 +517,5 @@ input[type="checkbox"] {
   align-content: flex-start;
   align-items: center;
   column-gap: 20px;  
-  border-radius: 50px;
+  border-radius: 100px;
 }
