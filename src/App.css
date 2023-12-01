@@ -304,10 +304,10 @@ body, html {
 
 .sign-up-left {
   display: flex;
+  width: 100%;
   flex-direction: row;
   align-content: flex-start;
   align-items: center;
- 
 }
 
 .sign-up-right {
@@ -618,6 +618,7 @@ h1 {
 
 .user-management .user-management-table tr#rows:hover {
   background-color: #f5f5f5;
+  cursor: pointer;
 }
 
 #table-head {
@@ -702,5 +703,4 @@ h1 {
   align-items: center;
   column-gap: 20px;  
   border-radius: 100px;
-}
 }

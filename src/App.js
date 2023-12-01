@@ -17,6 +17,7 @@ import ViewApplications from './components/ViewApplications'
 import AddApplications from './components/UserMng/AddApplications';
 import Createticket from './components/CreateTicket'
 import Registration from './components/auth/registration';
+import ViewAllApplications from './components/ViewAllApplications';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigateBeforeOutlined } from '@mui/icons-material';
@@ -65,7 +66,7 @@ function App() {
           <Route path='/profile' element={<Viewprofile/>}/>
           <Route path='/edit-profile' element={<Editprofile/>}/>
           <Route path='/view-all-users' element={<Viewallusers/>}/>
-          <Route path='/view-all-applications' element={<Viewapplications/>}/>
+          <Route path='/view-all-applications' element={<ViewAllApplications/>}/>
           <Route path='/settings' element={<Settings/>}/>
           <Route path='/add-applications' element={<AddApplications/>}/>
         </Routes>
