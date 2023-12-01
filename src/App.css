@@ -310,6 +310,10 @@ body, html {
   align-items: center;
 }
 
+.sign-up-left label{
+  white-space: nowrap;
+}
+
 .sign-up-right {
   display: flex;
   justify-content: flex-end;
@@ -618,6 +622,18 @@ h1 {
 
 .user-management .user-management-table tr#rows:hover {
   background-color: #f5f5f5;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-management .user-management-table tr#inactive-rows {
+  color: #8D99AE;
+  cursor: pointer;
+}
+
+.user-management .user-management-table tr#inactive-rows:hover {
+  color: #8D99AE;
+  font-weight: bold;
   cursor: pointer;
 }
 

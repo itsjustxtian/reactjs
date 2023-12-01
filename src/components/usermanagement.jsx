@@ -99,11 +99,14 @@ const Usermanagement = () => {
       </thead>
       <tbody>
        {sortedData().map((row) => (
-          <tr id='rows' key={row.id} onClick={togglePopup}>
-            <td>{row.companyid}</td>
-            <td>{row.lastname + ', ' + row.firstname}</td>
-            <td>{row.role}</td>
-            <td>{row.status}</td>
+          <tr
+            id={row.status === 'Inactive' ? 'inactive-rows' : 'rows'}
+            key={row.id} 
+            onClick={togglePopup}>
+              <td>{row.companyid}</td>
+              <td>{row.lastname + ', ' + row.firstname}</td>
+              <td>{row.role}</td>
+              <td>{row.status}</td>
           </tr>
         ))}
       </tbody>
