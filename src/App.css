@@ -704,3 +704,46 @@ h1 {
   column-gap: 20px;  
   border-radius: 100px;
 }
+
+/*View all users*/
+
+.View-All-Users{
+  background-color:#f5f5f5;
+  width: 80%;
+  margin: 30px;
+  border: none;
+  border-radius: 20px;
+
+}
+
+.View-All-Users .View-All-Users-table {
+
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: scroll;
+
+}
+
+.View-All-Users .View-All-Users-table th,
+.View-All-Users .View-All-Users-table td {
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 30px;
+  text-align: center;
+}
+
+.View-All-Users .View-All-Users-table th:nth-child(1) { width: 30%;}
+.View-All-Users .View-All-Users-table th:nth-child(2) { width: 40%;}
+.View-All-Users .View-All-Users-table th:nth-child(3) { width: 20%;}
+.View-All-Users .View-All-Users-table th:nth-child(4) { width: 10%;}
+
+.View-All-Users .View-All-Users-table tr#rows:hover {
+  background-color:#f5f5f5;
+  cursor: pointer;
+}
+
+#table-head {
+  cursor: pointer;
+  align-self: center;
+}
