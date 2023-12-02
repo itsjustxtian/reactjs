@@ -827,3 +827,10 @@ h1 {
   text-align: center;
   margin: 5px;
 }
+
+.clear-icon {
+  display: flex;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-left: 5px;
+}

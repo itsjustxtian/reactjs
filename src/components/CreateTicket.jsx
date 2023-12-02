@@ -6,35 +6,58 @@ import { storage, db } from '../config/firebase-config';
 import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
 import { query, getDocs, where } from 'firebase/firestore';
+import ClearIcon from '@mui/icons-material/Clear';
+
 
 const CreateTicket = ({ handleClose }) => {
   const handleCancel = () => {
     handleClose();
   };
 
-  /*const [input, setInput] = useState({
+  const [input, setInput] = useState({
     application: '',
     author: sessionStorage.getItem('uid'),
     subject: '',
     assignDev: '',
     description: '',
-    tags: '',
+    tags: [],
     severity: '',
     type: '',
     attachments: [],
-  });*/
+  });
 
-  const [input, setInput] = useState('');
+  const handleTagInput = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const newTag = e.target.value.trim();
+      if (newTag !== '') {
+        setInput((prevInput) => ({
+          ...prevInput,
+          tags: [...prevInput.tags, newTag],
+        }));
+        e.target.value = ''; // Clear the input field after adding the tag
+      }
+    }
+  };
+  
 
   const inputHandler = (e) => {
     const { name, value } = e.target;
-    setInput((prevInput) => ({
-      ...prevInput,
-      [name]: value,
-    }));
+
+    if (name === 'tags') {
+      setInput((prevInput) => ({
+        ...prevInput,
+        tags: value.split(',').map((tag) => tag.trim()), // Split tags by comma and trim spaces
+      }));
+    } else {
+      setInput((prevInput) => ({
+        ...prevInput,
+        [name]: value,
+      }));
+    }
+
   };
 
-  const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
   const [errormessage, setErrorMessage] = useState('');
 
@@ -45,6 +68,12 @@ const CreateTicket = ({ handleClose }) => {
     setFiles([...files, ...Array.from(selectedFiles)]);
   };
 
+  const handleRemoveFile = (index) => {
+    const updatedFiles = [...files];
+    updatedFiles.splice(index, 1);
+    setFiles(updatedFiles);
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -53,6 +82,7 @@ const CreateTicket = ({ handleClose }) => {
       if (input.application === '') {
         console.log("Some fields are emptyyyy.");
         setErrorMessage('All fields are required to be filled.');
+        console.log(errormessage);
         return;
       } else {
         let userData = {
@@ -61,7 +91,10 @@ const CreateTicket = ({ handleClose }) => {
           subject: input.subject,
           assignDev: input.assignDev,
           description: input.description,
-          tags: input.tags,
+          tags: input.tags.join(', '),
+          severity: input.severity,
+          type: input.type,
+          attachments: files.map((file) => file.name),
         };
 
         // Upload files to storage
@@ -83,21 +116,22 @@ const CreateTicket = ({ handleClose }) => {
           subject: '',
           assignDev: '',
           description: '',
-          tags: '',
+          tags: [],
           severity: '',
           type: '',
-          attachments: '',
+          attachments: [],
         });
 
         setFiles([]);
-        setFile(null);
 
         console.log('Creating new ticket', userData);
         setErrorMessage('Creating new ticket Successful');
+        console.log(errormessage);
       }
     } catch (error) {
       console.error('Registration error:', error);
       setErrorMessage(error.message);
+      console.log(errormessage);
     }
   };
 
@@ -108,6 +142,7 @@ const CreateTicket = ({ handleClose }) => {
           <label>Application: </label>
           <input
               type="text"
+              name="application"
               value = {input.application}
               onChange={(e) => inputHandler(e)}/>
         </div>
@@ -115,8 +150,8 @@ const CreateTicket = ({ handleClose }) => {
         <div id='new-line'>
           <label>Subject: </label>
           <input
-              type="sub" 
-              placeholder="" 
+              type="text" 
+              name="subject" 
               value = {input.subject}
               onChange={(e) => inputHandler(e)}
           />
@@ -126,7 +161,7 @@ const CreateTicket = ({ handleClose }) => {
           <label>Assigned Developer: </label>
           <input
               type="text" 
-              placeholder="" 
+              name="assignDev" 
               value = {input.assignDev}
               onChange={(e) => inputHandler(e)}
           />
@@ -137,7 +172,8 @@ const CreateTicket = ({ handleClose }) => {
         <label>Description: </label>
         <br/>
         <textarea 
-          description=""
+          type="text"
+          name='description'
           value = {input.description}
           onChange={(e) => inputHandler(e)}
           cols="30" 
@@ -145,12 +181,13 @@ const CreateTicket = ({ handleClose }) => {
         </textarea>
         
         <div id='new-line'>
-          <label>Tags: </label>
+        <label>Tags: </label>
           <input
-              type="tags" 
-              placeholder="" 
-              value = {input.tags}
-              onChange={(e) => inputHandler(e)}
+            type="text"
+            name="tags"
+            placeholder='Please type it as "Tag1, Tag2, Tag3"'
+            value={input.tags.join(', ')}
+            onChange={inputHandler}        
           />
         </div>
         
@@ -168,15 +205,15 @@ const CreateTicket = ({ handleClose }) => {
         
         <div id='new-line'>
           <label>Type: </label>
-          <input type="radio" name="ticketType" value="Functional" onChange={(e) => inputHandler(e, 'type')}/>
+          <input type="radio" name="type" value="Functional" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Functional </label>
-          <input type="radio" name="ticketType" value="Performance" onChange={(e) => inputHandler(e, 'type')}/>
+          <input type="radio" name="type" value="Performance" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Performance </label>
-          <input type="radio" name="ticketType" value="Usability" onChange={(e) => inputHandler(e, 'type')}/>
+          <input type="radio" name="type" value="Usability" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Usability </label>
-          <input type="radio" name="ticketType" value="Compatibility" onChange={(e) => inputHandler(e, 'type')}/>
+          <input type="radio" name="type" value="Compatibility" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Compatibility </label>
-          <input type="radio" name="ticketType" value="Security" onChange={(e) => inputHandler(e, 'type')}/>
+          <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Security </label>
         </div>
           
@@ -197,6 +234,24 @@ const CreateTicket = ({ handleClose }) => {
           <AttachFileIcon />
           <div id='addAtt'> Add Attachments </div>
         </button>
+
+      {files.length > 0 && (
+        <div>
+          <p>Selected Files:</p>
+          <ul>
+            {files.map((file, index) => (
+              <li key={index}>
+                {file.name}
+                <ClearIcon
+                  className='clear-icon'
+                  onClick={() => handleRemoveFile(index)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
         </div>
             
         <div className='formbuttons'>
