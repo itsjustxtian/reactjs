@@ -516,6 +516,10 @@ body, html {
   cursor: pointer;
 }
 
+.CreateTicket .addAtt:hover{
+  background-color: #3D5654;
+}
+
 .CreateTicket {
   text-align: left;
   max-width: 100%; /* Adjust the max-width according to your design */
@@ -557,8 +561,13 @@ body, html {
   align-items: center;
 }
 
-.CreateTicket button:hover {
-  background-color: rgb(49, 114, 205);
+.CreateTicket .formbuttons .submit:hover{
+  background-color: #3D5654;
+}
+
+.CreateTicket .formbuttons .cancel:hover{
+  background-color: #3D5654;
+  color: white;
 }
 
 /* View Application dapit */
@@ -833,4 +842,96 @@ h1 {
   vertical-align: middle;
   cursor: pointer;
   margin-left: 5px;
+}
+
+.add-application {
+  width: 100%;
+  padding: 30px;
+}
+
+.add-application #new-line {
+  display: flex;
+}
+
+.add-application #new-line label{
+  display: flex;
+  white-space: nowrap;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 18px;
+}
+
+.add-application #new-line input{
+  border: none;
+  border-radius: 20px;
+  background-color: #D9D9D9;
+  margin-top: 10px;
+  margin-left: 20px;
+  width: 100%;
+  height: 40px;
+  padding-left: 20px;
+  align-items: flex-end;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+}
+
+.add-application textarea {
+  width: /*calc(100% - 20px)*/ 100%;
+  border-radius: 20px;
+  background-color: #D9D9D9;
+  border-color: transparent;
+  margin-top: 10px;
+  resize: none;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+}
+
+.add-application .formbuttons {
+  display: flex;
+  padding-top: 30px;
+}
+
+.add-application .submit{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.add-application .submit:hover{
+  background-color: #3D5654;
+}
+
+.add-application .cancel:hover{
+  background-color: #3D5654;
+  color: white;
+}
+
+.add-application .cancel{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: 10px;
+
+  padding: 20px;
+  background-color: #CADFDE;
+  color: black;
+  border: none;
+  cursor: pointer;
 }
