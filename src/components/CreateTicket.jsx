@@ -11,6 +11,26 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 const CreateTicket = ({ handleClose }) => {
   const handleCancel = () => {
+    // Clear all values in the input when cancel is pressed
+    setInput({
+      application: '',
+      author: sessionStorage.getItem('uid'),
+      subject: '',
+      assignDev: '',
+      description: '',
+      tags: [],
+      severity: '',
+      type: '',
+      attachments: [],
+    });
+    setFiles([]);
+    setErrorMessage('');
+
+    // Reset radio button values
+    document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.checked = false;
+    });
+
     handleClose();
   };
 
