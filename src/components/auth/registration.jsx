@@ -25,6 +25,8 @@ const Registration = ({handleClose}) => {
         profilePicture: '',
         password: '',
         confirmpassword: '',
+        role: '',
+        status: ''
     });
 
     const inputHandler = (e) => {
@@ -129,6 +131,8 @@ const Registration = ({handleClose}) => {
                         password: input.password,
                         confirmpassword: input.confirmpassword,
                         datecreated: serverTimestamp(),
+                        role: 'Developer',
+                        status: 'Active',
                       };
                     
                     // Upload avatar to storage
@@ -160,6 +164,9 @@ const Registration = ({handleClose}) => {
                         birthdate: null,
                         profilePicture: '',
                         password: '',
+                        confirmpassword:'',
+                        role: '',
+                        status: ''
                     });
     
                     setAvatar(null);

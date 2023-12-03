@@ -851,6 +851,7 @@ h1 {
 
 .add-application #new-line {
   display: flex;
+  margin-top: 10px;
 }
 
 .add-application #new-line label{
@@ -890,7 +891,7 @@ h1 {
 
 .add-application .formbuttons {
   display: flex;
-  padding-top: 30px;
+  padding-top: 20px;
 }
 
 .add-application .submit{
@@ -934,4 +935,67 @@ h1 {
   color: black;
   border: none;
   cursor: pointer;
+}
+
+.add-application #add-icon {
+  border-radius: 20px;
+  border: none;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: 10px;
+  background-color: #18B3A7;
+  color: white;
+  cursor:pointer
+}
+
+.add-application #add-icon:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.add-application #selectedtl {
+  margin-left: 10px;
+}
+
+.add-application #selectedtl {
+  background-color: #D9D9D9;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+.add-application #selectedtl:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.add-application #selectedMembers {
+  margin-left: 10px;
+  display: flex;
+}
+
+.add-application #selectedMembers label {
+  background-color: #D9D9D9;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+.add-application #selectedMembers label:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.selection {
+  font-size: 18px;
+}
+
+.selection input{
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 20px;
 }
