@@ -204,7 +204,7 @@ const CreateTicket = ({ handleClose }) => {
             name="tags"
             placeholder='Please type it as "Tag1, Tag2, Tag3"'
             value={input.tags.join(', ')}
-            onChange={(e) => handleTagInput(e)}        
+            onChange={(e) => inputHandler(e)}        
           />
         </div>
         

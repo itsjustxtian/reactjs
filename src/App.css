@@ -4,7 +4,6 @@
   width: 100vw;
   height: 100vh;
   background-color: #e1eceb;
-  margin: 0;
   overflow: hidden;
 }
 
@@ -198,31 +197,39 @@ body, html {
   }
 }
 
-.buttoncontainer {
-  height: 61px;
-  width: 262px;
-  position: absolute;
-  top: 2%;
-  right: 2%;
-  justify-content: center;
-  flex-direction: row;
-  align-items: center;
+.dashboard {
+  margin: 30px;
+  width: 100%;
+  background-color: #e1eceb;
+}
+
+.buttoncontainer{
+  display: flex;
+  justify-content: flex-end;
 }
 
 .buttoncontainer .rectangle {
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 20px;
+
+
   background-color: #18b3a7;
+
   border-radius: 20px;
-  width: 100%;
-  height: 100%;
-  border-color: transparent;
+  border: none;
+
   color: white;
   font-family: 'Inter', sans-serif;
-  font-size: calc(8px + 2vmin);
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin: 0%;
+  font-size: 25px;
+}
+
+.buttoncontainer label {
+  padding: 5px;
 }
 
 .buttoncontainer .rectangle:hover {
@@ -230,20 +237,12 @@ body, html {
   color: black;
 }
 
-.rectangle #text {
-  flex: 80%;
-}
-
-.rectangle #icon{
-  flex: 20%;
-  font-size: calc(10px + 2vmin);
-}
-
-.dashboard {
-  height: 100vh;
-  background-color: #e1eceb;
-  display: flex; /* Use flex to create a horizontal layout */
-  flex-direction: column;
+.ticket-table {
+  height: 80%;
+  border: none;
+  border-radius: 30px;
+  padding: 20px;
+  margin-bottom: 30px;
 }
 
 .UserProfile{
@@ -998,4 +997,57 @@ h1 {
   margin-top: 10px;
   margin-right: 10px;
   margin-left: 20px;
+}
+
+.ticket-table {
+  background-color: white;
+}
+
+.ticket-table .dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: scroll;
+}
+/*farley*/
+
+
+.ticket-table .dashboard-table th,
+.ticket-table .dashboard-table td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 30px;
+  text-align: center;
+}
+
+.ticket-table .dashboard-table th {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  
+}
+
+.ticket-table .dashboard-table th:nth-child(1) { width: 30%; }
+.ticket-table .dashboard-table th:nth-child(2) { width: 40%; }
+.ticket-table .dashboard-table th:nth-child(3) { width: 20%; }
+.ticket-table .dashboard-table th:nth-child(4) { width: 10%; }
+
+.ticket-table .dashboard-table tr#rows:hover {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ticket-table .dashboard-table tr#inactive-rows {
+  color: #8D99AE;
+  cursor: pointer;
+}
+
+.ticket-table .dashboard-table tr#inactive-rows:hover {
+  color: #8D99AE;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#table-head {
+  cursor: pointer;
+  align-self: center; 
 }
