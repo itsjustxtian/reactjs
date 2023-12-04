@@ -1,11 +1,8 @@
-import { SpaceBar } from '@mui/icons-material';
-import { Tab } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef } from 'react';
 import { storage, db } from '../config/firebase-config';
-import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
-import { serverTimestamp, addDoc, collection } from 'firebase/firestore';
-import { query, getDocs, where } from 'firebase/firestore';
+import { uploadBytes, ref } from 'firebase/storage';
+import { addDoc, collection } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 
 
@@ -207,7 +204,7 @@ const CreateTicket = ({ handleClose }) => {
             name="tags"
             placeholder='Please type it as "Tag1, Tag2, Tag3"'
             value={input.tags.join(', ')}
-            onChange={inputHandler}        
+            onChange={(e) => handleTagInput(e)}        
           />
         </div>
         

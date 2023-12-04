@@ -4,6 +4,8 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import Selectteamlead from '../UserMng/selectteamlead';
 import Selectqa from '../UserMng/selectqa';
 import Selectmembers from '../UserMng/selectmembers'
+import { db } from '../../config/firebase-config';
+import { addDoc, collection } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const AddApplications = () => {
@@ -12,14 +14,12 @@ const AddApplications = () => {
   const [selectedTeamLead, setSelectedTeamLead] = useState(null);
   const [selectedQa, setSelectedQa] = useState(null);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState([]);
-  const [input, setInput] = useState('');
-  /*const [input, setInput] = useState({
+  const [errormessage, setErrorMessage] = useState('');
+  //const [input, setInput] = useState('');
+  const [input, setInput] = useState({
     applicationname: '',
-    assignedQA: '',
     description: '',
-    members: [],
-    teamleader: ''
-  })*/
+  })
 
   const togglePopup = (button) => {
     setSelectedButton(button);
@@ -61,14 +61,64 @@ const AddApplications = () => {
     // Update the state with the new array
     setSelectedTeamMembers(updatedMembers);
   };
-  
 
-  const handleSubmit = () => {
+  const inputHandler = (e) => {
+    const { name, value } = e.target;
+
+    setInput((prevInput) => ({
+        ...prevInput,
+        [name]: value,
+      }));
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+
     // Now you can access detailed data in selectedTeamLead
-    console.log('Selected Team Lead in AddApplications:', selectedTeamLead);
+    console.log('Application name:', input.applicationname);
+    console.log('Team Leader:', selectedTeamLead.uid)
+    console.log('Assigned QA: ', selectedQa.uid)
+    {selectedTeamMembers.map((member) => (
+      console.log("Team Member: ", member.id)
+    ))}
+    console.log('Description: ', input.description)
 
-    // Add your logic here to handle the selected data
-    // For example, you can update the state or perform other actions
+    try {
+      setErrorMessage('');
+      if (input.applicationname === '') {
+        console.log("Some fields are empty.");
+        setErrorMessage('All fields are required to be filled.');
+        console.log(errormessage);
+        return;
+      } else {
+        let appData = {
+          applicationname: input.applicationname,
+          teamleader: selectedTeamLead.uid,
+          assignedqa: selectedQa.uid,
+          teammembers: selectedTeamMembers.map(member => member.id),
+          description: input.description,
+        };
+
+        await addDoc(collection(db, 'applications'), appData);
+
+        setInput({
+          applicationname: '',
+          description: '',
+        });
+
+        setSelectedTeamMembers([]);
+        handleRemoveqa(selectedQa);
+        handleRemovetl(selectedTeamLead);
+
+        console.log('Creating new application', appData);
+        setErrorMessage('Creating new application successful!');
+        console.log(errormessage);
+      }
+    } catch (error) {
+      console.error('Creation error:', error);
+      setErrorMessage(error.message);
+      console.log(errormessage);
+    }
   };
 
   return (
@@ -82,6 +132,7 @@ const AddApplications = () => {
           type='text'
           name='applicationname'
           value={input.applicationname}
+          onChange={(e) => inputHandler(e)}
           />
       </div>
 
@@ -154,12 +205,13 @@ const AddApplications = () => {
           type='text'
           name='description'
           value={input.description}
+          onChange={(e) => inputHandler(e)}
           cols={30}
           rows={10}/>
       </div>
 
       <div className='formbuttons'>
-          <button className='submit'>
+          <button className='submit' onClick={handleSubmit}>
             Submit
           </button>
           <button className='cancel' id='text'>
