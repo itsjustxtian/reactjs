@@ -1,0 +1,75 @@
+/* Inbox.css */
+
+
+.inbox-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content horizontally */
+  margin-top: 50px;
+}
+
+.message-container {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Take the full width of the parent */
+  max-width: 500px; /* Set a maximum width for the message containers */
+  margin-bottom: 20px; /* Add spacing between each message container */
+}
+
+
+.profile-picture {
+  width: 40px; /* Adjust the size of the profile picture or icon */
+  height: 40px;
+  margin-left: 20px;
+  margin-right: 20px; /* Add spacing between the picture and message content */
+  border-radius: 50%; /* Make it round for a profile picture effect */
+  /* Add styling for your icon or profile picture */
+}
+
+.message-box {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  background-color: white;
+  width: 1000px; /* Set a fixed width for the message box */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* Center the message horizontally */
+  flex: 1; /* Allow the message content to occupy remaining space */
+}
+
+.message-author {
+  font-weight: bold;
+  margin-right: 10px; /* Add spacing between author and message */
+  white-space: nowrap; /* Prevent wrapping for author */
+}
+
+.message-text {
+  margin-right: 20px; /* Add spacing between message and */
+  white-space: nowrap; /* Prevent wrapping for message */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis (...) for overflow text */
+}
+
+.message-date {
+  color: #888;
+  font-size: 14px;
+  white-space: nowrap; /* Prevent wrapping for date */
+  align-self: flex-end;
+}
+
+.message-container {
+  transition: background-color 0.3s;
+}
+
+.message-container :hover {
+  background-color: rgb(157, 157, 160); /* Change to the desired gray color */
+  cursor: pointer;
+}
+
