@@ -64,23 +64,43 @@ const ViewApplications = () => {
 
   return (
     <div className='viewApplications'>
-      <h1>View Applications</h1>
       
-      <div className="label2"> APPLICATION NAME</div>
-
       <div className='box'>
         <div className="rectangle" />
       </div>
+      
+      <div className='appLabel'>
+        <div id= 'new-line1'> 
+          <label>
+          APPLICATION NAME
+          </label>
+        </div>
 
-      <div className="label1"> Team Leader:</div>
-        <div className="text1"> Leader Name </div>
+        <div id= 'new-line'> 
+          <label>
+          Team Leader: 
+          </label>
+        </div>
 
-        <div className="label2"> Team Leader: Leader Name</div>
-        <div className="text2"> Assigne QA: QA Name</div>
-          
-        <br/>
-        <div className="label3"> Description: </div>
-        <div className="text3"> Description: dasjkhfghkajsf asfhasjfghk fas afgakf fghjkadsgf</div>
+        <div id= 'new-line'> 
+          <label>
+          Assign QA: 
+          </label>
+        </div>
+
+        <div id= 'new-line2'> 
+          <label>
+          Description: 
+          </label>
+        </div>
+
+        <div id= 'new-line3'> 
+          <label>
+          sampple rani
+          </label>
+        </div>
+
+      </div>
 
 
         <div className='ticket-table'>
@@ -93,12 +113,7 @@ const ViewApplications = () => {
                 className={getClassNamesFor('subject')}>
                 Bug History
               </th>
-              <th
-                onClick={() => requestSort('application')} 
-                id='table-head'
-                className={getClassNamesFor('application')}>
-                Application
-              </th>
+              
               <th
                 onClick={() => requestSort('status')} 
                 id='table-head'
@@ -115,7 +130,6 @@ const ViewApplications = () => {
                 key={row.id} 
                 onClick={togglePopup}>
                   <td>{row.subject}</td>
-                  <td>{row.application}</td>
                   <td
                     id={row.status === "Open"
                     ? 'open-ticket'

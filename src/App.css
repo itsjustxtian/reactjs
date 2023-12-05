@@ -633,23 +633,62 @@ body, html {
 }
 
 /* View Application dapit */
+.viewApplications .rectangle {
+  width: 150px;
+  height: 150px;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  height: 150px;
+  left: 100;
+  margin-left: 20px;
+  top: 0;
+}
+
 .viewApplications {
-  margin: 20px;
-  margin-left: 10px;
-  font-weight: bold;
-  
+  width: 100%;
+  padding: 30px;
+}
+
+.viewApplications #new-line {
+  display: flex;
+  margin-top: 10px;
+}
+
+.viewApplications #new-line1 label{
+  color: black;
+  font-size: 28px;
+  font-weight: 700;
+  left: 0;
+  top: 0;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.viewApplications #new-line2 label{
+  margin-top: 40px;
+  margin-left: 22px;
+}
+.viewApplications #new-line3 label{
+  font-size: 18px;
+  margin-left: 22px;
+}
+
+.viewApplications .appLabel label{
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+  margin-left: 200px;
+  vertical-align: middle;
+  font-size: 18px;
 }
 
 h1 {
   color: #333;
 }
 
-.viewApplications .rectangle {
-  width: 150px;
-  height: 150px;
-  background-color: #7ea2ba;
-}
 
+
+/* END */
 .error-message {
   font-size: 20px;
   color: red;
