@@ -1,49 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
 
 const ViewTicket = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { ticketId } = 'CtWfbsVs8q5SBgyu3WBF';
+  const [ticketData, setTicketData] = useState(null);
 
-  // Sample ticket details
-  const ticketDetails = {
-    application: 'Sample Application',
-    subject: 'Sample Subject',
-    assignedDeveloper: 'Dela Cruz, Juan',
-    description: 'Example description',
-    tags: ['Sample tag 1'],
-    severity: 'Critical',
-    type: 'Performance',
-  };
+  useEffect(() => {
+    const fetchTicketData = async () => {
+      try {
+        if (!ticketId) {
+          console.log('Ticket ID is missing.');
+          return;
+        }
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+        const ticketRef = doc(db, 'tickets', ticketId);
+        const ticketDoc = await getDoc(ticketRef);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+        if (ticketDoc.exists()) {
+          console.log('Ticket Data:', ticketDoc.data());
+          setTicketData({ id: ticketDoc.id, ...ticketDoc.data() });
+        } else {
+          console.log('Ticket not found');
+        }
+      } catch (error) {
+        console.error('Error fetching ticket data:', error);
+      }
+    };
+
+    fetchTicketData();
+  }, [ticketId]);
+
+  if (!ticketData) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div>
-      <button onClick={openModal}>Open Ticket</button>
+    <div className='ViewTicket'>
+      <h2>Ticket #{ticketData.id}</h2>
+      <p>Application: {ticketData.application}</p>
+      <p>Subject: {ticketData.subject}</p>
+      <p>Assignee: {ticketData.assignDev}</p>
+      <p>Description: {ticketData.description}</p>
+      <p>Severity: {ticketData.severity}</p>
+      <p>Status: {ticketData.status}</p>
+      <p>Type: {ticketData.type}</p>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="modal">
-          <div className="modal-main">
-            <h1>Application: {ticketDetails.application}</h1>
-            <h2>Subject: {ticketDetails.subject}</h2>
-            <p>Assigned Developer: {ticketDetails.assignedDeveloper}</p>
-            <p>Description: {ticketDetails.description}</p>
-            <p>Tags: {ticketDetails.tags.join(', ')}</p>
-            <p>Severity/Priority: {ticketDetails.severity}</p>
-            <p>Type: {ticketDetails.type}</p>
+      {ticketData.tags && ticketData.tags.length > 0 && (
+        <div>
+          <p>Tags:</p>
+          <ul>
+            {ticketData.tags.map((tag, index) => (
+              <li key={index}>{tag}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-            {/* Add more ticket details as needed */}
-
-            <button className="close" onClick={closeModal}>
-              Close
-            </button>
-          </div>
+      {ticketData.attachments && ticketData.attachments.length > 0 && (
+        <div>
+          <p>Attachments:</p>
+          <ul>
+            {ticketData.attachments.map((attachment, index) => (
+              <li key={index}>{attachment}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
