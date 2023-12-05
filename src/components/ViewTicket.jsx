@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 
-const ViewTicket = () => {
+const ViewTicket = ({handleClose}) => {
   const ticketId = 'CtWfbsVs8q5SBgyu3WBF';
   const [ticketData, setTicketData] = useState(null);
 
@@ -35,17 +35,27 @@ const ViewTicket = () => {
   if (!ticketData) {
     return <div>Loading...</div>;
   }
+  const handleCancel = () => {
+    handleClose();
+  };
 
   return (
     <div className='ViewTicket'>
       <h2>Ticket #{ticketData.id}</h2>
-      <p>Application: {ticketData.application}</p>
-      <p>Subject: {ticketData.subject}</p>
-      <p>Assignee: {ticketData.assignDev}</p>
-      <p>Description: {ticketData.description}</p>
-      <p>Severity: {ticketData.severity}</p>
-      <p>Status: {ticketData.status}</p>
-      <p>Type: {ticketData.type}</p>
+      <p>Application: 
+        <c> {ticketData.application} </c> </p>
+      <p>Subject: 
+        <c> {ticketData.subject} </c></p>
+      <p>Assignee: 
+        <c> {ticketData.assignDev}</c> </p>
+      <p>Description:
+        <c> {ticketData.description}</c></p>
+      <p>Severity: 
+        <c> {ticketData.severity}</c></p>
+      <p>Status: 
+        <c> {ticketData.status}</c></p>
+      <p>Type: 
+        <c> {ticketData.type}</c></p>
 
       {ticketData.tags && ticketData.tags.length > 0 && (
         <div>
@@ -66,7 +76,14 @@ const ViewTicket = () => {
               <li key={index}>{attachment}</li>
             ))}
           </ul>
+          <div className='formbuttons'>
+          <button className='cancel' id='text'>
+              <div id='text' onClick={handleCancel}> Cancel </div>
+            </button>
+            </div>
         </div>
+        
+
       )}
     </div>
   );
