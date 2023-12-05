@@ -21,6 +21,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigateBeforeOutlined } from '@mui/icons-material';
 
+
 function App() {
   const navigate = useNavigate();
   const [authenticated, setAuthenticated] = useState(
