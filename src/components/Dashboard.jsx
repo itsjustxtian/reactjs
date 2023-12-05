@@ -5,9 +5,11 @@ import { db } from '../config/firebase-config'
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Popup from './PopUp';
 import CreateTicket from './CreateTicket';
+import Viewticket from './ViewTicket'
 
 const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
@@ -56,7 +58,8 @@ const Dashboard = () => {
     return sortableData;
   };
 
-  const togglePopup = () => {
+  const togglePopup = (content) => {
+    setPopupContent(content);
     setShowPopup(!showPopup);
   };
 
@@ -67,7 +70,7 @@ const Dashboard = () => {
   return (
     <div className='dashboard'>
       <div className='buttoncontainer'>
-        <button className='rectangle' onClick={togglePopup}>
+        <button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
           <NoteAddIcon/>
           <label>Create New...</label>
         </button>
@@ -103,7 +106,7 @@ const Dashboard = () => {
                 id={
                   row.status === 'Resolved' ? 'resolved-row' : 'rows'}
                 key={row.id} 
-                onClick={togglePopup}>
+                onClick={() => togglePopup(<Viewticket handleClose={closePopup}/>)}>
                   <td>{row.subject}</td>
                   <td>{row.application}</td>
                   <td
@@ -125,8 +128,8 @@ const Dashboard = () => {
       </div>
 
       <Popup show={showPopup} handleClose={closePopup}>
-          <CreateTicket handleClose={closePopup}/>
-        </Popup>
+          {popupContent}
+      </Popup>
 
     </div>
   );

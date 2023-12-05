@@ -293,6 +293,7 @@ body, html {
 
 .buttoncontainer label {
   padding: 5px;
+  cursor: pointer;
 }
 
 .buttoncontainer .rectangle:hover {
@@ -621,6 +622,16 @@ body, html {
 .CreateTicket .typanan #new-line {
   display: flex;
   align-items: center;
+}
+.CreateTicket .typanan #new-line-developer {
+  display: flex;
+  align-items: center;
+}
+
+.CreateTicket .typanan #new-line-developer button{
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
 .CreateTicket .formbuttons .submit:hover{
@@ -1038,7 +1049,7 @@ h1 {
   cursor: pointer;
 }
 
-.add-application #add-icon {
+#add-icon {
   border-radius: 20px;
   border: none;
   padding-left: 20px;
@@ -1049,7 +1060,7 @@ h1 {
   cursor:pointer
 }
 
-.add-application #add-icon:hover {
+#add-icon:hover {
   background-color: #3D5654;
   color: white;
 }
@@ -1162,4 +1173,41 @@ h1 {
 #table-head {
   cursor: pointer;
   align-self: center; 
+}
+
+#selected {
+  margin-left: 10px;
+}
+
+#selected {
+  background-color: #D9D9D9;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+#selected:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.CreateTicket #selectedMembers {
+  margin-left: 10px;
+  display: flex;
+}
+
+.CreateTicket #selectedMembers label {
+  background-color: #D9D9D9;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+.CreateTicket #selectedMembers label:hover {
+  background-color: #3D5654;
+  color: white;
 }
