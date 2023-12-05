@@ -100,12 +100,24 @@ const Dashboard = () => {
           <tbody>
             {sortedData().map((row) => (
               <tr
-                id='rows'
+                id={
+                  row.status === 'Resolved' ? 'resolved-row' : 'rows'}
                 key={row.id} 
                 onClick={togglePopup}>
                   <td>{row.subject}</td>
                   <td>{row.application}</td>
-                  <td>{row.status}</td>
+                  <td
+                    id={row.status === "Open"
+                    ? 'open-ticket'
+                    : row.status === "In progress"
+                    ? 'in-progress-ticket'
+                    : row.status === "Closed"
+                    ? 'closed-ticket'
+                    : row.status === "Resolved"
+                    ? 'resolved-row'
+                    : 'rows'}>
+                      {row.status}
+                  </td>
               </tr>
             ))}
           </tbody>

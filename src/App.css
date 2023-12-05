@@ -1036,15 +1036,25 @@ h1 {
   cursor: pointer;
 }
 
-.ticket-table .dashboard-table tr#inactive-rows {
+.ticket-table .dashboard-table tr#resolved-row {
   color: #8D99AE;
   cursor: pointer;
 }
 
-.ticket-table .dashboard-table tr#inactive-rows:hover {
-  color: #8D99AE;
+.ticket-table .dashboard-table tr#resolved-row:hover {
   font-weight: bold;
-  cursor: pointer;
+}
+
+.ticket-table .dashboard-table td#open-ticket {
+  color: #00FF00;
+}
+
+.ticket-table .dashboard-table td#in-progress-ticket {
+  color: #FFA500;
+}
+
+.ticket-table .dashboard-table td#closed-ticket {
+  color: #FF0000;
 }
 
 #table-head {
