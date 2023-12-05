@@ -1211,3 +1211,62 @@ h1 {
   background-color: #3D5654;
   color: white;
 }
+
+/* View Profile/Profile Screen */
+
+.viewProfile .rectangle {
+  width: 200px;
+  height: 200px;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  left: 100;
+  margin-left: 20px;
+  top: 0;
+}
+
+.viewProfile {
+  padding: 30px;
+}
+
+.viewProfile #new-line {
+  display: flex;
+  margin-top: 10px;
+}
+
+.viewProfile #new-line1 label{
+  color: black;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  left: 0;
+  top: 0;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.viewProfile #new-line2 label{
+  color: black;
+  margin-top: 50px;
+  font-weight: 550;
+  margin-left: 90px;
+}
+.viewProfile #new-line3 label{
+  margin-top: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  margin-left: 28px;
+}
+.viewProfile #new-line4 label{
+  font-size: 18px;
+  margin-left: 80px;
+}
+
+.viewProfile .appLabel label{
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+  margin-left: 250px;
+  vertical-align: middle;
+  font-size: 18px;
+}
+
