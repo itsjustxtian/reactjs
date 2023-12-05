@@ -141,7 +141,7 @@ if (!userQuerySnapshot.empty) {
   return (
     <div className='sign-up-containerr'>
       <h1>Edit Profile</h1>
-      <br />
+      
       <div>
         <div className='profile-picture-component'>
           <Avatar
