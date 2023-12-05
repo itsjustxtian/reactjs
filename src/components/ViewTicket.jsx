@@ -4,7 +4,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 
 const ViewTicket = () => {
-  const { ticketId } = 'CtWfbsVs8q5SBgyu3WBF';
+  const ticketId = 'CtWfbsVs8q5SBgyu3WBF';
   const [ticketData, setTicketData] = useState(null);
 
   useEffect(() => {
