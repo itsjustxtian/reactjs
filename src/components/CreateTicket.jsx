@@ -4,6 +4,11 @@ import { storage, db } from '../config/firebase-config';
 import { uploadBytes, ref } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import SelectApplication from './UserMng/SelectApplication';
+import Popup from './PopUp';
+import Selectmembers from './UserMng/selectmembers';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 
 
 const CreateTicket = ({ handleClose }) => {
@@ -91,6 +96,20 @@ const CreateTicket = ({ handleClose }) => {
     setFiles(updatedFiles);
   };
 
+  const handleRemoveApplication = () => {
+    setSelectedApplication(null);
+  }
+
+  const handleRemoveMember = (memberToRemove) => {
+    // Create a new array excluding the member to be removed
+    const updatedMembers = selectedDevelopers.filter(
+      (member) => member.id !== memberToRemove.id
+    );
+  
+    // Update the state with the new array
+    setSelectedDevelopers(updatedMembers);
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -152,16 +171,50 @@ const CreateTicket = ({ handleClose }) => {
     }
   };
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedButton, setSelectedButton] = useState(null);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [selectedDevelopers, setSelectedDevelopers] = useState([]);
+
+  const togglePopup = (button) => {
+    setSelectedButton(button);
+    setShowPopup((prevShowPopup) => !prevShowPopup);
+  };
+
+
+  const closePopup = (userDetail) => {
+    setShowPopup(false);
+    setSelectedButton(null);
+    console.log('Received userDetail:', userDetail);
+    // Check if data is provided and matches the expected structure
+    if (Array.isArray(userDetail) && userDetail.every((user) => user.id && user.firstname && user.lastname && user.role === "Developer")) {
+      console.log('Selected Team Members (Developers) in CreateTicket:', userDetail);
+      setSelectedDevelopers(userDetail);
+    } else if(userDetail && userDetail.id && userDetail.applicationname) {
+      console.log('Selected Application in CreateTicket:', userDetail);
+      setSelectedApplication(userDetail);
+    } else {
+      console.log('None selected or invalid data format.');
+    }
+  };
+
   return (
     <div className='CreateTicket'>
       <div className='typanan'>
         <div id='new-line'>
           <label>Application: </label>
-          <input
-              type="text"
-              name="application"
-              value = {input.application}
-              onChange={(e) => inputHandler(e)}/>
+          <button id='add-icon' onClick={() => togglePopup('application')}>
+            <AppRegistrationIcon/>
+          </button>
+          <label id='selected'>
+            {selectedApplication ? selectedApplication.applicationname : 'No Application Selected'}
+            {selectedApplication && (
+              <ClearIcon
+              className='clear-icon' 
+              onClick={() => handleRemoveApplication(selectedApplication)}
+              />
+            )}
+          </label>
         </div>
         
         <div id='new-line'>
@@ -174,14 +227,24 @@ const CreateTicket = ({ handleClose }) => {
           />
         </div>
         
-        <div id='new-line'>
+        <div id='new-line-developer'>
           <label>Assigned Developer: </label>
-          <input
-              type="text" 
-              name="assignDev" 
-              value = {input.assignDev}
-              onChange={(e) => inputHandler(e)}
-          />
+          <button id='add-icon' onClick={() => togglePopup('members')}>
+            <PersonAddAlt1Icon/>
+          </button>
+          <div id='selectedMembers'>
+          {selectedDevelopers.map((member) => (
+            <div key={member.id} id='list'>
+              <label>
+                {member.lastname + ', ' + member.firstname}
+                <ClearIcon
+                className='clear-icon'
+                onClick={() => handleRemoveMember(member)}
+                />
+              </label>
+            </div>
+          ))}
+          </div>
         </div>
 
         <div className='space'/>
@@ -281,6 +344,10 @@ const CreateTicket = ({ handleClose }) => {
         </div> 
 
         </div>
+        <Popup show={showPopup} handleClose={closePopup}>
+          {selectedButton === 'application' && <SelectApplication handleClose={closePopup}/>}
+          {selectedButton === 'members' && <Selectmembers handleClose={closePopup}/>}
+        </Popup>
     </div>
     
     
