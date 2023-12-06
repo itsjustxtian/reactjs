@@ -12,6 +12,11 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 
 
 const CreateTicket = ({ handleClose }) => {
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedButton, setSelectedButton] = useState(null);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [selectedDevelopers, setSelectedDevelopers] = useState([]);
+
   const handleCancel = () => {
     // Clear all values in the input when cancel is pressed
     setInput({
@@ -37,10 +42,8 @@ const CreateTicket = ({ handleClose }) => {
   };
 
   const [input, setInput] = useState({
-    application: '',
     author: sessionStorage.getItem('uid'),
     subject: '',
-    assignDev: '',
     description: '',
     tags: [],
     severity: '',
@@ -115,7 +118,7 @@ const CreateTicket = ({ handleClose }) => {
 
     try {
       setErrorMessage('');
-      if (input.application === '') {
+      if (!selectedApplication) {
         console.log("Some fields are emptyyyy.");
         setErrorMessage('All fields are required to be filled.');
         console.log(errormessage);
@@ -123,12 +126,13 @@ const CreateTicket = ({ handleClose }) => {
       } else {
         let userData = {
           author: sessionStorage.getItem('uid'),
-          application: input.application,
+          application: selectedApplication.applicationname,
           subject: input.subject,
-          assignDev: input.assignDev,
+          assignDev: selectedDevelopers.map(member => member.id),
           description: input.description,
           tags: input.tags.join(', '),
           severity: input.severity,
+          status: 'Open',
           type: input.type,
           attachments: files.map((file) => file.name),
         };
@@ -144,21 +148,24 @@ const CreateTicket = ({ handleClose }) => {
           }
         }
 
+        console.log('Data to be created:', userData);
+
         await addDoc(collection(db, 'tickets'), userData);
 
         setInput({
-          application: '',
           author: sessionStorage.getItem('uid'),
           subject: '',
-          assignDev: '',
           description: '',
           tags: [],
           severity: '',
           type: '',
+          status: '',
           attachments: [],
         });
 
         setFiles([]);
+        setSelectedApplication(null);
+        setSelectedDevelopers([]);
 
         console.log('Creating new ticket', userData);
         setErrorMessage('Creating new ticket Successful');
@@ -170,11 +177,6 @@ const CreateTicket = ({ handleClose }) => {
       console.log(errormessage);
     }
   };
-
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedButton, setSelectedButton] = useState(null);
-  const [selectedApplication, setSelectedApplication] = useState(null);
-  const [selectedDevelopers, setSelectedDevelopers] = useState([]);
 
   const togglePopup = (button) => {
     setSelectedButton(button);
@@ -193,6 +195,7 @@ const CreateTicket = ({ handleClose }) => {
     } else if(userDetail && userDetail.id && userDetail.applicationname) {
       console.log('Selected Application in CreateTicket:', userDetail);
       setSelectedApplication(userDetail);
+      console.log('Stored Application:', selectedApplication);
     } else {
       console.log('None selected or invalid data format.');
     }

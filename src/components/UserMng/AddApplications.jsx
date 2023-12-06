@@ -191,7 +191,7 @@ const AddApplications = () => {
             </label>
           </div>
         ))}
-      </div>
+        </div>
       </div>
 
       <div id='new-line'>
