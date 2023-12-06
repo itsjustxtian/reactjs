@@ -67,6 +67,8 @@ const Dashboard = () => {
     setShowPopup(false);
   };
 
+  console.log('Popup content', popupContent);
+
   return (
     <div className='dashboard'>
       <div className='buttoncontainer'>
@@ -128,7 +130,7 @@ const Dashboard = () => {
       </div>
 
       <Popup show={showPopup} handleClose={closePopup}>
-          {popupContent}
+        {popupContent}
       </Popup>
 
     </div>

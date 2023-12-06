@@ -18,7 +18,7 @@
   box-shadow: 5px 10px 10px 5px #00000040;
   width: 80%;
   max-width: 1215px;
-  height: 80%;
+  /*height: 80%;*/
   max-height: 860px;
   position: fixed;
   top: 50%;
