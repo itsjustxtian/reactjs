@@ -7,7 +7,7 @@ const ViewProfile = () => {
           Connect nalang nis database(ata)
         <div className='box'>
             <div className="rectangle" />
-          </div>
+        </div>
           
           <div className='appLabel'>
             <div id= 'new-line1'> 

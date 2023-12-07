@@ -79,11 +79,17 @@ const ViewTicket = ({handleClose, ticketId}) => {
         </div>
       )}
 
-      <div className='formbuttons'>
-        <button className='cancel' id='text'>
-          <div id='text' onClick={handleCancel}> Cancel </div>
-        </button>
-      </div>
+        <div className='formbuttons' style={{ textAlign: 'right' }}>
+          <button className='button' id='close'>
+            Change Status
+          </button>
+          <button className='button' id='edit'>
+            <div id='text'>Edit</div>
+          </button>
+          <button className='button' id='cancel'>
+              <div id='text' onClick={handleCancel}> Close </div>
+            </button>
+        </div> 
     </div>
   );
 };

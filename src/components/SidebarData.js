@@ -43,11 +43,6 @@ export const SidebarData = [
         link: "/edit-profile"
     },
     {
-        title: "View All Users Screen (admin view)",
-        icon: <AssignmentIndIcon />,
-        link: "/view-all-users"
-    },
-    {
         title: "View all applications/projects screen ",
         icon: <AppsIcon />,
         link: "/view-all-applications"
