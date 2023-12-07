@@ -493,6 +493,7 @@ body, html {
   background-color: transparent; /* Color of the scrollbar track */
 }
 
+/*Create Ticket Screen*/
 .CreateTicket input[type="checkbox"] {
   transform: scale(1.75); /* Adjust the scale factor to make the checkbox larger */
   margin: 10px;
@@ -502,7 +503,6 @@ body, html {
 .CreateTicket input[type="radio"] {
   transform: scale(1.75);
   margin-right: 10px;
-  margin: 10px;
   width: auto;
 }
 
@@ -584,8 +584,6 @@ body, html {
 }
 
 .CreateTicket {
-  text-align: left;
-  max-width: 100%; /* Adjust the max-width according to your design */
   border-radius: 10px; /* Optional: Add border-radius for rounded corners */
   margin: 10px;
   font-size: 18px;
@@ -594,7 +592,6 @@ body, html {
 
 .CreateTicket input {
   width: 100%;
-  margin-top: 10px;
   margin-left: 10px;
   font-size: 18px; /* Adjust the font size of the placeholder text */
   border-radius: 20px; /* Adjust the border radius to make the edges curve */
@@ -611,10 +608,6 @@ body, html {
   margin-right: 10px;
 }
 
-#new-line input {
-  vertical-align: middle;
-}
-
 .typanan input{
   height: 30px;
 }
@@ -622,16 +615,50 @@ body, html {
 .CreateTicket .typanan #new-line {
   display: flex;
   align-items: center;
-}
-.CreateTicket .typanan #new-line-developer {
-  display: flex;
-  align-items: center;
+  margin-top: 10px;
 }
 
-.CreateTicket .typanan #new-line-developer button{
+.CreateTicket .typanan #new-line-radios {
   display: flex;
   align-items: center;
   margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.CreateTicket .typanan #new-line-tags {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.CreateTicket .typanan #new-line-tags label {
+  align-items: center;
+  vertical-align: middle;
+}
+
+.CreateTicket .typanan #new-line-tags input {
+  width: auto;
+}
+
+.CreateTicket .typanan #new-line-tags #tagslist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: 10px;
+}
+
+.CreateTicket .typanan #new-line-tags #tags label{
+  background-color: #D9D9D9;
+  padding: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+  vertical-align: middle;
+}
+
+.CreateTicket .typanan #new-line-tags #tags label:hover {
+  background-color: #3D5654;
+  color: white;
 }
 
 .CreateTicket .formbuttons .submit:hover{
@@ -642,6 +669,40 @@ body, html {
   background-color: #3D5654;
   color: white;
 }
+
+.CreateTicket #selectedMembers {
+  margin-left: 10px;
+  display: flex;
+}
+
+.CreateTicket #selectedMembers label {
+  background-color: #D9D9D9;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+.CreateTicket #selectedMembers label:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.CreateTicket .typanan #selectedfiles {
+  list-style-type: none;
+}
+
+.CreateTicket .typanan #selectedfiles li{
+  width: fit-content;
+  background-color: #D9D9D9;
+  margin-top: 5px;
+  padding: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
 
 /* View Application dapit */
 .viewApplications .rectangle {
@@ -701,8 +762,11 @@ h1 {
 
 /* END */
 .error-message {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  justify-content: flex-end;
   font-size: 20px;
-  color: red;
 }
 
 .user-management{
@@ -1189,25 +1253,6 @@ h1 {
 }
 
 #selected:hover {
-  background-color: #3D5654;
-  color: white;
-}
-
-.CreateTicket #selectedMembers {
-  margin-left: 10px;
-  display: flex;
-}
-
-.CreateTicket #selectedMembers label {
-  background-color: #D9D9D9;
-  padding: 2px;
-  margin-left: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-radius: 20px;
-}
-
-.CreateTicket #selectedMembers label:hover {
   background-color: #3D5654;
   color: white;
 }

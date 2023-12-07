@@ -16,11 +16,11 @@ const CreateTicket = ({ handleClose }) => {
   const [selectedButton, setSelectedButton] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [selectedDevelopers, setSelectedDevelopers] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const handleCancel = () => {
     // Clear all values in the input when cancel is pressed
     setInput({
-      application: '',
       author: sessionStorage.getItem('uid'),
       subject: '',
       assignDev: '',
@@ -32,6 +32,9 @@ const CreateTicket = ({ handleClose }) => {
     });
     setFiles([]);
     setErrorMessage('');
+    setTags([]);
+    setSelectedDevelopers([]);
+    setSelectedApplication(null);
 
     // Reset radio button values
     document.querySelectorAll('input[type="radio"]').forEach((radio) => {
@@ -45,41 +48,37 @@ const CreateTicket = ({ handleClose }) => {
     author: sessionStorage.getItem('uid'),
     subject: '',
     description: '',
-    tags: [],
     severity: '',
     type: '',
     attachments: [],
   });
 
-  const handleTagInput = (e) => {
+  const tagHandler = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const newTag = e.target.value.trim();
       if (newTag !== '') {
-        setInput((prevInput) => ({
-          ...prevInput,
-          tags: [...prevInput.tags, newTag],
-        }));
+        setTags((prevTags) => [...prevTags, newTag]);
         e.target.value = ''; // Clear the input field after adding the tag
       }
+      console.log("Tags:", tags);
     }
   };
-  
 
   const inputHandler = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'tags') {
+    /*if (name === 'tags') {
       setInput((prevInput) => ({
         ...prevInput,
         tags: value.split(',').map((tag) => tag.trim()), // Split tags by comma and trim spaces
       }));
-    } else {
+    } else {*/
       setInput((prevInput) => ({
         ...prevInput,
         [name]: value,
       }));
-    }
+    //}
 
   };
 
@@ -113,6 +112,16 @@ const CreateTicket = ({ handleClose }) => {
     setSelectedDevelopers(updatedMembers);
   };
 
+  const handleRemoveTag = (index) => {
+    // Create a new array excluding the tag to be removed
+    const updatedTags = [...tags];
+    updatedTags.splice(index, 1);
+
+    // Update the state with the new array
+    setTags(updatedTags);
+  };
+
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -130,7 +139,7 @@ const CreateTicket = ({ handleClose }) => {
           subject: input.subject,
           assignDev: selectedDevelopers.map(member => member.id),
           description: input.description,
-          tags: input.tags.join(', '),
+          tags: tags,
           severity: input.severity,
           status: 'Open',
           type: input.type,
@@ -156,7 +165,6 @@ const CreateTicket = ({ handleClose }) => {
           author: sessionStorage.getItem('uid'),
           subject: '',
           description: '',
-          tags: [],
           severity: '',
           type: '',
           status: '',
@@ -166,6 +174,10 @@ const CreateTicket = ({ handleClose }) => {
         setFiles([]);
         setSelectedApplication(null);
         setSelectedDevelopers([]);
+        setTags([]);
+        document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+          radio.checked = false;
+        });
 
         console.log('Creating new ticket', userData);
         setErrorMessage('Creating new ticket Successful');
@@ -230,7 +242,7 @@ const CreateTicket = ({ handleClose }) => {
           />
         </div>
         
-        <div id='new-line-developer'>
+        <div id='new-line'>
           <label>Assigned Developer: </label>
           <button id='add-icon' onClick={() => togglePopup('members')}>
             <PersonAddAlt1Icon/>
@@ -250,31 +262,42 @@ const CreateTicket = ({ handleClose }) => {
           </div>
         </div>
 
-        <div className='space'/>
-
-        <label>Description: </label>
-        <br/>
-        <textarea 
-          type="text"
-          name='description'
-          value = {input.description}
-          onChange={(e) => inputHandler(e)}
-          cols="30" 
-          rows="10">
-        </textarea>
-        
         <div id='new-line'>
+          <label>Description: </label>
+        </div>
+          <textarea 
+            type="text"
+            name='description'
+            value = {input.description}
+            onChange={(e) => inputHandler(e)}
+            cols="30" 
+            rows="10">
+          </textarea>
+        
+        <div id='new-line-tags'>
         <label>Tags: </label>
           <input
             type="text"
             name="tags"
-            placeholder='Please type it as "Tag1, Tag2, Tag3"'
-            value={input.tags.join(', ')}
-            onChange={(e) => inputHandler(e)}        
+            placeholder='Input tag then press Enter...'
+            onKeyUp={(e) => tagHandler(e)}
           />
+          <div id='tagslist'>
+          {tags.map((tag, index) => (
+            <div key={index} id='tags'>
+              <label>
+                {tag}
+                <ClearIcon
+                  className='clear-icon'
+                  onClick={() => handleRemoveTag(index)}
+                />
+              </label>
+            </div>
+          ))}
+          </div>
         </div>
         
-        <div id='new-line'>
+        <div id='new-line-radios'>
           <label>Severity/Priority: </label>
           <input type="radio" name="severity" value="Critical" onChange={(e) => inputHandler(e, 'severity')} />
           <label> Critical </label>
@@ -286,7 +309,7 @@ const CreateTicket = ({ handleClose }) => {
           <label> Low </label>
         </div>
         
-        <div id='new-line'>
+        <div id='new-line-radios'>
           <label>Type: </label>
           <input type="radio" name="type" value="Functional" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Functional </label>
@@ -300,41 +323,43 @@ const CreateTicket = ({ handleClose }) => {
           <label> Security </label>
         </div>
           
-        <div>
-        <input
-          type="file"
-          accept="image/*, .pdf, .doc, .docx"  // Define the file types you want to allow
-          style={{ display: 'none' }}
-          ref={fileInputRef}
-          onChange={handleFileInputChange}
-          multiple
-        />
+        <div id='selectedfiles'>
+          <input
+            type="file"
+            accept="image/*, .pdf, .doc, .docx"  // Define the file types you want to allow
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            onChange={handleFileInputChange}
+            multiple
+          />
 
-        <button
-          className='addAtt'
-          onClick={() => fileInputRef.current.click()} // Trigger file input click on button click
-        >
-          <AttachFileIcon />
-          <div id='addAtt'> Add Attachments </div>
-        </button>
-
-      {files.length > 0 && (
-        <div>
-          <p>Selected Files:</p>
-          <ul>
-            {files.map((file, index) => (
-              <li key={index}>
-                {file.name}
-                <ClearIcon
-                  className='clear-icon'
-                  onClick={() => handleRemoveFile(index)}
-                />
-              </li>
-            ))}
-          </ul>
+          <button
+            className='addAtt'
+            onClick={() => fileInputRef.current.click()} // Trigger file input click on button click
+          >
+            <AttachFileIcon />
+            <div id='addAtt'> Add Attachments </div>
+          </button>
+            {files.length > 0 && (
+              <div>
+                <p>Selected Files:</p>
+                <ul id='selectedfiles'>
+                  {files.map((file, index) => (
+                    <li key={index}>
+                      {file.name}
+                      <ClearIcon
+                        className='clear-icon'
+                        onClick={() => handleRemoveFile(index)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
         </div>
-      )}
 
+        <div className='error-message'>
+          {errormessage}
         </div>
             
         <div className='formbuttons'>
