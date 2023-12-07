@@ -33,11 +33,6 @@ export const SidebarData = [
         link: "/applications"
     },
     {
-        title: "Profile Screen",
-        icon: <AssignmentIndIcon />,
-        link: "/profile"
-    },
-    {
         title: "Edit Profile Screen",
         icon: <AssignmentIndIcon />,
         link: "/edit-profile"

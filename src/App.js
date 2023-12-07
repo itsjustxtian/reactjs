@@ -58,7 +58,6 @@ function App() {
           <Route path="/showticket/" element={<ViewTicket />} />
 
           <Route path="/applications" element={<ViewApplications />} />
-          <Route path="/profile" element={<Viewprofile />} />
           <Route path="/edit-profile" element={<Editprofile />} />
           <Route path="/view-all-applications" element={<ViewAllApplications />} />
           <Route path="/settings" element={<Settings />} />

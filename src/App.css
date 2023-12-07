@@ -1268,6 +1268,14 @@ h1 {
   margin-left: 20px;
   top: 0;
 }
+.ticket-table .dashboard-table label#Inactive {
+  color: #9f9f9f;
+}
+
+.ticket-table .dashboard-table label#Active {
+  color: #17ae19;
+}
+
 
 .viewProfile {
   padding: 30px;
