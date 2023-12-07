@@ -28,11 +28,6 @@ export const SidebarData = [
         link: "/usermanagement"
     },
     {
-        title: "Ticket Screen",
-        icon: <BugReportIcon />,
-        link: "/showticket"
-    },
-    {
         title: "Application Screen",
         icon: <AppsIcon />,
         link: "/applications"
