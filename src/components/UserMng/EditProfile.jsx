@@ -216,10 +216,11 @@ if (!userQuerySnapshot.empty) {
               // ... (other props)
             />
             <div className='formbuttons'>
+            <button className='submit'> Submit </button>
               <button className='cancel' id='text' onClick={handleCancel}>
                 <div id='text'> Cancel </div>
               </button>
-              <button className='submit'> Submit </button>
+              
             </div>
           </div>
         </div>

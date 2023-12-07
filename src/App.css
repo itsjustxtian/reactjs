@@ -718,7 +718,6 @@ h1 {
   margin-left: 20px;
 }
 
-
 .profile{
   padding-top: 30px;
   border: 5px solid #3d5654;
@@ -730,57 +729,6 @@ h1 {
   position: relative;
   top: 10px;
   left: 540px;
-}
-
-.edit{
-  height: 10px;
-  width: 10px;
-  border: none;
-  border-radius: 10px;
-  text-align: center;
-  font-size: medium;
-  color: solid #3d5654;
-}
-
-.edit a{
-  position: relative;
-  top: 80px;
-  text-decoration: none;
-  color: solid #3d5654;
-  font-size: medium;
-  transition: 0.8s;
-
-}
-
-
-.edit a:hover{
-    text-decoration: underline;
-}
-
-/*trials*/
-.box-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  top:150px;
-  column-gap: 30px;
-  margin-left: 585px;
-}
-
-.box{
-  height:30px;
-  width:30px;
-}
-
-.box a{
-  text-decoration: underline;
-  color: solid #3d5654 ;
-  font-size: medium;
-  transition: 0.8s;
-}
-
-.box a:hover{
-  letter-spacing: 0.1px;
-  color:#18B3A7;
 }
 
 .sign-up-leftt {
@@ -835,16 +783,18 @@ h1 {
   align-self: center;
 }
 
+/*Edit profile*/
 .sign-up-containerr .formbuttons {
   display: flex;
   justify-content: flex-start;
   margin-left: auto;
   align-items: center;
+  gap: 5px; 
 }
 
 .sign-up-containerr .submit{
   font-family: 'Inter', sans-serif;
-  font-size: medium;
+  font-size: 20px;
   text-align: center;
   border-radius: 20px;
 
@@ -852,7 +802,8 @@ h1 {
   align-items: flex-end;
   margin-left: auto;
 
-  padding: 10px;
+
+  padding: 20px;
   background-color: #18B3A7;
   color: white;
   border: none;
@@ -861,15 +812,16 @@ h1 {
 
 .sign-up-containerr .cancel{
   font-family: 'Inter', sans-serif;
-  font-size: medium;
+  font-size: 20px;
   text-align: center;
   border-radius: 20px;
 
   display: flex;
   align-items: flex-end;
   margin-left: auto;
+  
 
-  padding: 10px;
+  padding: 20px;
   background-color: #CADFDE;
   color: black;
   border: none;
@@ -1124,3 +1076,31 @@ h1 {
   cursor: pointer;
   align-self: center; 
 }
+
+/* View profile*/
+.view-profile-container {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  text-align: center;
+  margin: 5px;
+}
+
+.view-profile-container label {
+  margin: 5px;
+}
+
+.view-profile-container input {
+  height: calc(15px + 2vmin);
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  border-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+}
+div {
+  display: initial;
+}
+
