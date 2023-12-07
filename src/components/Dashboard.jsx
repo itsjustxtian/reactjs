@@ -58,8 +58,8 @@ const Dashboard = () => {
     return sortableData;
   };
 
-  const togglePopup = (content) => {
-    setPopupContent(content);
+  const togglePopup = (content, ticketId) => {
+    setPopupContent({content, ticketId});
     setShowPopup(!showPopup);
   };
 
@@ -108,7 +108,7 @@ const Dashboard = () => {
                 id={
                   row.status === 'Resolved' ? 'resolved-row' : 'rows'}
                 key={row.id} 
-                onClick={() => togglePopup(<Viewticket handleClose={closePopup}/>)}>
+                onClick={() => togglePopup(<Viewticket handleClose={closePopup} ticketId={row.id}/>, row.id)}>
                   <td>{row.subject}</td>
                   <td>{row.application}</td>
                   <td
@@ -130,7 +130,7 @@ const Dashboard = () => {
       </div>
 
       <Popup show={showPopup} handleClose={closePopup}>
-        {popupContent}
+        {popupContent && popupContent.content}
       </Popup>
 
     </div>

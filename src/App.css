@@ -1270,14 +1270,18 @@ h1 {
   font-size: 18px;
 }
 
+.ViewTicket {
+  width: auto;
+}
+
 /* View Ticket Design */
 .ViewTicket p{
   font-size: 19px;
   top: 0;
 }
 .ViewTicket .formbuttons {
-  display: flex;
 }
+
 .ViewTicket .formbuttons .cancel:hover{
   background-color: #3D5654;
   color: white;
@@ -1290,7 +1294,7 @@ h1 {
 
   display: flex;
   align-items: flex-end;
-  margin-left: 1000px;
+  margin-left: auto;
 
   padding: 20px;
   background-color: #CADFDE;

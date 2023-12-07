@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 
-const ViewTicket = ({handleClose}) => {
-  const ticketId = 'CtWfbsVs8q5SBgyu3WBF';
+const ViewTicket = ({handleClose, ticketId}) => {
+  console.log('Received ticket Id: ', ticketId);
   const [ticketData, setTicketData] = useState(null);
 
   useEffect(() => {
@@ -76,15 +76,14 @@ const ViewTicket = ({handleClose}) => {
               <li key={index}>{attachment}</li>
             ))}
           </ul>
-          <div className='formbuttons'>
-          <button className='cancel' id='text'>
-              <div id='text' onClick={handleCancel}> Cancel </div>
-            </button>
-            </div>
         </div>
-        
-
       )}
+
+      <div className='formbuttons'>
+        <button className='cancel' id='text'>
+          <div id='text' onClick={handleCancel}> Cancel </div>
+        </button>
+      </div>
     </div>
   );
 };
