@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
+import EditTicket from './EditTicket';
+import Popup from './PopUp';
 
 const ViewTicket = ({handleClose, ticketId}) => {
   console.log('Received ticket Id: ', ticketId);
   const [ticketData, setTicketData] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
 
   useEffect(() => {
     const fetchTicketData = async () => {
@@ -37,6 +41,16 @@ const ViewTicket = ({handleClose, ticketId}) => {
   }
   const handleCancel = () => {
     handleClose();
+  };
+
+  const togglePopup = (content, ticketId, userId) => {
+    setPopupContent({content, ticketId, userId})
+    setShowPopup(!showPopup);
+    
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -83,13 +97,17 @@ const ViewTicket = ({handleClose, ticketId}) => {
           <button className='button' id='close'>
             Change Status
           </button>
-          <button className='button' id='edit'>
+          <button className='button' id='edit' onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')}/>)}>
             <div id='text'>Edit</div>
           </button>
           <button className='button' id='cancel'>
               <div id='text' onClick={handleCancel}> Close </div>
             </button>
         </div> 
+
+        <Popup show={showPopup} handleClose={closePopup}>
+          {popupContent && popupContent.content}
+        </Popup>
     </div>
   );
 };

@@ -525,6 +525,7 @@ body, html {
 
 .CreateTicket .formbuttons {
   display: flex;
+  align-items: flex-end;
 }
 
 .CreateTicket .submit{
@@ -1387,4 +1388,209 @@ h1 {
   color: black;
   border: none;
   cursor: pointer;
+}
+
+.edit-ticket {
+
+}
+
+.edit-ticket input[type="checkbox"] {
+  transform: scale(1.75); /* Adjust the scale factor to make the checkbox larger */
+  margin: 10px;
+  width: auto;
+}
+
+.edit-ticket input[type="radio"] {
+  transform: scale(1.75);
+  margin-right: 10px;
+  width: auto;
+}
+
+.edit-ticket textarea {
+  width: calc(100% - 20px);
+  border-radius: 20px;
+  background-color: #D9D9D9;
+  border-color: transparent;
+  margin-top: 10px;
+  resize: none;
+  padding: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+}
+
+.edit-ticket .formbuttons {
+  display: flex;
+  align-items: flex-end;
+}
+
+.edit-ticket .save-changes{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-ticket .cancel{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: 10px;
+
+  padding: 20px;
+  background-color: #CADFDE;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-ticket .addAtt{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+  justify-content: center;
+  max-width: 200px;
+  width: 100%;
+  padding: 10px;
+  background-color: #18B3A7;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.edit-ticket .addAtt:hover{
+  background-color: #3D5654;
+}
+
+.edit-ticket {
+  border-radius: 10px; /* Optional: Add border-radius for rounded corners */
+  margin: 10px;
+  font-size: 18px;
+  font-family: 'Inter', sans-serif;
+}
+
+.edit-ticket input {
+  width: 100%;
+  margin-left: 10px;
+  font-size: 18px; /* Adjust the font size of the placeholder text */
+  border-radius: 20px; /* Adjust the border radius to make the edges curve */
+  background-color: #D9D9D9;
+  border-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.edit-ticket label {
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+.edit-ticket .typanan #new-line {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.edit-ticket .typanan #new-line-radios {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.edit-ticket .typanan #new-line-tags {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.edit-ticket .typanan #new-line-tags label {
+  align-items: center;
+  vertical-align: middle;
+}
+
+.edit-ticket .typanan #new-line-tags input {
+  width: auto;
+}
+
+.edit-ticket .typanan #new-line-tags #tagslist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: 10px;
+}
+
+.edit-ticket .typanan #new-line-tags #tags label{
+  background-color: #D9D9D9;
+  padding: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+  vertical-align: middle;
+}
+
+.edit-ticket .typanan #new-line-tags #tags label:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.edit-ticket .formbuttons .save-changes:hover{
+  background-color: #3D5654;
+}
+
+.edit-ticket .formbuttons .cancel:hover{
+  background-color: #3D5654;
+  color: white;
+}
+
+.edit-ticket #selectedMembers {
+  margin-left: 10px;
+  display: flex;
+}
+
+.edit-ticket #selectedMembers label {
+  background-color: #D9D9D9;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+.edit-ticket #selectedMembers label:hover {
+  background-color: #3D5654;
+  color: white;
+}
+
+.edit-ticket .typanan #selectedfiles {
+  list-style-type: none;
+}
+
+.edit-ticket .typanan #selectedfiles li{
+  width: fit-content;
+  background-color: #D9D9D9;
+  margin-top: 5px;
+  padding: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
 }
