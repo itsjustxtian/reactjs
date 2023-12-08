@@ -5,7 +5,7 @@ import Selectteamlead from '../UserMng/selectteamlead';
 import Selectqa from '../UserMng/selectqa';
 import Selectmembers from '../UserMng/selectmembers'
 import { db } from '../../config/firebase-config';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const AddApplications = () => {
@@ -92,11 +92,13 @@ const AddApplications = () => {
         return;
       } else {
         let appData = {
+          author: sessionStorage.getItem('uid'),
           applicationname: input.applicationname,
           teamleader: selectedTeamLead.uid,
           assignedqa: selectedQa.uid,
           teammembers: selectedTeamMembers.map(member => member.id),
           description: input.description,
+          datecreated: serverTimestamp(),
         };
 
         await addDoc(collection(db, 'applications'), appData);
@@ -111,7 +113,7 @@ const AddApplications = () => {
         handleRemovetl(selectedTeamLead);
 
         console.log('Creating new application', appData);
-        setErrorMessage('Creating new application successful!');
+        setErrorMessage('New Application Created Successfully!');
         console.log(errormessage);
       }
     } catch (error) {

@@ -2,7 +2,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef, useEffect } from 'react';
 import { storage, db } from '../config/firebase-config';
 import { uploadBytes, ref } from 'firebase/storage';
-import { addDoc, collection, doc, getDocs, getDoc, query, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SelectApplication from './UserMng/SelectApplication';
@@ -11,12 +11,13 @@ import Selectmembers from './UserMng/selectmembers';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 
 const EditTicket = ({handleClose, ticketId, userId}) => {
-    console.log('Passed data in Edit Ticket: ', ticketId, userId);
+    //console.log('Passed data in Edit Ticket: ', ticketId, userId);
     const [data, setData] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedButton, setSelectedButton] = useState(null);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [selectedDevelopers, setSelectedDevelopers] = useState([]);
+    const [developers, setDevelopers] = useState([]);
     const [tags, setTags] = useState([]);
     const [input, setInput] = useState({
         author: sessionStorage.getItem('uid'),
@@ -39,9 +40,29 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             const ticketDoc = await getDoc(ticketRef);
 
             if (ticketDoc.exists()) {
-                console.log('Ticket Data:', ticketDoc.data());
+                //console.log('Ticket Data:', ticketDoc.data());
                 setSelectedApplication(ticketDoc.data().application);
+                console.log('Existing Application: ', selectedApplication);
                 setSelectedDevelopers(ticketDoc.data().assignDev);
+
+                const developerDocs = [];
+                
+                for (const developerId of selectedDevelopers) {
+                    const devRef = doc(db, 'users', developerId);
+                    const devDoc = await getDoc(devRef);
+            
+                    if (devDoc.exists()) {
+                        //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
+                        developerDocs.push(devDoc.data());
+                        // Do something with the developer document
+                    } else {
+                        console.log("Developer document not found for ID ", developerId);
+                    }
+                }
+
+                setDevelopers(developerDocs);
+                console.log("Returned documents for Assigned Developers: ", developers);
+
                 setTags(ticketDoc.data().tags);
                 updateInputState(ticketDoc.data());
             } else {
@@ -84,6 +105,18 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
     const closePopup = (userDetail) => {
         setShowPopup(false);
         setSelectedButton(null);
+        console.log('Received userDetail in EditTicket after Popup Closed: ', userDetail);
+
+        if (Array.isArray(userDetail) && userDetail.every((user) => user.id && user.firstname && user.lastname && user.role === "Developer")) {
+            console.log('Selected Team Members (Developers) in CreateTicket:', userDetail);
+            setSelectedDevelopers(userDetail);
+          } else if(userDetail && userDetail.id && userDetail.applicationname) {
+            console.log('Selected Application in EditTicket:', userDetail);
+            setSelectedApplication(userDetail);
+            console.log('Stored Application:', selectedApplication);
+          } else {
+            console.log('None selected or invalid data format.');
+          }
     };
 
     const tagHandler = (e) => {
@@ -159,8 +192,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             console.log(errormessage);
             return;
           } else {
-            let userData = {
-              author: sessionStorage.getItem('uid'),
+            let updatedData = {
               application: selectedApplication.applicationname,
               subject: input.subject,
               assignDev: selectedDevelopers.map(member => member.id),
@@ -183,9 +215,10 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
               }
             }
     
-            console.log('Data to be created:', userData);
-    
-            await addDoc(collection(db, 'tickets'), userData);
+            console.log('Updated data:', updatedData);
+
+            const ticketRef = doc(db, 'tickets', ticketId)
+            await updateDoc(ticketRef, updatedData);
     
             setInput({
               author: sessionStorage.getItem('uid'),
@@ -205,8 +238,8 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
               radio.checked = false;
             });
     
-            console.log('Creating new ticket', userData);
-            setErrorMessage('Creating new ticket Successful');
+            console.log('Creating new ticket', updatedData);
+            setErrorMessage('New Ticket Created Successfully!');
             console.log(errormessage);
           }
         } catch (error) {
@@ -225,7 +258,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                     <AppRegistrationIcon/>
                 </button>
                 <label id='selected'>
-                    {selectedApplication ? selectedApplication : 'No Application Selected'}
+                    {selectedApplication ? selectedApplication.applicationname : 'No Application Selected'}
                     {selectedApplication && (
                     <ClearIcon
                     className='clear-icon' 
@@ -251,7 +284,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                     <PersonAddAlt1Icon/>
                 </button>
                 <div id='selectedMembers'>
-                    {selectedDevelopers.map((member) => (
+                    {developers.map((member) => (
                         <div key={member.id} id='list'>
                         <label>
                             {member.lastname + ', ' + member.firstname}
@@ -374,7 +407,12 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             <button className='cancel' id='text'>
               <div id='text' onClick={handleCancel}> Cancel Edit </div>
             </button>
-        </div> 
+        </div>
+
+        <Popup show={showPopup} handleClose={closePopup}>
+          {selectedButton === 'application' && <SelectApplication handleClose={closePopup}/>}
+          {selectedButton === 'members' && <Selectmembers handleClose={closePopup}/>}
+        </Popup> 
     </div>
   )
 }

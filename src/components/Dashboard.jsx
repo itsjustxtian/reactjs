@@ -1,6 +1,6 @@
 // Dashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, where } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Popup from './PopUp';
@@ -17,15 +17,44 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'tickets'));
-        const documents = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setData(documents);
+        const documents = querySnapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          const applicationName = await getApplicationName(data.application);
+          return { id: doc.id, ...data, application: applicationName };
+        });
+  
+        // Wait for all promises to resolve
+        const updatedDocuments = await Promise.all(documents);
+  
+        setData(updatedDocuments);
+        console.log(updatedDocuments);
       } catch (error) {
         console.log('Error fetching data:', error);
       }
     };
+  
 
     fetchData();
   }, []);
+
+  const getApplicationName = async (appId) => {
+    try {
+      const docRef = doc(db, 'applications', appId);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        // Access the applicationname field from the document
+        const applicationName = docSnap.data().applicationname;
+        return applicationName;
+      } else {
+        console.log('No matching document for appId:', appId);
+        return null; // or handle the case where the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error fetching application name:', error);
+      throw error; // or handle the error appropriately
+    }
+  }
 
   const requestSort = (key) => {
     let direction = 'ascending';

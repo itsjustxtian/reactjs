@@ -18,13 +18,63 @@
   box-shadow: 5px 10px 10px 5px #00000040;
   width: 80%;
   max-width: 1215px;
-  /*height: 80%;*/
-  max-height: 860px;
+  max-height: 80vh;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.display-block {
+  display: block;
+}
+
+.display-none {
+  display: none;
+}
+
+/*.modal-main { commented this out kay doble na --Ocon
+  background-color: #fefefe;
+  border-radius: 35px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  width: 80%;
+  max-width: 1215px;
+  max-height: 80%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f0f0f0;
+}*/
+
+.modal-main::-webkit-scrollbar {
+  width: 8px; /* Adjust the width of the scrollbar */
+}
+
+.modal-main::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Color of the scrollbar thumb */
+  border-radius: 30px; /* Adjust the border-radius to make the scrollbar appear larger */
+}
+
+.modal-main::-webkit-scrollbar-track {
+  background-color: transparent; /* Color of the scrollbar track */
 }
 
 /* Add more styles based on your design requirements */
@@ -441,57 +491,7 @@ body, html {
 
 /* create ticket dapit*/
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.display-block {
-  display: block;
-}
-
-.display-none {
-  display: none;
-}
-
-.modal-main {
-  background-color: #fefefe;
-  border-radius: 35px;
-  box-shadow: 5px 10px 10px 5px #00000040;
-  width: 80%; /* Adjust the width as needed */
-  max-width: 1215px; /* Set a maximum width if desired */
-  max-height: 80%;
-  /*max-height: 860px;*/
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  overflow-y: auto;
-
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f0f0f0;
-}
-
-.modal-main::-webkit-scrollbar {
-  width: 8px; /* Adjust the width of the scrollbar */
-}
-
-.modal-main::-webkit-scrollbar-thumb {
-  background-color: transparent; /* Color of the scrollbar thumb */
-  border-radius: 30px; /* Adjust the border-radius to make the scrollbar appear larger */
-}
-
-.modal-main::-webkit-scrollbar-track {
-  background-color: transparent; /* Color of the scrollbar track */
-}
 
 /*Create Ticket Screen*/
 .CreateTicket input[type="checkbox"] {
@@ -505,7 +505,6 @@ body, html {
   margin-right: 10px;
   width: auto;
 }
-
 
 .CreateTicket textarea {
   width: calc(100% - 20px);
@@ -1390,10 +1389,6 @@ h1 {
   cursor: pointer;
 }
 
-.edit-ticket {
-
-}
-
 .edit-ticket input[type="checkbox"] {
   transform: scale(1.75); /* Adjust the scale factor to make the checkbox larger */
   margin: 10px;
@@ -1565,6 +1560,7 @@ h1 {
 .edit-ticket #selectedMembers {
   margin-left: 10px;
   display: flex;
+  flex-wrap: wrap;
 }
 
 .edit-ticket #selectedMembers label {

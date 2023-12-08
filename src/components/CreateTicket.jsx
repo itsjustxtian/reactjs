@@ -128,7 +128,7 @@ const CreateTicket = ({ handleClose }) => {
       } else {
         let userData = {
           author: sessionStorage.getItem('uid'),
-          application: selectedApplication.applicationname,
+          application: selectedApplication.id,
           subject: input.subject,
           assignDev: selectedDevelopers.map(member => member.id),
           description: input.description,
@@ -151,7 +151,7 @@ const CreateTicket = ({ handleClose }) => {
         }
 
         console.log('Data to be created:', userData);
-
+        
         await addDoc(collection(db, 'tickets'), userData);
 
         setInput({
@@ -198,9 +198,8 @@ const CreateTicket = ({ handleClose }) => {
       console.log('Selected Team Members (Developers) in CreateTicket:', userDetail);
       setSelectedDevelopers(userDetail);
     } else if(userDetail && userDetail.id && userDetail.applicationname) {
-      console.log('Selected Application in CreateTicket:', userDetail);
       setSelectedApplication(userDetail);
-      console.log('Stored Application:', selectedApplication);
+      console.log('Selected Application in CreateTicket:', userDetail);      
     } else {
       console.log('None selected or invalid data format.');
     }

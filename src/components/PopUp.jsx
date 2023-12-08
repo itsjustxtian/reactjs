@@ -7,7 +7,9 @@ const Popup = ({ handleClose, show, children }) => {
   return (
     <div className={showHideClassName}>
       <section className="modal-main">
-        {children}
+        <div className='popup-content'>
+          {children}
+        </div>
       </section>
     </div>
   );
