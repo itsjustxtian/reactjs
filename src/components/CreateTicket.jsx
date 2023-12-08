@@ -67,13 +67,6 @@ const CreateTicket = ({ handleClose }) => {
 
   const inputHandler = (e) => {
     const { name, value } = e.target;
-
-    /*if (name === 'tags') {
-      setInput((prevInput) => ({
-        ...prevInput,
-        tags: value.split(',').map((tag) => tag.trim()), // Split tags by comma and trim spaces
-      }));
-    } else {*/
       setInput((prevInput) => ({
         ...prevInput,
         [name]: value,
