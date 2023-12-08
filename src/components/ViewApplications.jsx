@@ -1,11 +1,12 @@
-import React,{useState, useEffect} from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import Popup from './PopUp';
-import AddApplications from './UserMng/AddApplications';
+import Viewticket from './ViewTicket'
 
 const ViewApplications = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
@@ -54,13 +55,16 @@ const ViewApplications = () => {
     return sortableData;
   };
 
-  const togglePopup = () => {
+  const togglePopup = (content, ticketId) => {
+    setPopupContent({content, ticketId});
     setShowPopup(!showPopup);
   };
 
   const closePopup = () => {
     setShowPopup(false);
   };
+
+  console.log('Popup content', popupContent);
 
   return (
     <div className='viewApplications'>
@@ -103,7 +107,7 @@ const ViewApplications = () => {
       </div>
 
 
-        <div className='ticket-table'>
+      <div className='ticket-table'>
         <table className='dashboard-table'>
           <thead>
             <tr>
@@ -113,7 +117,6 @@ const ViewApplications = () => {
                 className={getClassNamesFor('subject')}>
                 Bug History
               </th>
-              
               <th
                 onClick={() => requestSort('status')} 
                 id='table-head'
@@ -128,7 +131,7 @@ const ViewApplications = () => {
                 id={
                   row.status === 'Resolved' ? 'resolved-row' : 'rows'}
                 key={row.id} 
-                onClick={togglePopup}>
+                onClick={() => togglePopup(<Viewticket handleClose={closePopup} ticketId={row.id}/>, row.id)}>
                   <td>{row.subject}</td>
                   <td
                     id={row.status === "Open"
@@ -147,12 +150,13 @@ const ViewApplications = () => {
           </tbody>
         </table>
       </div>
-            <Popup show={showPopup} handleClose={closePopup}>
-          <AddApplications handleClose={closePopup}/>
-        </Popup>
 
-      </div>
-  )
-}
+      <Popup show={showPopup} handleClose={closePopup}>
+        {popupContent && popupContent.content}
+      </Popup>
 
-export default ViewApplications
+    </div>
+  );
+};
+
+export default ViewApplications;
