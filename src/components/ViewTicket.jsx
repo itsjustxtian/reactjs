@@ -71,7 +71,7 @@ const ViewTicket = ({handleClose, ticketId}) => {
       <p>Type: 
         <c> {ticketData.type}</c></p>
 
-      {ticketData.tags && ticketData.tags.length > 0 && (
+      {ticketData.tags && Array.isArray(ticketData.tags) && ticketData.tags.length >  0 && (
         <div>
           <p>Tags:</p>
           <ul>
