@@ -110,7 +110,7 @@ const ViewAllUsers = () => {
     </table>
 
         <Popup show={showPopup} handleClose={closePopup}>
-          <EditProfile handleClose={closePopup}/>
+          <ViewProfile handleClose={closePopup}/>
         </Popup>
 
     </div>

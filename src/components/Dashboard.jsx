@@ -1,13 +1,94 @@
 // Dashboard.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { collection, doc, getDoc, getDocs, where } from 'firebase/firestore'
+import { db } from '../config/firebase-config'
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Popup from './PopUp';
 import CreateTicket from './CreateTicket';
+import Viewticket from './ViewTicket'
 
 const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
+  const [data, setData] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
-  const togglePopup = () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'tickets'));
+        const documents = querySnapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          const applicationName = await getApplicationName(data.application);
+          return { id: doc.id, ...data, application: applicationName };
+        });
+  
+        // Wait for all promises to resolve
+        const updatedDocuments = await Promise.all(documents);
+  
+        setData(updatedDocuments);
+        console.log(updatedDocuments);
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+  
+
+    fetchData();
+  }, []);
+
+  const getApplicationName = async (appId) => {
+    try {
+      const docRef = doc(db, 'applications', appId);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        // Access the applicationname field from the document
+        const applicationName = docSnap.data().applicationname;
+        return applicationName;
+      } else {
+        console.log('No matching document for appId:', appId);
+        return null; // or handle the case where the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error fetching application name:', error);
+      throw error; // or handle the error appropriately
+    }
+  }
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getClassNamesFor = (name) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const sortedData = () => {
+    const sortableData = [...data];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  };
+
+  const togglePopup = (content, ticketId) => {
+    setPopupContent({content, ticketId});
     setShowPopup(!showPopup);
   };
 
@@ -15,24 +96,72 @@ const Dashboard = () => {
     setShowPopup(false);
   };
 
+  console.log('Popup content', popupContent);
+
   return (
     <div className='dashboard'>
       <div className='buttoncontainer'>
-        <button className='rectangle' id='text' onClick={togglePopup}>
-          <NoteAddIcon id='icon' />
-          <div id='text'>Create New...</div>
+        <button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
+          <NoteAddIcon/>
+          <label>Create New...</label>
         </button>
-
-        
       </div>
+
+      <div className='ticket-table'>
+        <table className='dashboard-table'>
+          <thead>
+            <tr>
+              <th
+                onClick={() => requestSort('subject')} 
+                id='table-head'
+                className={getClassNamesFor('subject')}>
+                Bugs
+              </th>
+              <th
+                onClick={() => requestSort('application')} 
+                id='table-head'
+                className={getClassNamesFor('application')}>
+                Application
+              </th>
+              <th
+                onClick={() => requestSort('status')} 
+                id='table-head'
+                className={getClassNamesFor('status')}>
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData().map((row) => (
+              <tr
+                id={
+                  row.status === 'Resolved' ? 'resolved-row' : 'rows'}
+                key={row.id} 
+                onClick={() => togglePopup(<Viewticket handleClose={closePopup} ticketId={row.id}/>, row.id)}>
+                  <td>{row.subject}</td>
+                  <td>{row.application}</td>
+                  <td
+                    id={row.status === "Open"
+                    ? 'open-ticket'
+                    : row.status === "In progress"
+                    ? 'in-progress-ticket'
+                    : row.status === "Closed"
+                    ? 'closed-ticket'
+                    : row.status === "Resolved"
+                    ? 'resolved-row'
+                    : 'rows'}>
+                      {row.status}
+                  </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <Popup show={showPopup} handleClose={closePopup}>
-          <CreateTicket handleClose={closePopup}/>
-        </Popup>
-      <div className='space'></div>
+        {popupContent && popupContent.content}
+      </Popup>
 
-      <div className='table'>
-        <div className='rectangle'></div>
-      </div>
     </div>
   );
 };

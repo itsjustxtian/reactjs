@@ -28,29 +28,14 @@ export const SidebarData = [
         link: "/usermanagement"
     },
     {
-        title: "Ticket Screen",
-        icon: <BugReportIcon />,
-        link: "/showticket"
-    },
-    {
         title: "Application Screen",
         icon: <AppsIcon />,
         link: "/applications"
     },
     {
-        title: "Profile Screen",
-        icon: <AssignmentIndIcon />,
-        link: "/profile"
-    },
-    {
         title: "Edit Profile Screen",
         icon: <AssignmentIndIcon />,
         link: "/edit-profile"
-    },
-    {
-        title: "View All Users Screen (admin view)",
-        icon: <AssignmentIndIcon />,
-        link: "/view-all-users"
     },
     {
         title: "View all applications/projects screen ",
