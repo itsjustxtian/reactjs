@@ -1155,20 +1155,15 @@ h1 {
 }
 
 .buttoncontainer {
-  height: 61px;
-  width: 262px;
-  position: absolute;
-  top: 2%;
-  right: 2%;
-  justify-content: center;
-  flex-direction: row;
+  display: flex;
+  margin-bottom: 30px;
+  justify-content: flex-end;
   align-items: center;
 }
 
 .buttoncontainer .rectangle {
   background-color: #18b3a7;
   border-radius: 20px;
-  width: 50%;
   height: 100%;
   border-color: transparent;
   color: white;

@@ -56,6 +56,28 @@ const ViewProfile = ({handleClose, profileId}) => {
           setApplicationData(applications);
           console.log("applicationData: ", applicationData);
         }
+
+        if (profileDoc.data().role === "Quality Assurance") {
+          const appQuery = query(collection(db, 'applications'), where('assignedqa', '==', profileDoc.data().uid))
+          const qaDoc = await getDocs(appQuery);
+        
+          // Create an array to store application data
+          const applications = [];
+
+          // Iterate through the documents in the QuerySnapshot
+          qaDoc.forEach((doc) => {
+            // Log retrieved Developer Doc ID and Data
+            console.log("Retrieved QA ID: ", doc.id);
+            console.log("Retrieved QA Data: ", doc.data());
+
+            // Add application data to the array
+            applications.push({ id: doc.id, ...doc.data() });
+          });
+
+          // Update the state with the application data
+          setApplicationData(applications);
+          console.log("applicationData: ", applicationData);
+        }
         
 
       } catch (error) {
