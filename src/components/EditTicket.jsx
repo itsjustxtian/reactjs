@@ -15,6 +15,9 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
     const [data, setData] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedButton, setSelectedButton] = useState(null);
+    const [existingApplication, setExistingApplication] = useState(null);
+    const [selectedSeverity, setSelectedSeverity] = useState(null);
+    const [selectedType, setSelectedType] = useState(null);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [selectedDevelopers, setSelectedDevelopers] = useState([]);
     const [developers, setDevelopers] = useState([]);
@@ -40,9 +43,21 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             const ticketDoc = await getDoc(ticketRef);
 
             if (ticketDoc.exists()) {
-                //console.log('Ticket Data:', ticketDoc.data());
-                setSelectedApplication(ticketDoc.data().application);
-                console.log('Existing Application: ', selectedApplication);
+              console.log("ticketDoc.data(): ",ticketDoc.data());
+                setExistingApplication(ticketDoc.data().application);
+
+                  const appRef = doc(db, 'applications', existingApplication);
+                  const appDoc = await getDoc(appRef);
+          
+                  if (appDoc.exists()) {
+                      //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
+                      //setExistingApplication(appDoc.data());
+                      setSelectedApplication(appDoc.data());
+                      
+                  } else {
+                      console.log("Developer document not found for ID ", selectedApplication);
+                  }
+
                 setSelectedDevelopers(ticketDoc.data().assignDev);
 
                 const developerDocs = [];
@@ -61,9 +76,13 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 }
 
                 setDevelopers(developerDocs);
-                console.log("Returned documents for Assigned Developers: ", developers);
+                //setSelectedApplication(applicationDoc);
+                //console.log("Returned documents for Assigned Developers: ", developers);
 
                 setTags(ticketDoc.data().tags);
+                setSelectedSeverity(ticketDoc.data().severity);
+                setSelectedType(ticketDoc.data().type);
+                setFiles(ticketDoc.data().attachments);
                 updateInputState(ticketDoc.data());
             } else {
               console.log("No Matching Documents.");
@@ -88,7 +107,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
           attachments: fetchedData.attachments,
         });
 
-        console.log('Input state updated successfully:', input);
+        console.log('Input state updated successfully:', input, selectedApplication, selectedDevelopers);
       };
     
 
@@ -136,9 +155,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
           setInput((prevInput) => ({
             ...prevInput,
             [name]: value,
-          }));
-        //}
-    
+          }));    
       };
     
       const [files, setFiles] = useState([]);
@@ -335,27 +352,27 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
         
             <div id='new-line-radios'>
             <label>Severity/Priority: </label>
-            <input type="radio" name="severity" value="Critical" onChange={(e) => inputHandler(e, 'severity')} />
+            <input type="radio" name="severity" value="Critical" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Critical'}/>
             <label> Critical </label>
-            <input type="radio" name="severity" value="High" onChange={(e) => inputHandler(e, 'severity')}/>
+            <input type="radio" name="severity" value="High" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'High'}/>
             <label> High </label>
-            <input type="radio" name="severity" value="Medium" onChange={(e) => inputHandler(e, 'severity')}/>
+            <input type="radio" name="severity" value="Medium" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Medium'}/>
             <label> Medium </label>
-            <input type="radio" name="severity" value="Low" onChange={(e) => inputHandler(e, 'severity')}/>
+            <input type="radio" name="severity" value="Low" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Low'}/>
             <label> Low </label>
             </div>
         
             <div id='new-line-radios'>
             <label>Type: </label>
-            <input type="radio" name="type" value="Functional" onChange={(e) => inputHandler(e, 'type')}/>
+            <input type="radio" name="type" value="Functional" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Functional'}/>
             <label> Functional </label>
-            <input type="radio" name="type" value="Performance" onChange={(e) => inputHandler(e, 'type')}/>
+            <input type="radio" name="type" value="Performance" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Performance'}/>
             <label> Performance </label>
-            <input type="radio" name="type" value="Usability" onChange={(e) => inputHandler(e, 'type')}/>
+            <input type="radio" name="type" value="Usability" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Usability'}/>
             <label> Usability </label>
-            <input type="radio" name="type" value="Compatibility" onChange={(e) => inputHandler(e, 'type')}/>
+            <input type="radio" name="type" value="Compatibility" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Compatibility'}/>
             <label> Compatibility </label>
-            <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')}/>
+            <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Security'}/>
             <label> Security </label>
             </div>
           
