@@ -76,19 +76,19 @@ const ViewApplications = () => {
       <div className='appLabel'>
         <div id= 'new-line1'> 
           <label>
-          APPLICATION NAME
+          Sample Application 1
           </label>
         </div>
 
         <div id= 'new-line'> 
           <label>
-          Team Leader: 
+          Team Leader: CRC3vheNh1fYtYOtWKZ7bec92ml2
           </label>
         </div>
 
         <div id= 'new-line'> 
           <label>
-          Assign QA: 
+          Assign QA: XAw6bHubc7aem8WtsMylHdo9KTJ3
           </label>
         </div>
 
@@ -100,7 +100,7 @@ const ViewApplications = () => {
 
         <div id= 'new-line3'> 
           <label>
-          sampple rani
+          Description for Sample Application 1
           </label>
         </div>
 

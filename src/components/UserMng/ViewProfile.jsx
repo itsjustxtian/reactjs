@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../../config/firebase-config';
 import { doc, getDoc } from 'firebase/firestore';
+import Avatar from '@mui/material';
 import { onValue } from 'firebase/database';
 import { SpaceBar } from '@mui/icons-material';
+
 
 /* const profileId = '9JkZB1M1WL1Ad9LFRMhw' */
 const ViewProfile = ({handleClose, profileId}) => {
