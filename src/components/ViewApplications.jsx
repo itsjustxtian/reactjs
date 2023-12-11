@@ -253,24 +253,13 @@ const ViewApplications = ({appId, handleClose}) => {
 
         <div id= 'new-line'> 
           <label>
-          <strong>Team Leader:</strong>{teamLeader}
+          Team Leader: 
           </label>
         </div>
 
         <div id= 'new-line'> 
           <label>
-          <strong>Assign QA:</strong> {assignedqa}
-          </label>
-        </div>
-
-        <div id='new-line'>
-          <label>
-            <strong>Team Members:</strong>
-              {teamMembers && teamMembers.length > 0 ? (
-                <span>{teamMembers.join(', ')}</span>
-              ) : (
-                teamMembers ? teamMembers[0] : "No Team Members Identified."
-              )}
+          Assign QA: 
           </label>
         </div>
 
@@ -282,7 +271,7 @@ const ViewApplications = ({appId, handleClose}) => {
 
         <div id= 'description-text'> 
           <label>
-            {description}
+          sampple rani
           </label>
         </div>
 
