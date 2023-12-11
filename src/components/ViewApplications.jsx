@@ -253,13 +253,13 @@ const ViewApplications = ({appId, handleClose}) => {
 
         <div id= 'new-line'> 
           <label>
-          Team Leader: 
+          Team Leader: {teamLeader}
           </label>
         </div>
 
         <div id= 'new-line'> 
           <label>
-          Assign QA: 
+          Assign QA: {assignedqa}
           </label>
         </div>
 
@@ -271,7 +271,7 @@ const ViewApplications = ({appId, handleClose}) => {
 
         <div id= 'description-text'> 
           <label>
-          sampple rani
+            {description}
           </label>
         </div>
 
