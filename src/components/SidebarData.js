@@ -10,6 +10,7 @@ import AppsIcon from '@mui/icons-material/Apps';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import AssistantPhotoIcon from '@mui/icons-material/AssistantPhoto';
 
 export const SidebarData = [
     {
@@ -52,4 +53,9 @@ export const SidebarData = [
         icon: <AddBoxIcon />,
         link: "/add-applications"
     },
+    {
+        title: "Suggestions Box",
+        icon: <AssistantPhotoIcon/>,
+        link: "/suggestions-box"
+    }
 ]

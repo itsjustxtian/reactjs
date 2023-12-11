@@ -1,8 +1,8 @@
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef, useEffect } from 'react';
 import { storage, db } from '../config/firebase-config';
-import { uploadBytes, ref } from 'firebase/storage';
-import { addDoc, collection, doc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
+import { onSnapshot, addDoc, collection, doc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SelectApplication from './UserMng/SelectApplication';
@@ -43,11 +43,11 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             const ticketDoc = await getDoc(ticketRef);
 
             if (ticketDoc.exists()) {
-              console.log("ticketDoc.data(): ",ticketDoc.data());
+                console.log("ticketDoc.data(): ",ticketDoc.data());
                 setExistingApplication(ticketDoc.data().application);
 
-                  const appRef = doc(db, 'applications', existingApplication);
-                  const appDoc = await getDoc(appRef);
+                const appRef = doc(db, 'applications', ticketDoc.data().application);
+                const appDoc = await getDoc(appRef);
           
                   if (appDoc.exists()) {
                       //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
@@ -83,6 +83,26 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 setSelectedSeverity(ticketDoc.data().severity);
                 setSelectedType(ticketDoc.data().type);
                 setFiles(ticketDoc.data().attachments);
+
+                // Extract filenames and URLs from download URLs
+                const attachmentsData = ticketDoc.data().attachments.map((url) => {
+                  const decodedURL = decodeURIComponent(url);
+                  const pathSegments = decodedURL.split('/');
+                  const filenameWithQuery = pathSegments[pathSegments.length - 1];
+                  const filenameWithoutQuery = filenameWithQuery.split('?')[0];
+
+                  return {
+                    url: url,
+                    filename: filenameWithoutQuery,
+                  };
+                });
+
+                // Extract filenames from attachmentsData
+                const filenames = attachmentsData.map((attachment) => attachment.filename);
+
+                // Set the files state
+                setFiles(filenames);
+
                 updateInputState(ticketDoc.data());
             } else {
               console.log("No Matching Documents.");
@@ -107,7 +127,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
           attachments: fetchedData.attachments,
         });
 
-        console.log('Input state updated successfully:', input, selectedApplication, selectedDevelopers);
+        console.log('Input state updated successfully:', input, "Existing selectedApplication: ", selectedApplication, "Existing selectedDevelopers: ", selectedDevelopers);
       };
     
 
@@ -200,71 +220,141 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
     
       const submitHandler = async (e) => {
         e.preventDefault();
-    
+      
         try {
           setErrorMessage('');
           if (!selectedApplication) {
-            console.log("Some fields are emptyyyy.");
+            console.log('Some fields are emptyyyy.');
             setErrorMessage('All fields are required to be filled.');
             console.log(errormessage);
             return;
           } else {
-            let updatedData = {
-              application: selectedApplication.applicationname,
-              subject: input.subject,
-              assignDev: selectedDevelopers.map(member => member.id),
-              description: input.description,
-              tags: tags,
-              severity: input.severity,
-              status: 'Open',
-              type: input.type,
-              attachments: files.map((file) => file.name),
-            };
-    
+            let downloadURLs = [];
+      
             // Upload files to storage
             if (files.length > 0) {
               const storageRef = storage;
-    
+      
               for (const selectedFile of files) {
-                const fileRef = ref(storageRef, `attachments/${selectedFile.name}`);
+                const fileRef = ref(storageRef, `attachments/${selectedFile}`);
                 await uploadBytes(fileRef, selectedFile);
                 console.log('File uploaded successfully!');
+                console.log('Fileref: ', fileRef);
+      
+                const downloadURL = await getDownloadURL(fileRef);
+                downloadURLs.push(downloadURL);
+                console.log("downloadURLs: ", downloadURLs, "downloadURL", downloadURL)
               }
             }
-    
-            console.log('Updated data:', updatedData);
+      
+            // Fetch the document
+            const ticketRef = doc(db, 'tickets', ticketId);
+            const ticketSnapshot = await getDoc(ticketRef);
+      
+            // Check if the document exists
+            if (ticketSnapshot.exists()) {
+                        
+              const originalData = ticketSnapshot.data();
+      
+              // Check for changes in input fields
+              let updatedData = {};
+              
+              if (
+                selectedApplication &&
+                selectedApplication.id !== originalData.application.id
+              ) {
+                updatedData.application = selectedApplication.id;
+                console.log(
+                  "selectedApplication:",
+                  selectedApplication,
+                  "selectedApplication.id: ",
+                  selectedApplication.id,
+                  "originalData.application",
+                  originalData.application.id,
+                  "updatedData.application",
+                  updatedData.application
+                );
+              }
+              
+      
+              if (input.subject !== originalData.subject) {
+                updatedData.subject = input.subject;
+              }
+      
+              const updatedDevelopers = selectedDevelopers.map((member) => member);
+              if (!arraysEqual(updatedDevelopers, originalData.assignDev)) {
+                updatedData.assignDev = updatedDevelopers;
+              }
+      
+              if (input.description !== originalData.description) {
+                updatedData.description = input.description;
+              }
+      
+              if (!arraysEqual(tags, originalData.tags)) {
+                updatedData.tags = tags;
+              }
+      
+              if (input.severity !== originalData.severity) {
+                updatedData.severity = input.severity;
+              }
+      
+              if (input.type !== originalData.type) {
+                updatedData.type = input.type;
+              }
+      
+              if (!arraysEqual(downloadURLs, originalData.attachments)) {
+                updatedData.attachments = downloadURLs;
+                console.log("downloadURLs", downloadURLs);
+              }
 
-            const ticketRef = doc(db, 'tickets', ticketId)
-            await updateDoc(ticketRef, updatedData);
-    
-            setInput({
-              author: sessionStorage.getItem('uid'),
-              subject: '',
-              description: '',
-              severity: '',
-              type: '',
-              status: '',
-              attachments: [],
-            });
-    
-            setFiles([]);
-            setSelectedApplication(null);
-            setSelectedDevelopers([]);
-            setTags([]);
-            document.querySelectorAll('input[type="radio"]').forEach((radio) => {
-              radio.checked = false;
-            });
-    
-            console.log('Creating new ticket', updatedData);
-            setErrorMessage('New Ticket Created Successfully!');
-            console.log(errormessage);
+              console.log("Updated data:", updatedData, "Original data: ", originalData);
+      
+              // Perform the update only if there are changes
+              if (Object.keys(updatedData).length > 0) {
+                await updateDoc(ticketRef, updatedData);
+              }
+      
+              setInput({
+                author: sessionStorage.getItem('uid'),
+                subject: '',
+                description: '',
+                severity: '',
+                type: '',
+                status: '',
+                attachments: [],
+              });
+      
+              setFiles([]);
+              setSelectedApplication(null);
+              setSelectedDevelopers([]);
+              setTags([]);
+              document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+                radio.checked = false;
+              });
+      
+              console.log('Ticket Updated Successfully!');
+              setErrorMessage('Ticket Updated Successfully!');
+            } else {
+              console.log('No Matching Documents.');
+            }
           }
         } catch (error) {
-          console.error('Registration error:', error);
+          console.error('Update error:', error);
           setErrorMessage(error.message);
           console.log(errormessage);
         }
       };
+      
+      // Helper function to check if two arrays are equal
+      function arraysEqual(arr1, arr2) {
+        return (
+          arr1.length === arr2.length &&
+          arr1.every((value) => arr2.includes(value)) &&
+          arr2.every((value) => arr1.includes(value))
+        );
+      }
+      
+      
 
   return (
     <div className='edit-ticket'>
@@ -397,9 +487,9 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 <div>
                     <p>Selected Files:</p>
                     <ul id='selectedfiles'>
-                    {files.map((file, index) => (
+                    {files.map((filename, index) => (
                         <li key={index}>
-                        {file.name}
+                        {filename}
                         <ClearIcon
                             className='clear-icon'
                             onClick={() => handleRemoveFile(index)}
@@ -419,7 +509,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
 
         <div className='formbuttons'>
             <button className='save-changes' id='text'>
-              <div id='text' onClick={handleCancel}> Save Changes </div>
+              <div id='text' onClick={submitHandler}> Save Changes </div>
             </button>
             <button className='cancel' id='text'>
               <div id='text' onClick={handleCancel}> Cancel Edit </div>

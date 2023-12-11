@@ -53,6 +53,18 @@ const ViewTicket = ({handleClose, ticketId}) => {
     setShowPopup(false);
   };
 
+  // Function to extract filename from a URL
+  const getFilenameFromURL = (url) => {
+    const decodedURL = decodeURIComponent(url);
+    const pathSegments = decodedURL.split('/');
+    let filenameWithQuery = pathSegments[pathSegments.length - 1];
+
+    // Remove query parameters if present
+    const filenameWithoutQuery = filenameWithQuery.split('?')[0];
+
+    return filenameWithoutQuery;
+  };
+
   return (
     <div className='ViewTicket'>
       <h2>Ticket #{ticketData.id}</h2>
@@ -87,7 +99,11 @@ const ViewTicket = ({handleClose, ticketId}) => {
           <p>Attachments:</p>
           <ul>
             {ticketData.attachments.map((attachment, index) => (
-              <li key={index}>{attachment}</li>
+              <li key={index}>
+                <a href={attachment} target="_blank" rel="noopener noreferrer">
+                  {getFilenameFromURL(attachment)}
+                </a>
+              </li>
             ))}
           </ul>
         </div>

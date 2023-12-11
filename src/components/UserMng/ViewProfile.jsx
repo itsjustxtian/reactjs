@@ -2,14 +2,20 @@ import { Tab } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../../config/firebase-config';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { onValue } from 'firebase/database';
-import { SpaceBar } from '@mui/icons-material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { Avatar } from '@mui/material';
+import ViewApplications from '../ViewApplications';
+import Popup from '../PopUp';
 
 /* const profileId = '9JkZB1M1WL1Ad9LFRMhw' */
 const ViewProfile = ({handleClose, profileId}) => {
   console.log('Received profile Id: ', profileId);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
   const [profileData, setProfileData] = useState(null);
+  const [applicationData, setApplicationData] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -28,6 +34,30 @@ const ViewProfile = ({handleClose, profileId}) => {
         } else {
           console.log('Profile not found');
         }
+
+        if (profileDoc.data().role === "Developer") {
+          const appQuery = query(collection(db, 'applications'), where('teammembers', 'array-contains', profileId))
+          const qaDoc = await getDocs(appQuery);
+        
+          // Create an array to store application data
+          const applications = [];
+
+          // Iterate through the documents in the QuerySnapshot
+          qaDoc.forEach((doc) => {
+            // Log retrieved Developer Doc ID and Data
+            console.log("Retrieved Developer Doc ID: ", doc.id);
+            console.log("Retrieved Developer Doc Data: ", doc.data());
+
+            // Add application data to the array
+            applications.push({ id: doc.id, ...doc.data() });
+          });
+
+          // Update the state with the application data
+          setApplicationData(applications);
+          console.log("applicationData: ", applicationData);
+        }
+        
+
       } catch (error) {
         console.error('Error fetching Profile data:', error);
       }
@@ -43,22 +73,36 @@ const ViewProfile = ({handleClose, profileId}) => {
     handleClose();
   };
 
+  const togglePopup = (content, ticketId) => {
+    setPopupContent({content, ticketId});
+    setShowPopup(!showPopup);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+  };
+  if (!profileData || applicationData === null) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className='viewProfile'>
-          {profileData.id}
-          <div>
-          <button className='button' id='cancel'>
-              <div id='text' onClick={handleCancel}> Close dapat ni png, same naa sa figma</div>
-            </button>
-          </div>
-        <div className='box'>
-            <div className="rectangle" />
+          <div className='profile-picture'>
+            <Avatar
+              alt={profileData.lastname}
+              sx={{
+                width: 200,
+                height: 200,
+                border: '2px solid #000', // Set border width and color
+                borderRadius: '50%', // Make it a circular avatar
+              }}
+              src={profileData.profilePicture}
+            />
           </div>
           
           <div className='appLabel'>
             <div id= 'new-line1'> 
               <label>
-              {profileData.firstname} {profileData.lastname}
+              {profileData.lastname}, {profileData.firstname}
               </label>
             </div>
 
@@ -84,21 +128,49 @@ const ViewProfile = ({handleClose, profileId}) => {
               <label>
               Assignments:
               </label>
+              <div className='profile-applications-table'>
+                <table className='dashboard-table'>
+                  <thead>
+                    <tr>
+                      <th>
+                        Application
+                      </th>
+                      <th>
+                        Role
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {applicationData.map((row) => (
+                      <tr
+                        key={row.id} 
+                        id='rows'
+                        onClick={() => togglePopup(<ViewApplications handleClose={closePopup} appId={row.id}/>)}>
+                        <td>{row.applicationname}</td>
+                        <td>{profileData.role}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div id= 'new-line4'> 
-              <label>
-              Application 1 <Tab></Tab> <Tab></Tab>  Team Leader 1
-              </label>
-            </div>
-
-            <div id= 'new-line4'> 
-              <label>
-              Application 2 <Tab></Tab> <Tab></Tab>  Team Leader 2
-              </label>
-            </div>
+            
           </div>
-      
+
+          <div className='formbuttons'>
+            <button className='edit-changes'>
+              Edit Profile
+            </button>
+            <button className='cancel' id='text'>
+              <div id='text' onClick={handleCancel}> Close </div>
+            </button>
+        </div> 
+
+        <Popup show={showPopup} handleClose={closePopup}>
+          {popupContent && popupContent.content}
+        </Popup>
+
     </div>
   )
 }

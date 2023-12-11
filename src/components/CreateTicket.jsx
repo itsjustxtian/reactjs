@@ -1,7 +1,7 @@
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef } from 'react';
 import { storage, db } from '../config/firebase-config';
-import { uploadBytes, ref } from 'firebase/storage';
+import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
@@ -126,6 +126,25 @@ const CreateTicket = ({ handleClose }) => {
         console.log(errormessage);
         return;
       } else {
+        let downloadURLs = []; // Array to store download URLs
+
+        // Upload files to storage
+        if (files.length > 0) {
+          const storageRef = storage;
+
+          for (const selectedFile of files) {
+            const fileRef = ref(storageRef, `attachments/${selectedFile.name}`);
+            await uploadBytes(fileRef, selectedFile);
+            console.log('File uploaded successfully!');
+
+            // Get the download URL for the file
+            const downloadURL = await getDownloadURL(fileRef);
+
+            // Add the download URL to the array
+            downloadURLs.push(downloadURL);
+          }
+        }
+
         let userData = {
           author: sessionStorage.getItem('uid'),
           application: selectedApplication.id,
@@ -136,19 +155,8 @@ const CreateTicket = ({ handleClose }) => {
           severity: input.severity,
           status: 'Open',
           type: input.type,
-          attachments: files.map((file) => file.name),
+          attachments: downloadURLs,
         };
-
-        // Upload files to storage
-        if (files.length > 0) {
-          const storageRef = storage;
-
-          for (const selectedFile of files) {
-            const fileRef = ref(storageRef, `attachments/${selectedFile.name}`);
-            await uploadBytes(fileRef, selectedFile);
-            console.log('File uploaded successfully!');
-          }
-        }
 
         console.log('Data to be created:', userData);
         

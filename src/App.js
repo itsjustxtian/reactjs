@@ -16,6 +16,7 @@ import ViewAllApplications from './components/ViewAllApplications';
 import AddApplications from './components/UserMng/AddApplications';
 import Createticket from './components/CreateTicket';
 import Registration from './components/auth/registration';
+import SuggestionBox from './components/SuggestionBox';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigateBeforeOutlined } from '@mui/icons-material';
@@ -54,9 +55,8 @@ function App() {
           <Route path="/loginscreen" element={<SignIn />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/create-edit" element={<Createticket />} />
-        
           <Route path="/showticket/" element={<ViewTicket />} />
-
+          <Route path='/suggestions-box' element={<SuggestionBox/>}/>
           <Route path="/applications" element={<ViewApplications />} />
           <Route path="/edit-profile" element={<Editprofile />} />
           <Route path="/view-all-applications" element={<ViewAllApplications />} />

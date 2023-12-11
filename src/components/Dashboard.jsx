@@ -95,8 +95,6 @@ const Dashboard = () => {
     setShowPopup(false);
   };
 
-  console.log('Popup content', popupContent);
-
   return (
     <div className='dashboard'>
       <div className='buttoncontainer'>
