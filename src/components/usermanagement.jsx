@@ -10,6 +10,7 @@ import EditProfile from './UserMng/EditProfile'
 const Usermanagement = () => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [popupContent, setPopupContent] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,8 +59,10 @@ const Usermanagement = () => {
 
   const [showPopup, setShowPopup] = useState(false);
 
-  const togglePopup = () => {
+  const togglePopup = (content, profileId) => {
+    setPopupContent({content, profileId})
     setShowPopup(!showPopup);
+    
   };
 
   const closePopup = () => {
@@ -102,7 +105,7 @@ const Usermanagement = () => {
           <tr
             id={row.status === 'Inactive' ? 'inactive-rows' : 'rows'}
             key={row.id} 
-            onClick={togglePopup}>
+            onClick={() => togglePopup(<ViewProfile handleClose={closePopup} profileId={row.id}/>, row.id)}>
               <td>{row.companyid}</td>
               <td>{row.lastname + ', ' + row.firstname}</td>
               <td>{row.role}</td>
@@ -113,7 +116,7 @@ const Usermanagement = () => {
     </table>
 
         <Popup show={showPopup} handleClose={closePopup}>
-          <EditProfile handleClose={closePopup}/>
+          {popupContent && popupContent.content}
         </Popup>
 
     </div>

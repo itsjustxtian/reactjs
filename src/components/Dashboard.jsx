@@ -1,29 +1,103 @@
 // Dashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Popup from './PopUp';
 import CreateTicket from './CreateTicket';
+import Viewticket from './ViewTicket'
 
 const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+
+ /* useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'tickets'));
+        const documents = querySnapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          const applicationName = await getApplicationName(data.application);
+          return { id: doc.id, ...data, application: applicationName };
+        });
+  
+        // Wait for all promises to resolve
+        const updatedDocuments = await Promise.all(documents);
+  
+        setData(updatedDocuments);
+        console.log(updatedDocuments);
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);*/
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'tickets'));
-        const documents = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const documents = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const applicationName = await getApplicationName(data.application);
+            return { id: doc.id, ...data, application: applicationName };
+          })
+        );
+  
         setData(documents);
+        console.log(documents);
+  
+        // Set up real-time listener for the 'tickets' collection
+        const unsubscribe = onSnapshot(collection(db, 'tickets'), (snapshot) => {
+          const updatedData = Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const data = doc.data();
+              const applicationName = await getApplicationName(data.application);
+              return { id: doc.id, ...data, application: applicationName };
+            })
+          );
+  
+          updatedData.then((resolvedData) => {
+            setData(resolvedData);
+            console.log('Real-time update:', resolvedData);
+          });
+        });
+  
+        return () => {
+          // Unsubscribe when the component is unmounted
+          unsubscribe();
+        };
       } catch (error) {
         console.log('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
+
+  const getApplicationName = async (appId) => {
+    try {
+      const docRef = doc(db, 'applications', appId);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        // Access the applicationname field from the document
+        const applicationName = docSnap.data().applicationname;
+        return applicationName;
+      } else {
+        console.log('No matching document for appId:', appId);
+        return null; // or handle the case where the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error fetching application name:', error);
+      throw error; // or handle the error appropriately
+    }
+  }
 
   const requestSort = (key) => {
     let direction = 'ascending';
@@ -56,7 +130,8 @@ const Dashboard = () => {
     return sortableData;
   };
 
-  const togglePopup = () => {
+  const togglePopup = (content, ticketId) => {
+    setPopupContent({content, ticketId});
     setShowPopup(!showPopup);
   };
 
@@ -67,7 +142,7 @@ const Dashboard = () => {
   return (
     <div className='dashboard'>
       <div className='buttoncontainer'>
-        <button className='rectangle' onClick={togglePopup}>
+        <button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
           <NoteAddIcon/>
           <label>Create New...</label>
         </button>
@@ -103,7 +178,7 @@ const Dashboard = () => {
                 id={
                   row.status === 'Resolved' ? 'resolved-row' : 'rows'}
                 key={row.id} 
-                onClick={togglePopup}>
+                onClick={() => togglePopup(<Viewticket handleClose={closePopup} ticketId={row.id}/>, row.id)}>
                   <td>{row.subject}</td>
                   <td>{row.application}</td>
                   <td
@@ -125,8 +200,8 @@ const Dashboard = () => {
       </div>
 
       <Popup show={showPopup} handleClose={closePopup}>
-          <CreateTicket handleClose={closePopup}/>
-        </Popup>
+        {popupContent && popupContent.content}
+      </Popup>
 
     </div>
   );

@@ -10,6 +10,7 @@ import AppsIcon from '@mui/icons-material/Apps';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import AssistantPhotoIcon from '@mui/icons-material/AssistantPhoto';
 
 export const SidebarData = [
     {
@@ -28,43 +29,13 @@ export const SidebarData = [
         link: "/usermanagement"
     },
     {
-        title: "Ticket Screen",
-        icon: <BugReportIcon />,
-        link: "/showticket"
-    },
-    {
-        title: "Application Screen",
-        icon: <AppsIcon />,
-        link: "/applications"
-    },
-    {
-        title: "Profile Screen",
-        icon: <AssignmentIndIcon />,
-        link: "/profile"
-    },
-    {
-        title: "Edit Profile Screen",
-        icon: <AssignmentIndIcon />,
-        link: "/edit-profile"
-    },
-    {
-        title: "View All Users Screen (admin view)",
-        icon: <AssignmentIndIcon />,
-        link: "/view-all-users"
-    },
-    {
         title: "View all applications/projects screen ",
         icon: <AppsIcon />,
         link: "/view-all-applications"
     },
     {
-        title: "Settings screen ",
-        icon: <SettingsIcon />,
-        link: "/settings"
-    },
-    {
-        title: "Add Applications screen ",
-        icon: <AddBoxIcon />,
-        link: "/add-applications"
-    },
+        title: "Suggestions Box",
+        icon: <AssistantPhotoIcon/>,
+        link: "/suggestions-box"
+    }
 ]

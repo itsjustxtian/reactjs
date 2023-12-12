@@ -1,0 +1,527 @@
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import React, { useState, useRef, useEffect } from 'react';
+import { storage, db } from '../config/firebase-config';
+import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
+import { onSnapshot, addDoc, collection, doc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
+import ClearIcon from '@mui/icons-material/Clear';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import SelectApplication from './UserMng/SelectApplication';
+import Popup from './PopUp';
+import Selectmembers from './UserMng/selectmembers';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+
+const EditTicket = ({handleClose, ticketId, userId}) => {
+    //console.log('Passed data in Edit Ticket: ', ticketId, userId);
+    const [data, setData] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
+    const [selectedButton, setSelectedButton] = useState(null);
+    const [existingApplication, setExistingApplication] = useState(null);
+    const [selectedSeverity, setSelectedSeverity] = useState(null);
+    const [selectedType, setSelectedType] = useState(null);
+    const [selectedApplication, setSelectedApplication] = useState(null);
+    const [selectedDevelopers, setSelectedDevelopers] = useState([]);
+    const [developers, setDevelopers] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [input, setInput] = useState({
+        author: sessionStorage.getItem('uid'),
+        subject: '',
+        description: '',
+        severity: '',
+        type: '',
+        attachments: [],
+      });
+
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            if(!ticketId){
+                console.log("Ticket ID is missing.");
+                return;
+            }
+
+            const ticketRef = doc(db, 'tickets', ticketId);
+            const ticketDoc = await getDoc(ticketRef);
+
+            if (ticketDoc.exists()) {
+                console.log("ticketDoc.data(): ",ticketDoc.data());
+                setExistingApplication(ticketDoc.data().application);
+
+                const appRef = doc(db, 'applications', ticketDoc.data().application);
+                const appDoc = await getDoc(appRef);
+          
+                  if (appDoc.exists()) {
+                      //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
+                      //setExistingApplication(appDoc.data());
+                      setSelectedApplication(appDoc.data());
+                      
+                  } else {
+                      console.log("Developer document not found for ID ", selectedApplication);
+                  }
+
+                setSelectedDevelopers(ticketDoc.data().assignDev);
+
+                const developerDocs = [];
+                
+                for (const developerId of selectedDevelopers) {
+                    const devRef = doc(db, 'users', developerId);
+                    const devDoc = await getDoc(devRef);
+            
+                    if (devDoc.exists()) {
+                        //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
+                        developerDocs.push(devDoc.data());
+                        // Do something with the developer document
+                    } else {
+                        console.log("Developer document not found for ID ", developerId);
+                    }
+                }
+
+                setDevelopers(developerDocs);
+                //setSelectedApplication(applicationDoc);
+                //console.log("Returned documents for Assigned Developers: ", developers);
+
+                setTags(ticketDoc.data().tags);
+                setSelectedSeverity(ticketDoc.data().severity);
+                setSelectedType(ticketDoc.data().type);
+                setFiles(ticketDoc.data().attachments);
+
+                // Extract filenames and URLs from download URLs
+                const attachmentsData = ticketDoc.data().attachments.map((url) => {
+                  const decodedURL = decodeURIComponent(url);
+                  const pathSegments = decodedURL.split('/');
+                  const filenameWithQuery = pathSegments[pathSegments.length - 1];
+                  const filenameWithoutQuery = filenameWithQuery.split('?')[0];
+
+                  return {
+                    url: url,
+                    filename: filenameWithoutQuery,
+                  };
+                });
+
+                // Extract filenames from attachmentsData
+                const filenames = attachmentsData.map((attachment) => attachment.filename);
+
+                // Set the files state
+                setFiles(filenames);
+
+                updateInputState(ticketDoc.data());
+            } else {
+              console.log("No Matching Documents.");
+            }
+          } catch (error) {
+            console.error("Error fetching data: ", error);
+            // Handle the error condition here
+          }
+        };
+    
+        fetchData();
+        // Include dependencies in the array if needed (e.g., [ticketId])
+      }, [ticketId]);
+
+      const updateInputState = (fetchedData) => {
+        setInput({
+          author: sessionStorage.getItem('uid'),
+          subject: fetchedData.subject, // Use the fetched data or default to an empty string
+          description: fetchedData.description,
+          severity: fetchedData.severity,
+          type: fetchedData.type,
+          attachments: fetchedData.attachments,
+        });
+
+        console.log('Input state updated successfully:', input, "Existing selectedApplication: ", selectedApplication, "Existing selectedDevelopers: ", selectedDevelopers);
+      };
+    
+
+    const handleCancel = () => {
+        handleClose();
+      };
+
+    const togglePopup = (button) => {
+    setSelectedButton(button);
+    setShowPopup((prevShowPopup) => !prevShowPopup);
+    };
+
+
+    const closePopup = (userDetail) => {
+        setShowPopup(false);
+        setSelectedButton(null);
+        console.log('Received userDetail in EditTicket after Popup Closed: ', userDetail);
+
+        if (Array.isArray(userDetail) && userDetail.every((user) => user.id && user.firstname && user.lastname && user.role === "Developer")) {
+            console.log('Selected Team Members (Developers) in CreateTicket:', userDetail);
+            setSelectedDevelopers(userDetail);
+          } else if(userDetail && userDetail.id && userDetail.applicationname) {
+            console.log('Selected Application in EditTicket:', userDetail);
+            setSelectedApplication(userDetail);
+            console.log('Stored Application:', selectedApplication);
+          } else {
+            console.log('None selected or invalid data format.');
+          }
+    };
+
+    const tagHandler = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const newTag = e.target.value.trim();
+          if (newTag !== '') {
+            setTags((prevTags) => [...prevTags, newTag]);
+            e.target.value = ''; // Clear the input field after adding the tag
+          }
+          console.log("Tags:", tags);
+        }
+      };
+    
+      const inputHandler = (e) => {
+        const { name, value } = e.target;
+          setInput((prevInput) => ({
+            ...prevInput,
+            [name]: value,
+          }));    
+      };
+    
+      const [files, setFiles] = useState([]);
+      const [errormessage, setErrorMessage] = useState('');
+    
+      const fileInputRef = useRef(null);
+    
+      const handleFileInputChange = (e) => {
+        const selectedFiles = e.target.files;
+        setFiles([...files, ...Array.from(selectedFiles)]);
+      };
+    
+      const handleRemoveFile = (index) => {
+        const updatedFiles = [...files];
+        updatedFiles.splice(index, 1);
+        setFiles(updatedFiles);
+      };
+    
+      const handleRemoveApplication = () => {
+        setSelectedApplication(null);
+      }
+    
+      const handleRemoveMember = (memberToRemove) => {
+        // Create a new array excluding the member to be removed
+        const updatedMembers = selectedDevelopers.filter(
+          (member) => member.id !== memberToRemove.id
+        );
+      
+        // Update the state with the new array
+        setSelectedDevelopers(updatedMembers);
+      };
+    
+      const handleRemoveTag = (index) => {
+        // Create a new array excluding the tag to be removed
+        const updatedTags = [...tags];
+        updatedTags.splice(index, 1);
+    
+        // Update the state with the new array
+        setTags(updatedTags);
+      };
+    
+    
+      const submitHandler = async (e) => {
+        e.preventDefault();
+      
+        try {
+          setErrorMessage('');
+          if (!selectedApplication) {
+            console.log('Some fields are emptyyyy.');
+            setErrorMessage('All fields are required to be filled.');
+            console.log(errormessage);
+            return;
+          } else {
+            let downloadURLs = [];
+      
+            // Upload files to storage
+            if (files.length > 0) {
+              const storageRef = storage;
+      
+              for (const selectedFile of files) {
+                const fileRef = ref(storageRef, `attachments/${selectedFile}`);
+                await uploadBytes(fileRef, selectedFile);
+                console.log('File uploaded successfully!');
+                console.log('Fileref: ', fileRef);
+      
+                const downloadURL = await getDownloadURL(fileRef);
+                downloadURLs.push(downloadURL);
+                console.log("downloadURLs: ", downloadURLs, "downloadURL", downloadURL)
+              }
+            }
+      
+            // Fetch the document
+            const ticketRef = doc(db, 'tickets', ticketId);
+            const ticketSnapshot = await getDoc(ticketRef);
+      
+            // Check if the document exists
+            if (ticketSnapshot.exists()) {
+                        
+              const originalData = ticketSnapshot.data();
+      
+              // Check for changes in input fields
+              let updatedData = {};
+              
+              if (
+                selectedApplication &&
+                selectedApplication.id !== originalData.application.id
+              ) {
+                updatedData.application = selectedApplication.id;
+                console.log(
+                  "selectedApplication:",
+                  selectedApplication,
+                  "selectedApplication.id: ",
+                  selectedApplication.id,
+                  "originalData.application",
+                  originalData.application.id,
+                  "updatedData.application",
+                  updatedData.application
+                );
+              }
+              
+      
+              if (input.subject !== originalData.subject) {
+                updatedData.subject = input.subject;
+              }
+      
+              const updatedDevelopers = selectedDevelopers.map((member) => member);
+              if (!arraysEqual(updatedDevelopers, originalData.assignDev)) {
+                updatedData.assignDev = updatedDevelopers;
+              }
+      
+              if (input.description !== originalData.description) {
+                updatedData.description = input.description;
+              }
+      
+              if (!arraysEqual(tags, originalData.tags)) {
+                updatedData.tags = tags;
+              }
+      
+              if (input.severity !== originalData.severity) {
+                updatedData.severity = input.severity;
+              }
+      
+              if (input.type !== originalData.type) {
+                updatedData.type = input.type;
+              }
+      
+              if (!arraysEqual(downloadURLs, originalData.attachments)) {
+                updatedData.attachments = downloadURLs;
+                console.log("downloadURLs", downloadURLs);
+              }
+
+              console.log("Updated data:", updatedData, "Original data: ", originalData);
+      
+              // Perform the update only if there are changes
+              if (Object.keys(updatedData).length > 0) {
+                await updateDoc(ticketRef, updatedData);
+              }
+      
+              setInput({
+                author: sessionStorage.getItem('uid'),
+                subject: '',
+                description: '',
+                severity: '',
+                type: '',
+                status: '',
+                attachments: [],
+              });
+      
+              setFiles([]);
+              setSelectedApplication(null);
+              setSelectedDevelopers([]);
+              setTags([]);
+              document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+                radio.checked = false;
+              });
+      
+              console.log('Ticket Updated Successfully!');
+              setErrorMessage('Ticket Updated Successfully!');
+            } else {
+              console.log('No Matching Documents.');
+            }
+          }
+        } catch (error) {
+          console.error('Update error:', error);
+          setErrorMessage(error.message);
+          console.log(errormessage);
+        }
+      };
+      
+      // Helper function to check if two arrays are equal
+      function arraysEqual(arr1, arr2) {
+        return (
+          arr1.length === arr2.length &&
+          arr1.every((value) => arr2.includes(value)) &&
+          arr2.every((value) => arr1.includes(value))
+        );
+      }
+      
+      
+
+  return (
+    <div className='edit-ticket'>
+        <div className='typanan'>
+            <div id='new-line'>
+                <label>Application: </label>
+                <button id='add-icon' onClick={() => togglePopup('application')}>
+                    <AppRegistrationIcon/>
+                </button>
+                <label id='selected'>
+                    {selectedApplication ? selectedApplication.applicationname : 'No Application Selected'}
+                    {selectedApplication && (
+                    <ClearIcon
+                    className='clear-icon' 
+                    onClick={() => handleRemoveApplication(selectedApplication)}
+                    />
+                    )}
+                </label>
+            </div>
+        
+            <div id='new-line'>
+                <label>Subject: </label>
+                <input
+                    type="text" 
+                    name="subject" 
+                    value = {input.subject}
+                    onChange={(e) => inputHandler(e)}
+                />
+            </div>
+        
+            <div id='new-line'>
+                <label>Assigned Developer: </label>
+                <button id='add-icon' onClick={() => togglePopup('members')}>
+                    <PersonAddAlt1Icon/>
+                </button>
+                <div id='selectedMembers'>
+                    {developers.map((member) => (
+                        <div key={member.id} id='list'>
+                        <label>
+                            {member.lastname + ', ' + member.firstname}
+                            <ClearIcon
+                            className='clear-icon'
+                            onClick={() => handleRemoveMember(member)}
+                            />
+                        </label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div id='new-line'>
+            <label>Description: </label>
+            </div>
+            <textarea 
+                type="text"
+                name='description'
+                value = {input.description}
+                onChange={(e) => inputHandler(e)}
+                cols="30" 
+                rows="10">
+            </textarea>
+        
+            <div id='new-line-tags'>
+                <label>Tags: </label>
+                <input
+                    type="text"
+                    name="tags"
+                    placeholder='Input tag then press Enter...'
+                    onKeyUp={(e) => tagHandler(e)}
+                />
+                <div id='tagslist'>
+                    {tags.map((tag, index) => (
+                        <div key={index} id='tags'>
+                        <label>
+                            {tag}
+                            <ClearIcon
+                            className='clear-icon'
+                            onClick={() => handleRemoveTag(index)}
+                            />
+                        </label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        
+            <div id='new-line-radios'>
+            <label>Severity/Priority: </label>
+            <input type="radio" name="severity" value="Critical" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Critical'}/>
+            <label> Critical </label>
+            <input type="radio" name="severity" value="High" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'High'}/>
+            <label> High </label>
+            <input type="radio" name="severity" value="Medium" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Medium'}/>
+            <label> Medium </label>
+            <input type="radio" name="severity" value="Low" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Low'}/>
+            <label> Low </label>
+            </div>
+        
+            <div id='new-line-radios'>
+            <label>Type: </label>
+            <input type="radio" name="type" value="Functional" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Functional'}/>
+            <label> Functional </label>
+            <input type="radio" name="type" value="Performance" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Performance'}/>
+            <label> Performance </label>
+            <input type="radio" name="type" value="Usability" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Usability'}/>
+            <label> Usability </label>
+            <input type="radio" name="type" value="Compatibility" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Compatibility'}/>
+            <label> Compatibility </label>
+            <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Security'}/>
+            <label> Security </label>
+            </div>
+          
+            <div id='selectedfiles'>
+            <input
+                type="file"
+                accept="image/*, .pdf, .doc, .docx"  // Define the file types you want to allow
+                style={{ display: 'none' }}
+                ref={fileInputRef}
+                onChange={handleFileInputChange}
+                multiple
+            />
+
+            <button
+                className='addAtt'
+                onClick={() => fileInputRef.current.click()} // Trigger file input click on button click
+            >
+                <AttachFileIcon />
+                <div id='addAtt'> Add Attachments </div>
+            </button>
+                {files.length > 0 && (
+                <div>
+                    <p>Selected Files:</p>
+                    <ul id='selectedfiles'>
+                    {files.map((filename, index) => (
+                        <li key={index}>
+                        {filename}
+                        <ClearIcon
+                            className='clear-icon'
+                            onClick={() => handleRemoveFile(index)}
+                        />
+                        </li>
+                    ))}
+                    </ul>
+                </div>
+                )}
+            </div>
+
+            <div className='error-message'>
+            {errormessage}
+            </div>
+
+        </div>
+
+        <div className='formbuttons'>
+            <button className='save-changes' id='text'>
+              <div id='text' onClick={submitHandler}> Save Changes </div>
+            </button>
+            <button className='cancel' id='text'>
+              <div id='text' onClick={handleCancel}> Cancel Edit </div>
+            </button>
+        </div>
+
+        <Popup show={showPopup} handleClose={closePopup}>
+          {selectedButton === 'application' && <SelectApplication handleClose={closePopup}/>}
+          {selectedButton === 'members' && <Selectmembers handleClose={closePopup}/>}
+        </Popup> 
+    </div>
+  )
+}
+
+export default EditTicket
