@@ -19,9 +19,9 @@ export const SidebarData = [
         link: "/dashboard"
     },
     {
-        title: "Inbox",
+        title: "Suggestions",
         icon: <MailIcon />,
-        link: "/inbox"
+        link: "/suggestions"
     },
     {
         title: "User Management",

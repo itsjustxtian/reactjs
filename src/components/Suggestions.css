@@ -1,0 +1,51 @@
+/* Suggestions.css */
+
+.suggestions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  padding-left: 100px;
+}
+
+.suggestions-header {
+  text-align: left;
+  width: 100%; /* Ensure the header takes up the full width */
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+.suggestions-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.suggestions-textarea {
+  width: 1000px;
+  height: 300px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+.suggestions-submit {
+  background-color: #18b3a7;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.suggestions-submit:hover {
+  background-color: #156e63;
+}

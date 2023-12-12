@@ -195,7 +195,9 @@ const EditProfile = ({ handleClose, profileId }) => {
   ];
 
   return (
-    <div className='sign-up-container'>
+    <div className='sign-up-containerr'>
+      <h1>Edit Profile</h1>
+      
       <div>
         <h1>UPDATE USER DETAILS</h1>
 
@@ -304,20 +306,14 @@ const EditProfile = ({ handleClose, profileId }) => {
               onChange={(e) => inputHandler(e)}
               name='confirmpassword'
             />
-          </div>
-          {showNewPassword && (
-            <div className='sign-up-right'>
-              <label>New Password:</label>
-              <input
-                autoComplete='off'
-                type='password'
-                placeholder='New Password'
-                value={input.newpassword}
-                onChange={(e) => inputHandler(e)}
-                name='newpassword'
-              />
+            <div className='formbuttons'>
+            <button className='submit'> Submit </button>
+              <button className='cancel' id='text' onClick={handleCancel}>
+                <div id='text'> Cancel </div>
+              </button>
+              
             </div>
-          )}
+      
           {showNewPassword && (
             <div className='sign-up-right'>
               <label>Confirm New Password:</label>
@@ -346,9 +342,9 @@ const EditProfile = ({ handleClose, profileId }) => {
           <button id='cancel' onClick={handleCancel}>
             Cancel
           </button>
+          </div></div>
         </div>
       </div>
-    </div>
   );
 };
 
