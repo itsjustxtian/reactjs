@@ -29,29 +29,9 @@ export const SidebarData = [
         link: "/usermanagement"
     },
     {
-        title: "Application Screen",
-        icon: <AppsIcon />,
-        link: "/applications"
-    },
-    {
-        title: "Edit Profile Screen",
-        icon: <AssignmentIndIcon />,
-        link: "/edit-profile"
-    },
-    {
         title: "View all applications/projects screen ",
         icon: <AppsIcon />,
         link: "/view-all-applications"
-    },
-    {
-        title: "Settings screen ",
-        icon: <SettingsIcon />,
-        link: "/settings"
-    },
-    {
-        title: "Add Applications screen ",
-        icon: <AddBoxIcon />,
-        link: "/add-applications"
     },
     {
         title: "Suggestions Box",
