@@ -1,6 +1,6 @@
 // Dashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { collection, doc, getDoc, getDocs, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Popup from './PopUp';
@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
-  useEffect(() => {
+ /* useEffect(() => {
     const fetchData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'tickets'));
@@ -34,7 +34,51 @@ const Dashboard = () => {
     };
   
     fetchData();
+  }, []);*/
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'tickets'));
+        const documents = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const applicationName = await getApplicationName(data.application);
+            return { id: doc.id, ...data, application: applicationName };
+          })
+        );
+  
+        setData(documents);
+        console.log(documents);
+  
+        // Set up real-time listener for the 'tickets' collection
+        const unsubscribe = onSnapshot(collection(db, 'tickets'), (snapshot) => {
+          const updatedData = Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const data = doc.data();
+              const applicationName = await getApplicationName(data.application);
+              return { id: doc.id, ...data, application: applicationName };
+            })
+          );
+  
+          updatedData.then((resolvedData) => {
+            setData(resolvedData);
+            console.log('Real-time update:', resolvedData);
+          });
+        });
+  
+        return () => {
+          // Unsubscribe when the component is unmounted
+          unsubscribe();
+        };
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
 
   const getApplicationName = async (appId) => {
     try {

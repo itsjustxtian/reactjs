@@ -1,6 +1,6 @@
 import React from 'react'
 import { db } from '../config/firebase-config'
-import { collection, getDocs, query, where} from "firebase/firestore"
+import { collection, getDocs, query, where, onSnapshot} from "firebase/firestore"
 import { useState } from 'react'
 import { useEffect } from 'react'
 import AddApplications from './UserMng/AddApplications'
@@ -11,7 +11,7 @@ import ViewApplications from './ViewApplications'
 const ViewAllApplications = () => {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
+  /*useEffect(() => {
 
     const fetchData = async () => {
       try {
@@ -45,6 +45,44 @@ const ViewAllApplications = () => {
         console.log('Error fetching data:', error);
       }
     };    
+
+    fetchData();
+  }, []);*/
+
+  useEffect(() => {
+    const fetchData = () => {
+      const q = query(collection(db, 'applications'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const documents = querySnapshot.docs.map(async (doc) => {
+          const data = doc.data();
+
+          // Convert teamleader id to name
+          if (data.teamleader) {
+            data.teamleader = await getTeamLeaderName(data.teamleader);
+          } else {
+            data.teamleader = "No Team Leader Identified.";
+          }
+
+          // Convert assignedqa id to name
+          if (data.assignedqa) {
+            data.assignedqa = await getAssignedQaName(data.assignedqa);
+          } else {
+            data.assignedqa = "No Quality Assurance Personnel Identified.";
+          }
+
+          return { id: doc.id, ...data };
+        });
+
+        Promise.all(documents).then((resolvedDocuments) => {
+          setData(resolvedDocuments);
+        });
+      });
+
+      return () => {
+        // Unsubscribe when the component unmounts
+        unsubscribe();
+      };
+    };
 
     fetchData();
   }, []);
@@ -123,8 +161,8 @@ const ViewAllApplications = () => {
     <div className="View-All-Applications">
       <h1>REGISTERED APPLICATIONS</h1>
       <div className= 'buttoncontainer'>
-        <button className= 'rectangle' id= 'text' onClick={() => togglePopup(<AddApplications handleClose={closePopup}/>)}>
-          <div id= 'text'> New +</div>
+        <button onClick={() => togglePopup(<AddApplications handleClose={closePopup}/>)}>
+          New +
         </button>
       </div>
       

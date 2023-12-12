@@ -8,6 +8,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { Avatar } from '@mui/material';
 import ViewApplications from '../ViewApplications';
 import Popup from '../PopUp';
+import EditProfile from '../UserMng/EditProfile'
 
 /* const profileId = '9JkZB1M1WL1Ad9LFRMhw' */
 const ViewProfile = ({handleClose, profileId}) => {
@@ -181,7 +182,7 @@ const ViewProfile = ({handleClose, profileId}) => {
           </div>
 
           <div className='formbuttons'>
-            <button className='edit-changes'>
+            <button className='edit-changes' onClick={() => togglePopup(<EditProfile handleClose={closePopup} profileId={profileId}/>)}>
               Edit Profile
             </button>
             <button className='cancel' id='text'>

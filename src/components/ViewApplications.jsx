@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, collection, getDoc, getDocs, where, query } from 'firebase/firestore'
+import { doc, collection, getDoc, getDocs, where, query, onSnapshot } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import Popup from './PopUp';
 import Viewticket from './ViewTicket'
@@ -26,8 +26,6 @@ const ViewApplications = ({appId, handleClose}) => {
   const [teamMembers, setTeamMembers] = useState(null);
   const [assignedqa, setAssignedqa] = useState(null);
   const [description, setDescription] = useState(null);
-
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -124,6 +122,7 @@ const ViewApplications = ({appId, handleClose}) => {
     fetchData();
   }, [appId]);
 
+  
   const getApplicationName = async (appId) => {
     try {
       const docRef = doc(db, 'applications', appId);
