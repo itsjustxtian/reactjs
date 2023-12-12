@@ -19,11 +19,6 @@ export const SidebarData = [
         link: "/dashboard"
     },
     {
-        title: "Suggestions",
-        icon: <MailIcon />,
-        link: "/suggestions"
-    },
-    {
         title: "User Management",
         icon: <AccountCircleIcon />,
         link: "/usermanagement"
