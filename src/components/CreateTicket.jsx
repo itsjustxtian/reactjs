@@ -1,7 +1,7 @@
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef } from 'react';
 import { storage, db } from '../config/firebase-config';
-import { uploadBytes, ref } from 'firebase/storage';
+import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
@@ -9,7 +9,7 @@ import SelectApplication from './UserMng/SelectApplication';
 import Popup from './PopUp';
 import Selectmembers from './UserMng/selectmembers';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-
+import DatePicker from 'react-datepicker';
 
 const CreateTicket = ({ handleClose }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -29,6 +29,7 @@ const CreateTicket = ({ handleClose }) => {
       severity: '',
       type: '',
       attachments: [],
+      turnaroundtime: null
     });
     setFiles([]);
     setErrorMessage('');
@@ -43,6 +44,13 @@ const CreateTicket = ({ handleClose }) => {
 
     handleClose();
   };
+
+  const dateHandler = (date) => {
+    setInput((prevInput) => ({
+        ...prevInput,
+        turnaroundtime: date,
+    }));
+};
 
   const [input, setInput] = useState({
     author: sessionStorage.getItem('uid'),
@@ -126,6 +134,25 @@ const CreateTicket = ({ handleClose }) => {
         console.log(errormessage);
         return;
       } else {
+        let downloadURLs = []; // Array to store download URLs
+
+        // Upload files to storage
+        if (files.length > 0) {
+          const storageRef = storage;
+
+          for (const selectedFile of files) {
+            const fileRef = ref(storageRef, `attachments/${selectedFile.name}`);
+            await uploadBytes(fileRef, selectedFile);
+            console.log('File uploaded successfully!');
+
+            // Get the download URL for the file
+            const downloadURL = await getDownloadURL(fileRef);
+
+            // Add the download URL to the array
+            downloadURLs.push(downloadURL);
+          }
+        }
+
         let userData = {
           author: sessionStorage.getItem('uid'),
           application: selectedApplication.id,
@@ -136,19 +163,9 @@ const CreateTicket = ({ handleClose }) => {
           severity: input.severity,
           status: 'Open',
           type: input.type,
-          attachments: files.map((file) => file.name),
+          attachments: downloadURLs,
+          turnaroundtime: input.turnaroundtime
         };
-
-        // Upload files to storage
-        if (files.length > 0) {
-          const storageRef = storage;
-
-          for (const selectedFile of files) {
-            const fileRef = ref(storageRef, `attachments/${selectedFile.name}`);
-            await uploadBytes(fileRef, selectedFile);
-            console.log('File uploaded successfully!');
-          }
-        }
 
         console.log('Data to be created:', userData);
         
@@ -314,7 +331,19 @@ const CreateTicket = ({ handleClose }) => {
           <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Security </label>
         </div>
-          
+        
+        <div className='typanan'>
+        <div id='new-line'>
+            <label>Turnaround Date:</label>
+            <DatePicker
+            dateFormat='yyyy/MM/dd'
+            placeholderText='Select a Date'
+            selected={input.turnaroundtime}
+            onChange={(date) => dateHandler(date)}
+            minDate={new Date()} // Set the minimum date to the current date
+            />
+        </div>
+        </div>  
         <div id='selectedfiles'>
           <input
             type="file"

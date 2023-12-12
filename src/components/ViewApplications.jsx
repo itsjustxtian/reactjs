@@ -1,28 +1,202 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore'
+import { doc, collection, getDoc, getDocs, where, query, onSnapshot } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import Popup from './PopUp';
 import Viewticket from './ViewTicket'
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
-const ViewApplications = () => {
+const ViewApplications = ({appId, handleClose}) => {
+  console.log("appId:", appId)
+  const handleCancel = () => {
+    setData([]);
+    setApplicationName(null);
+    setTeamLeader(null);
+    setAssignedqa(null);
+    setDescription(null);
+    setShowPopup(false); // Close the popup
+    handleClose();
+  };
+
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null);
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [applicationName, setApplicationName] = useState(null);
+  const [teamLeader, setTeamLeader] = useState(null);
+  const [teamMembers, setTeamMembers] = useState(null);
+  const [assignedqa, setAssignedqa] = useState(null);
+  const [description, setDescription] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'tickets'));
-        const documents = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setData(documents);
+        if(!appId) {
+          console.log("appId not found: ", appId);
+          return;
+        }
+
+        // Reset the state when a new application is selected
+        setData([]);
+        setApplicationName(null);
+        setTeamLeader(null);
+        setAssignedqa(null);
+        setDescription(null);
+
+        console.log("useEffect is running.")
+        const appRef = doc(db, 'applications', appId)
+        const appDoc = await getDoc(appRef)
+        const ticketRef = query(collection(db, 'tickets'), where('application', '==', appId));
+        const ticketDocs = await getDocs(ticketRef);
+        const documents = ticketDocs.docs.map(async (doc) => {
+          const data = doc.data()
+          const applicationName = await getApplicationName(data.application);
+          return { id: doc.id, ...data, application: applicationName };
+        })
+
+        // Wait for all promises to resolve
+        const updatedDocuments = await Promise.all(documents);
+  
+        setData(updatedDocuments);
+        console.log(updatedDocuments);
+
+        if (appDoc.exists()) {
+          console.log("Application Data: ", appDoc.data())
+          
+          if (!appDoc.data().teamleader) {
+            setTeamLeader("No Team Leader Identified.")
+          }
+          else {
+            setTeamLeader(await getTeamLeaderName(appDoc.data().teamleader))
+          }
+
+          if (!appDoc.data().applicationname) {
+            setApplicationName("No Application Name Identified.")
+          }
+          else {
+            setApplicationName(appDoc.data().applicationname)
+          }
+
+          if (!appDoc.data().assignedqa) {
+            setAssignedqa("No Quality Assurance Personnel Identified.")
+          }
+          else {
+            setAssignedqa(await getAssignedQaName(appDoc.data().assignedqa))
+          }
+
+          if (!appDoc.data().teammembers) {
+            setTeamMembers(["No Team Members Identified."]);
+          } else {
+            const developerDocs = [];
+                
+                for (const developerId of appDoc.data().teammembers) {
+                    const devRef = doc(db, 'users', developerId);
+                    const devDoc = await getDoc(devRef);
+            
+                    if (devDoc.exists()) {
+                        //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
+                        developerDocs.push(devDoc.data().firstname + " " + devDoc.data().lastname);
+                        // Do something with the developer document
+                    } else {
+                        console.log("Developer document not found for ID ", developerId);
+                    }
+                  }
+                console.log("Developers: ", developerDocs)
+                setTeamMembers(developerDocs)
+            }
+
+
+          if (!appDoc.data().description) {
+            setDescription("No Description Identified.")
+          }
+          else {
+            setDescription(appDoc.data().description)
+          }
+
+
+        }
       } catch (error) {
         console.log('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [appId]);
+
+  
+  const getApplicationName = async (appId) => {
+    try {
+      const docRef = doc(db, 'applications', appId);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        // Access the applicationname field from the document
+        const applicationName = docSnap.data().applicationname;
+        return applicationName;
+      } else {
+        console.log('No matching document for appId:', appId);
+        return null; // or handle the case where the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error fetching application name:', error);
+      throw error; // or handle the error appropriately
+    }
+  }
+
+  const getTeamLeaderName = async (userid) => {
+    try {
+      if (!userid) {
+        console.error('UID is empty or null');
+        return null;
+      }
+  
+      const usersRef = query(collection(db, 'users'), where('uid', '==', userid));
+      const querySnapshot = await getDocs(usersRef);
+  
+      if (querySnapshot.docs.length > 0) {
+        // Access the team leader name field from the first document in the result
+        const teamLeaderName =
+          querySnapshot.docs[0].data().lastname +
+          ', ' +
+          querySnapshot.docs[0].data().firstname; // Adjust the field name accordingly
+        console.log('Team Leader Name:', teamLeaderName);
+        return teamLeaderName;
+      } else {
+        console.log('No matching document for teamLeader:', userid);
+        return null; // or handle the case where the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error fetching team leader name:', error);
+      throw error; // or handle the error appropriately
+    }
+  }; 
+
+  const getAssignedQaName = async (userid) => {
+    try {
+      if (!userid) {
+        console.error('UID is empty or null');
+        return null;
+      }
+  
+      const usersRef = query(collection(db, 'users'), where('uid', '==', userid));
+      const querySnapshot = await getDocs(usersRef);
+  
+      if (querySnapshot.docs.length > 0) {
+        // Access the team leader name field from the first document in the result
+        const teamLeaderName =
+          querySnapshot.docs[0].data().lastname +
+          ', ' +
+          querySnapshot.docs[0].data().firstname; // Adjust the field name accordingly
+        console.log('QA Name:', teamLeaderName);
+        return teamLeaderName;
+      } else {
+        console.log('No matching document for QA:', userid);
+        return null; // or handle the case where the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error fetching QA name:', error);
+      throw error; // or handle the error appropriately
+    }
+  };   
 
   const requestSort = (key) => {
     let direction = 'ascending';
@@ -69,45 +243,41 @@ const ViewApplications = () => {
   return (
     <div className='viewApplications'>
       
-      <div className='box'>
-        <div className="rectangle" />
-      </div>
-      
-      <div className='appLabel'>
-        <div id= 'new-line1'> 
+      <div className='applicationslabel'>
+        <div id= 'application-name'> 
           <label>
-          Sample Application 1
+          {applicationName}
           </label>
         </div>
 
         <div id= 'new-line'> 
           <label>
-          Team Leader: CRC3vheNh1fYtYOtWKZ7bec92ml2
+          Team Leader: {teamLeader}
           </label>
         </div>
 
         <div id= 'new-line'> 
           <label>
-          Assign QA: XAw6bHubc7aem8WtsMylHdo9KTJ3
+          Assign QA: {assignedqa}
           </label>
         </div>
 
-        <div id= 'new-line2'> 
+        <div id= 'description-label'> 
           <label>
-          Description: 
+          <strong>Description:</strong>
           </label>
         </div>
 
-        <div id= 'new-line3'> 
+        <div id= 'description-text'> 
           <label>
-          Description for Sample Application 1
+            {description}
           </label>
         </div>
 
       </div>
 
 
-      <div className='ticket-table'>
+      <div className='ticket-history'>
         <table className='dashboard-table'>
           <thead>
             <tr>
@@ -115,7 +285,7 @@ const ViewApplications = () => {
                 onClick={() => requestSort('subject')} 
                 id='table-head'
                 className={getClassNamesFor('subject')}>
-                Bug History
+                Bugs
               </th>
               <th
                 onClick={() => requestSort('status')} 
@@ -150,6 +320,12 @@ const ViewApplications = () => {
           </tbody>
         </table>
       </div>
+
+      <div className='formbuttons'>
+          <button className='cancel' id='text'>
+              <div id='text' onClick={handleCancel}> Close </div>
+            </button>
+        </div> 
 
       <Popup show={showPopup} handleClose={closePopup}>
         {popupContent && popupContent.content}
