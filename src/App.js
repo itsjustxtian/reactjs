@@ -3,7 +3,6 @@ import SignIn from './components/auth/SignIn';
 import './fonts.css';
 import Sidebar from './components/sidebar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Inbox from './components/inbox';
 import Dashboard from './components/Dashboard';
 import Usermanagement from './components/usermanagement';
 import ViewApplications from './components/ViewApplications';
@@ -19,6 +18,7 @@ import Registration from './components/auth/registration';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigateBeforeOutlined } from '@mui/icons-material';
+import Suggestions from './components/Suggestions';
 
 function App() {
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ function App() {
         <Sidebar onLogout={handleLogout} />
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/inbox" element={<Inbox />} />
+          <Route path="/suggestions" element={<Suggestions />} />
           <Route path="/usermanagement" element={<Usermanagement />} />
           <Route path="/loginscreen" element={<SignIn />} />
           <Route path="/registration" element={<Registration />} />
