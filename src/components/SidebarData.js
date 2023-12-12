@@ -31,6 +31,6 @@ export const SidebarData = [
     {
         title: "Suggestions Box",
         icon: <AssistantPhotoIcon/>,
-        link: "/suggestions-box"
+        link: "/suggestions"
     }
 ]
