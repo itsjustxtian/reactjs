@@ -9,7 +9,7 @@ import SelectApplication from './UserMng/SelectApplication';
 import Popup from './PopUp';
 import Selectmembers from './UserMng/selectmembers';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-
+import DatePicker from 'react-datepicker';
 
 const CreateTicket = ({ handleClose }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -29,6 +29,7 @@ const CreateTicket = ({ handleClose }) => {
       severity: '',
       type: '',
       attachments: [],
+      turnaroundtime: null
     });
     setFiles([]);
     setErrorMessage('');
@@ -43,6 +44,13 @@ const CreateTicket = ({ handleClose }) => {
 
     handleClose();
   };
+
+  const dateHandler = (date) => {
+    setInput((prevInput) => ({
+        ...prevInput,
+        turnaroundtime: date,
+    }));
+};
 
   const [input, setInput] = useState({
     author: sessionStorage.getItem('uid'),
@@ -156,6 +164,7 @@ const CreateTicket = ({ handleClose }) => {
           status: 'Open',
           type: input.type,
           attachments: downloadURLs,
+          turnaroundtime: input.turnaroundtime
         };
 
         console.log('Data to be created:', userData);
@@ -322,7 +331,19 @@ const CreateTicket = ({ handleClose }) => {
           <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')}/>
           <label> Security </label>
         </div>
-          
+        
+        <div className='typanan'>
+        <div id='new-line'>
+            <label>Turnaround Date:</label>
+            <DatePicker
+            dateFormat='yyyy/MM/dd'
+            placeholderText='Select a Date'
+            selected={input.turnaroundtime}
+            onChange={(date) => dateHandler(date)}
+            minDate={new Date()} // Set the minimum date to the current date
+            />
+        </div>
+        </div>  
         <div id='selectedfiles'>
           <input
             type="file"
