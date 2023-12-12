@@ -6,6 +6,7 @@ import EditTicket from './EditTicket';
 import Popup from './PopUp';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import { addDays, format } from 'date-fns'; // Import the date-fns library for date formatting
 
 const ViewTicket = ({handleClose, ticketId}) => {
   console.log('Received ticket Id: ', ticketId);
@@ -153,8 +154,6 @@ useEffect(() => {
   fetchTicketData();
 }, [ticketId]);
 
-
-
   if (!ticketData) {
     return <div>Loading...</div>;
   }
@@ -171,6 +170,10 @@ useEffect(() => {
   const closePopup = () => {
     setShowPopup(false);
   };
+
+  const formattedTurnaroundTime = ticketData.turnaroundtime
+  ? format(new Date(ticketData.turnaroundtime.seconds * 1000), 'yyyy/MM/dd')
+  : 'Not specified';
 
   // Function to extract filename from a URL
   const getFilenameFromURL = (url) => {
@@ -277,18 +280,22 @@ useEffect(() => {
       const ticketDoc = await getDoc(ticketRef);
   
       if (ticketDoc.exists()) {
+        const currentTurnaroundTime = ticketDoc.data().turnaroundtime;
+        const newTurnaroundTime = addDays(currentTurnaroundTime.toDate(), 7); // Add 7 days to the current date
+  
         await updateDoc(ticketRef, {
-          status: 'Open'
+          status: 'Open',
+          turnaroundtime: newTurnaroundTime
         });
   
-        console.log('Ticket status updated to "Open"');
+        console.log('Ticket status updated to "Open", Turnaround time updated.');
       } else {
         console.log('Ticket not found');
       }
     } catch (error) {
       console.error('Error updating ticket status:', error);
     }
-  }
+  };
 
   const resolveTicket = async (ticketId) => {
     if (!ticketId) {
@@ -369,6 +376,10 @@ useEffect(() => {
           </ul> 
         </div>
       )}
+
+      <div className="new-line">
+        <label>Turn-Around Date: <div id='type'> {formattedTurnaroundTime} </div></label>
+      </div>
 
       {ticketData.attachments && ticketData.attachments.length > 0 && (
         <div className='new-line'>
