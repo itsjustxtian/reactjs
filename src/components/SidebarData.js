@@ -16,21 +16,25 @@ export const SidebarData = [
     {
         title: "Dashboard",
         icon: <DashboardIcon />,
-        link: "/dashboard"
-    },
-    {
+        activeIcon: <DashboardIcon sx={{ fontSize: 50 }} />,
+        link: "/dashboard",
+      },
+      {
         title: "User Management",
         icon: <AccountCircleIcon />,
-        link: "/usermanagement"
-    },
-    {
-        title: "View all applications/projects screen ",
+        activeIcon: <AccountCircleIcon sx={{ fontSize: 50 }} />,
+        link: "/usermanagement",
+      },
+      {
+        title: "Applications",
         icon: <AppsIcon />,
-        link: "/view-all-applications"
-    },
-    {
+        activeIcon: <AppsIcon sx={{ fontSize: 50 }} />,
+        link: "/view-all-applications",
+      },
+      {
         title: "Suggestions Box",
-        icon: <AssistantPhotoIcon/>,
-        link: "/suggestions"
-    }
+        icon: <AssistantPhotoIcon />,
+        activeIcon: <AssistantPhotoIcon sx={{ fontSize: 50 }} />,
+        link: "/suggestions",
+      },
 ]

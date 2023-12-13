@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { query, collection, where, getDocs, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import EditTicket from './EditTicket';
 import Popup from './PopUp';
@@ -17,7 +17,7 @@ const ViewTicket = ({handleClose, ticketId}) => {
   const [applicationName, setApplicationName] = useState(null)
   const [developers, setDevelopers] = useState([])
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchTicketData = async () => {
       try {
         if (!ticketId) {
@@ -43,13 +43,14 @@ const ViewTicket = ({handleClose, ticketId}) => {
             const developerDocs = [];
 
             for (const developerId of ticketDoc.data().assignDev) {
-              const devRef = doc(db, 'users', developerId);
-              const devDoc = await getDoc(devRef);
-
-              if (devDoc.exists()) {
-                developerDocs.push(devDoc.data().firstname + ' ' + devDoc.data().lastname);
+              const devRef = query(collection(db, 'users'), where('uid', '==', developerId));
+              const devSnapshot = await getDocs(devRef);
+            
+              if (!devSnapshot.empty) {
+                const devData = devSnapshot.docs[0].data();
+                developerDocs.push(devData.firstname + ' ' + devData.lastname);
               } else {
-                console.log('Developer document not found for ID ', developerId);
+                console.log('Developer document not found for UID ', developerId);
               }
             }
 
@@ -69,7 +70,7 @@ const ViewTicket = ({handleClose, ticketId}) => {
         console.log("Application name: ", applicationName)
         console.log("Assigned Devs: ", developers)
     fetchTicketData();
-  }, [ticketId]);
+  }, [ticketId]);*/
 
 const getApplicationName = async (appId) => {
   try {
@@ -119,13 +120,14 @@ useEffect(() => {
               const developerDocs = [];
 
               for (const developerId of ticketDoc.data().assignDev) {
-                const devRef = doc(db, 'users', developerId);
-                const devDoc = await getDoc(devRef);
-
-                if (devDoc.exists()) {
-                  developerDocs.push(devDoc.data().firstname + ' ' + devDoc.data().lastname);
+                const devRef = query(collection(db, 'users'), where('uid', '==', developerId));
+                const devSnapshot = await getDocs(devRef);
+              
+                if (!devSnapshot.empty) {
+                  const devData = devSnapshot.docs[0].data();
+                  developerDocs.push(devData.firstname + ' ' + devData.lastname);
                 } else {
-                  console.log('Developer document not found for ID ', developerId);
+                  console.log('Developer document not found for UID ', developerId);
                 }
               }
 
@@ -398,15 +400,17 @@ useEffect(() => {
 
 
         <div className='formbuttons' style={{ textAlign: 'right' }}>
-          <button className='button' id='mark-as-resolved' onClick={() => resolveTicket(ticketId)}>
-            Mark as Resolved
-          </button>
-          {(ticketData.status !== 'Open' && ticketData.status !== 'In Progress') && (
+          {sessionStorage.getItem('role') !== 'Developer' && (
+            <button className='button' id='mark-as-resolved' onClick={() => resolveTicket(ticketId)}>
+              Mark as Resolved
+            </button>
+          )}
+          {sessionStorage.getItem('role') !== 'Developer' && (ticketData.status !== 'Open' && ticketData.status !== 'In Progress') && (
             <button className='button' id='reopen' onClick={() => reopenTicket(ticketId)}>
               Reopen
             </button>
           )}
-          {(ticketData.status === 'In Progress') && (
+          {sessionStorage.getItem('role') === 'Developer' && (ticketData.status === 'In Progress') && (
             <button
               className='button'
               id='close'
@@ -414,17 +418,17 @@ useEffect(() => {
               Close Ticket
             </button>
           )}
-          {(ticketData.status === 'Open') && (
+          {sessionStorage.getItem('role') === 'Developer' && (ticketData.status === 'Open') && (
             <button
-            className='button'
-            id='accept'
-            onClick={() => acceptTicket(ticketId)}>
-            Accept Ticket
-          </button>
+              className='button'
+              id='accept'
+              onClick={() => acceptTicket(ticketId)}>
+              Accept Ticket
+            </button>
           )}
-          <button className='button' id='edit' onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')}/>)}>
+          {sessionStorage.getItem('uid') === ticketData.author && (<button className='button' id='edit' onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')}/>)}>
             <div id='text'>Edit Ticket</div>
-          </button>
+          </button>)}
           <button className='button' id='cancel'>
               <div id='text' onClick={handleCancel}> Close </div>
             </button>

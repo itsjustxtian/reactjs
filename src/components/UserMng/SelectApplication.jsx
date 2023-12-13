@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { db } from '../../config/firebase-config';
-import { collection, getDocs } from 'firebase/firestore';
+import { and, query, where, collection, getDocs, or } from 'firebase/firestore';
 
 const SelectApplication = ({handleClose}) => {
     const handleCancel = () => {
@@ -11,31 +11,50 @@ const SelectApplication = ({handleClose}) => {
     const [selectedApplication, setSelectedApplication] = useState([]);
 
     useEffect(() => {
-        // Fetch team leaders from Firestore
-        const fetchApplications = async () => {
+      // Fetch applications from Firestore
+      const fetchApplications = async () => {
         try {
-            const usersRef = collection(db, 'applications');
-            const snapshot = await getDocs(usersRef);
-    
-            if (snapshot.empty) {
-            console.log('No documents found in the application collection.');
-            return;
-            }
-            
-            const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setApplications(usersData);
+          const uid = sessionStorage.getItem('uid');
+          console.log('UID stored in selectApplication: ', uid)
+          const role = sessionStorage.getItem('role');
+          let applicationsRef;
 
-            snapshot.forEach(doc => {
+          if (role === 'Admin') {
+            // If the user has an 'Admin' role, return all documents
+            applicationsRef = collection(db, 'applications');
+          } else {
+            // If not an 'Admin', include conditions based on 'assignedqa' and 'teamleader'
+            applicationsRef = query(
+              collection(db, 'applications'),
+              or(
+                where('assignedqa', '==', uid),
+                where('teamleader', '==', uid)
+              )
+            );
+          }
+
+          const querySnapshot = await getDocs(applicationsRef);
+
+          if (querySnapshot.empty) {
+            console.log('No documents found in the application collection for the specified user.');
+            return;
+          }
+    
+          const applicationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setApplications(applicationsData);
+    
+          querySnapshot.forEach(doc => {
             console.log('Document ID:', doc.id);
             console.log('Document data:', doc.data());
-            });
+          });
         } catch (error) {
-            console.error('Error fetching team members:', error);
+          console.error('Error fetching applications:', error);
         }
-        };
+      };
     
-        fetchApplications();
+      fetchApplications();
     }, []);
+    
 
     const handleSubmit = async () => {
         try {

@@ -1,11 +1,12 @@
 // Dashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { collection, doc, getDoc, getDocs, where, onSnapshot } from 'firebase/firestore'
+import { query, collection, doc, getDoc, getDocs, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../config/firebase-config'
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Popup from './PopUp';
 import CreateTicket from './CreateTicket';
 import Viewticket from './ViewTicket'
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 
 const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -13,35 +14,35 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
- /* useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'tickets'));
-        const documents = querySnapshot.docs.map(async (doc) => {
-          const data = doc.data();
-          const applicationName = await getApplicationName(data.application);
-          return { id: doc.id, ...data, application: applicationName };
-        });
-  
-        // Wait for all promises to resolve
-        const updatedDocuments = await Promise.all(documents);
-  
-        setData(updatedDocuments);
-        console.log(updatedDocuments);
-      } catch (error) {
-        console.log('Error fetching data:', error);
-      }
-    };
-  
-    fetchData();
-  }, []);*/
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'tickets'));
+        const uid = sessionStorage.getItem('uid');
+        await getUserData(uid);
+
+        // Step (1): Query applications based on user role and uid
+        const role = sessionStorage.getItem('role');
+        //const uid = sessionStorage.getItem('uid');
+        console.log("Role: ", role, "UID: ", uid)
+        let applicationsQuery;
+
+        if (role === 'Quality Assurance') {
+          applicationsQuery = query(collection(db, 'applications'), where('assignedqa', '==', uid));
+        } else if (role === 'Team Leader') {
+          applicationsQuery = query(collection(db, 'applications'), where('teamleader', '==', uid));
+        } else if (role === 'Developer') {
+          applicationsQuery = query(collection(db, 'applications'), where('teammembers', 'array-contains', uid));
+        }
+
+        const applicationsSnapshot = await getDocs(applicationsQuery);
+        const applicationIds = applicationsSnapshot.docs.map((doc) => doc.id);
+
+        // Step (2): Query tickets based on the filtered applicationIds
+        const ticketsQuery = query(collection(db, 'tickets'), where('application', 'in', applicationIds));
+        const ticketsSnapshot = await getDocs(ticketsQuery);
+
         const documents = await Promise.all(
-          querySnapshot.docs.map(async (doc) => {
+          ticketsSnapshot.docs.map(async (doc) => {
             const data = doc.data();
             const applicationName = await getApplicationName(data.application);
             return { id: doc.id, ...data, application: applicationName };
@@ -79,7 +80,19 @@ const Dashboard = () => {
     fetchData();
   }, []);
   
-
+  const getUserData = async (uid) => {
+    const q = query(collection(db, 'users'), where('uid', '==', uid));
+  
+    try {
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        sessionStorage.setItem('role', doc.data().role);
+      });
+    } catch (error) {
+      console.error('Error getting documents:', error);
+    }
+  };
+  
   const getApplicationName = async (appId) => {
     try {
       const docRef = doc(db, 'applications', appId);
@@ -139,15 +152,29 @@ const Dashboard = () => {
     setShowPopup(false);
   };
 
+  const formatTurnaroundTime = (turnaroundtime) => {
+    const timestampInMilliseconds = turnaroundtime.seconds * 1000 + Math.floor(turnaroundtime.nanoseconds / 1e6);
+    const turnaroundTimeDate = new Date(timestampInMilliseconds);
+
+    return turnaroundTimeDate.toLocaleDateString();
+  };
+
   return (
     <div className='dashboard'>
+      <div className='component-title'>
+        <CollectionsBookmarkIcon sx={{ fontSize: 60 }} style={{ marginRight: '10px' }}/>
+          Dashboard 
+        <CollectionsBookmarkIcon sx={{ fontSize: 60 }} style={{ marginLeft: '10px' }}/>
+      </div>
+      
       <div className='buttoncontainer'>
-        <button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
+        {sessionStorage.getItem('role') !== "Developer" && (<button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
           <NoteAddIcon/>
-          <label>Create New...</label>
-        </button>
+          <label>Create Ticket</label>
+        </button>)}
       </div>
 
+      <div className='center'>
       <div className='ticket-table'>
         <table className='dashboard-table'>
           <thead>
@@ -165,10 +192,22 @@ const Dashboard = () => {
                 Application
               </th>
               <th
+                onClick={() => requestSort('severity')} 
+                id='table-head'
+                className={getClassNamesFor('severity')}>
+                Severity
+              </th>
+              <th
                 onClick={() => requestSort('status')} 
                 id='table-head'
                 className={getClassNamesFor('status')}>
                 Status
+              </th>
+              <th
+                onClick={() => requestSort('turnaroundtime')} 
+                id='table-head'
+                className={getClassNamesFor('turnaroundtime')}>
+                T.A.T.
               </th>
             </tr>
           </thead>
@@ -181,6 +220,7 @@ const Dashboard = () => {
                 onClick={() => togglePopup(<Viewticket handleClose={closePopup} ticketId={row.id}/>, row.id)}>
                   <td>{row.subject}</td>
                   <td>{row.application}</td>
+                  <td>{row.severity}</td>
                   <td
                     id={row.status === "Open"
                     ? 'open-ticket'
@@ -193,10 +233,12 @@ const Dashboard = () => {
                     : 'rows'}>
                       {row.status}
                   </td>
+                  <td>{formatTurnaroundTime(row.turnaroundtime)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
       </div>
 
       <Popup show={showPopup} handleClose={closePopup}>

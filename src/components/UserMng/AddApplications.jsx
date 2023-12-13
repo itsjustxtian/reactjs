@@ -101,7 +101,7 @@ const AddApplications = ({handleClose}) => {
           applicationname: input.applicationname,
           teamleader: selectedTeamLead.uid,
           assignedqa: selectedQa.uid,
-          teammembers: selectedTeamMembers.map(member => member.id),
+          teammembers: selectedTeamMembers.map(member => member.uid),
           description: input.description,
           datecreated: serverTimestamp(),
         };

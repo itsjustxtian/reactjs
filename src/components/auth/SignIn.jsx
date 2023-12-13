@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { auth } from '../../config/firebase-config';
+import { auth, db } from '../../config/firebase-config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import BugHunterLogo from '../../icons/BugHunterLogo.png'; // Adjust the path based on your directory structure
 import { useNavigate } from 'react-router-dom';
 import Registration from './registration';
 import PopUp from '../../components/PopUp';
+import { getDoc, query, where, collection } from 'firebase/firestore';
 
 const SignIn = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -21,8 +22,7 @@ const SignIn = ({ onLogin }) => {
           // Call the onLogin prop passed from the parent component
           onLogin();
           sessionStorage.setItem('uid', userCredentials.user.uid);
-          console.log("UID stored for this session: ", sessionStorage.getItem('uid'));
-          // Use navigate to redirect to the dashboard
+
           navigate('/dashboard');
         })
         .catch((error) => {

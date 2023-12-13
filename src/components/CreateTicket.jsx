@@ -8,6 +8,7 @@ import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SelectApplication from './UserMng/SelectApplication';
 import Popup from './PopUp';
 import Selectmembers from './UserMng/selectmembers';
+import Selectfilteredmembers from './UserMng/selectfilteredmembers';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import DatePicker from 'react-datepicker';
 
@@ -157,7 +158,7 @@ const CreateTicket = ({ handleClose }) => {
           author: sessionStorage.getItem('uid'),
           application: selectedApplication.id,
           subject: input.subject,
-          assignDev: selectedDevelopers.map(member => member.id),
+          assignDev: selectedDevelopers.map(member => member.uid),
           description: input.description,
           tags: tags,
           severity: input.severity,
@@ -395,7 +396,7 @@ const CreateTicket = ({ handleClose }) => {
         </div>
         <Popup show={showPopup} handleClose={closePopup}>
           {selectedButton === 'application' && <SelectApplication handleClose={closePopup}/>}
-          {selectedButton === 'members' && <Selectmembers handleClose={closePopup}/>}
+          {selectedButton === 'members' && <Selectfilteredmembers handleClose={closePopup} appId={selectedApplication.id}/>}
         </Popup>
     </div>
     

@@ -10,15 +10,15 @@ function UserProfile(props) {
   return (
     <div className="UserProfile">
       <div className='UserImage'>
-      <Avatar 
-        src={props.profileSrc} 
-        className='ProfileImage'
-        sx={{ width: 75, height: 75 }}/>
+        <Avatar
+          src={props.profileSrc} 
+          className='ProfileImage'
+          sx={{ width: 150, height:150 }}/>
       </div>
       <div className="UserInfo">
         {/* Add your name and email here */}
-        <h3>{props.name}</h3>
-        <p id='email'>{props.email}</p>
+        <div id='name'>{props.name}</div>
+        <div id='email'>{props.email}</div>
       </div>
     </div>
   );
@@ -27,30 +27,40 @@ function UserProfile(props) {
 
 function Sidebar(props) {
   const [userData, setUserData] = useState({
-    firstname: "Juan",
-    lastname: "dela Cruz",
-    email: "your.email@example.com",
+    firstname: "",
+    lastname: "",
+    email: "",
     profilePicture: null
   });
+
+  const [loading, setLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     const uid = sessionStorage.getItem('uid');
 
-  const getUserData = async (uid) => {
+    const getUserData = async (uid) => {
       const q = query(collection(db, 'users'), where('uid', '==', uid));
       
       try {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          // Retrieve only the 'email' and 'profilePicture' fields
           setUserData(doc.data());
         });
       } catch (error) {
         console.error('Error getting documents:', error);
+      } finally {
+        setLoading(false);
+        setDataLoaded(true); // Set dataLoaded to true after data is loaded
       }
     };
-    getUserData(uid);
-  }, []);
+
+    // Check if user data has already been loaded before making the API call
+    if (loading && !dataLoaded) {
+      getUserData(uid);
+    }
+  }, [loading, dataLoaded]); // Include dataLoaded in the dependency array
+
 
   const handleLogout = () => {
     // Clear the session storage and navigate to the login screen
@@ -59,6 +69,7 @@ function Sidebar(props) {
     props.onLogout(); // Call the onLogout function passed as a prop
   };
 
+  const isItemActive = (link) => window.location.pathname === link;
 
   return (
     <div className='Sidebar'>
@@ -69,26 +80,26 @@ function Sidebar(props) {
           email={userData.email}/>
       </div>
       <ul className='SidebarList'>
-        {SidebarData.map((val, key) => {
-          return (
+        {SidebarData.map((item, index) => (
             <li
-              key={key}
+              key={index}
               className='row'
-              id = {window.location.pathname == val.link ? "active" : ""}
-              onClick={() => {window.location.pathname = val.link
+              id={window.location.pathname == item.link ? "active" : ""}
+              onClick={() => {
+                window.location.pathname = item.link;
+                setLoading(true); 
               }}
             >
-              <div id='icon'>{val.icon}</div>{" "}
-              <div id='title'>
-                {val.title}
-              </div>
+              <div id='icon'>{isItemActive(item.link) ? item.activeIcon : item.icon}</div>
+              <div id='title'>{item.title}</div>
             </li>
-          )
-        })}
+        ))}
       </ul>
-      <button onClick={handleLogout} className='logout-button'>
-        Logout
-      </button>
+      <div className='log-out-button'>
+        <button onClick={handleLogout} className='logout-button'>
+          Logout
+        </button>
+      </div>
     </div>
   )
 }

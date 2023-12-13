@@ -1,57 +1,34 @@
-import React from 'react'
-import { db } from '../config/firebase-config'
-import { collection, getDocs, query, where, onSnapshot} from "firebase/firestore"
-import { useState } from 'react'
-import { useEffect } from 'react'
-import AddApplications from './UserMng/AddApplications'
-import Popup from './PopUp'
+import React, { useState, useEffect } from 'react';
+import { or, collection, query, getDocs, onSnapshot, where } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
+import Popup from './PopUp';
+import AddApplications from './UserMng/AddApplications';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ViewApplications from './ViewApplications'
+import ViewApplications from './ViewApplications';
+import WidgetsIcon from '@mui/icons-material/Widgets';
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 
 const ViewAllApplications = () => {
   const [data, setData] = useState([]);
-
-  /*useEffect(() => {
-
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'applications'));
-        const documents = querySnapshot.docs.map(async (doc) => {
-          const data = doc.data();
-    
-          // Convert teamleader id to name
-          if (data.teamleader) {
-            data.teamleader = await getTeamLeaderName(data.teamleader);
-          } else {
-            data.teamleader = "No Team Leader Identified.";
-          }
-    
-          // Convert assignedqa id to name
-          if (data.assignedqa) {
-            data.assignedqa = await getAssignedQaName(data.assignedqa);
-          } else {
-            data.assignedqa = "No Quality Assurance Personnel Identified.";
-          }
-    
-          return { id: doc.id, ...data };
-        });
-    
-        // Wait for all promises to resolve
-        const updatedDocuments = await Promise.all(documents);
-    
-        setData(updatedDocuments);
-        console.log(updatedDocuments);
-      } catch (error) {
-        console.log('Error fetching data:', error);
-      }
-    };    
-
-    fetchData();
-  }, []);*/
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null);
 
   useEffect(() => {
     const fetchData = () => {
-      const q = query(collection(db, 'applications'));
+      const role = sessionStorage.getItem('role');
+
+      let q;
+
+      if (role !== 'Admin') {
+        // If the user is not an Admin, query the applications collection based on user's UID
+        const uid = sessionStorage.getItem('uid');
+        q = query(collection(db, 'applications'), or(where('assignedqa', '==', uid), where('teamleader', '==', uid), where('teammembers', 'array-contains', uid)));
+      } else {
+        // If the user is an Admin, query all documents in the applications collection
+        q = query(collection(db, 'applications'));
+      }
+
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const documents = querySnapshot.docs.map(async (doc) => {
           const data = doc.data();
@@ -60,14 +37,14 @@ const ViewAllApplications = () => {
           if (data.teamleader) {
             data.teamleader = await getTeamLeaderName(data.teamleader);
           } else {
-            data.teamleader = "No Team Leader Identified.";
+            data.teamleader = 'No Team Leader Identified.';
           }
 
           // Convert assignedqa id to name
           if (data.assignedqa) {
             data.assignedqa = await getAssignedQaName(data.assignedqa);
           } else {
-            data.assignedqa = "No Quality Assurance Personnel Identified.";
+            data.assignedqa = 'No Quality Assurance Personnel Identified.';
           }
 
           return { id: doc.id, ...data };
@@ -93,10 +70,10 @@ const ViewAllApplications = () => {
         console.error('UID is empty or null');
         return null;
       }
-  
+
       const usersRef = query(collection(db, 'users'), where('uid', '==', userid));
       const querySnapshot = await getDocs(usersRef);
-  
+
       if (querySnapshot.docs.length > 0) {
         // Access the team leader name field from the first document in the result
         const teamLeaderName =
@@ -113,7 +90,7 @@ const ViewAllApplications = () => {
       console.error('Error fetching team leader name:', error);
       throw error; // or handle the error appropriately
     }
-  }; 
+  };
 
   const getAssignedQaName = async (userid) => {
     try {
@@ -121,10 +98,10 @@ const ViewAllApplications = () => {
         console.error('UID is empty or null');
         return null;
       }
-  
+
       const usersRef = query(collection(db, 'users'), where('uid', '==', userid));
       const querySnapshot = await getDocs(usersRef);
-  
+
       if (querySnapshot.docs.length > 0) {
         // Access the team leader name field from the first document in the result
         const teamLeaderName =
@@ -141,12 +118,10 @@ const ViewAllApplications = () => {
       console.error('Error fetching QA name:', error);
       throw error; // or handle the error appropriately
     }
-  };   
-
-  const [showPopup, setShowPopup] = useState(false);
+  };
 
   const togglePopup = (content) => {
-    setPopupContent({content});
+    setPopupContent({ content });
     setShowPopup(!showPopup);
   };
 
@@ -154,49 +129,80 @@ const ViewAllApplications = () => {
     setShowPopup(false);
   };
 
-  const [popupContent, setPopupContent] = useState(null);
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
 
+  const getClassNamesFor = (name) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const sortedData = () => {
+    const sortableData = [...data];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  };
 
   return (
     <div className="View-All-Applications">
-      <h1>REGISTERED APPLICATIONS</h1>
-      <div className= 'buttoncontainer'>
-        <button onClick={() => togglePopup(<AddApplications handleClose={closePopup}/>)}>
-          New +
-        </button>
+      <div className='component-title'> <WidgetsIcon sx={{ fontSize: 60 }} style={{ marginRight: '10px' }}/> REGISTERED APPLICATIONS <WidgetsIcon sx={{ fontSize: 60 }} style={{ marginLeft: '10px' }}/></div>
+      <div className='buttoncontainer'>
+        {sessionStorage.getItem('role') !== "Developer" && (<button onClick={() => togglePopup(<AddApplications handleClose={closePopup}/>)}>
+          <DashboardCustomizeIcon sx={{ fontSize: 30 }} style={{ marginRight: '10px' }}/> Add App
+        </button>)}
       </div>
-      
 
-      <div >
-        {data.map((application) => (
-          <div key={application.id}>
-           
-            <div className='application-name' onClick={() => togglePopup(<ViewApplications appId={application.id} handleClose={closePopup}/>)}>
-              {application.applicationname}
-              <div className='icon'><VisibilityIcon onClick={<AddApplications/>}/></div>
-            </div>
-            <div className='team-leader'>
-              <strong>Team Leader: </strong> {application.teamleader}
-            </div>
-            <div className='assigned-qa'>
-              <strong>Assigned QA: </strong> {application.assignedqa}
-            </div>
-            <div className='space'/>
-          </div>
-        ))}
+      <div className='applications-table-div'>
+        <table>
+          <thead>
+            <tr>
+              <th onClick={() => requestSort('applicationname')} className={getClassNamesFor('applicationname')}>
+                Application Name
+              </th>
+              <th onClick={() => requestSort('teamleader')} className={getClassNamesFor('teamleader')}>
+                Team Leader
+              </th>
+              <th onClick={() => requestSort('assignedqa')} className={getClassNamesFor('assignedqa')}>
+                Assigned QA
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData().map((application) => (
+              <tr key={application.id}>
+                <td onClick={() => togglePopup(<ViewApplications appId={application.id} handleClose={closePopup}/>)}>
+                  {application.applicationname}
+                </td>
+                <td>{application.teamleader}</td>
+                <td>{application.assignedqa}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
       <Popup show={showPopup} handleClose={closePopup}>
         {popupContent && popupContent.content}
       </Popup>
     </div>
-  )
-}
+  );
+};
 
 export default ViewAllApplications;
-
-
-
-
-
-
-

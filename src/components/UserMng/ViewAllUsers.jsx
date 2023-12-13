@@ -1,6 +1,6 @@
 import React from 'react'
 import { db } from '../../config/firebase-config'
-import { collection, getDocs } from 'firebase/firestore'
+import { query, where, or, collection, getDocs } from 'firebase/firestore'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import Popup from '../PopUp'
@@ -14,16 +14,51 @@ const ViewAllUsers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        const documents = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        let applicationsRef;
+  
+        if (sessionStorage.getItem('role') !== "Admin") {
+          // Query the applications collection for documents matching the user's UID
+          const uid = sessionStorage.getItem('uid');
+          const applicationsQuery = query(collection(db, 'applications'), 
+            where('assignedqa', '==', uid),
+            or(where('teamleader', '==', uid),
+              where('teammembers', 'array-contains', uid)
+            )
+          );
+          const applicationsSnapshot = await getDocs(applicationsQuery);
+  
+          const applicationIds = applicationsSnapshot.docs.map(doc => doc.id);
+  
+          // Get teamleader, assignedqa, and teammembers values
+          const teamMembersData = applicationsSnapshot.docs.map(doc => ({
+            teamleader: doc.data().teamleader,
+            assignedqa: doc.data().assignedqa,
+            teammembers: doc.data().teammembers
+          }));
+  
+          // Flatten teammembers array
+          const teamMembersArray = teamMembersData.reduce((acc, val) => acc.concat(val.teammembers), []);
+  
+          applicationsRef = query(collection(db, 'users'), 
+            where('uid', 'in', [...teamMembersArray, ...applicationIds])
+          );
+        } else {
+          // If the role is Admin, query all documents in the users collection
+          applicationsRef = collection(db, 'users');
+        }
+        
+        console.log("Applications returned: ", applicationsRef)
+        const querySnapshot = await getDocs(applicationsRef);
+        const documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setData(documents);
       } catch (error) {
-        console.log('Error fetching data:', error);
+        console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   const requestSort = (key) => {
     let direction = 'ascending';

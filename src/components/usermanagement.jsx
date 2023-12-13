@@ -1,30 +1,72 @@
 import React from 'react'
 import { db } from '../config/firebase-config'
-import { collection, getDocs } from 'firebase/firestore'
+import { query, where, or, collection, getDocs } from 'firebase/firestore'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import Popup from './PopUp'
 import ViewProfile from './UserMng/ViewProfile'
 import EditProfile from './UserMng/EditProfile'
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 const Usermanagement = () => {
   const [data, setData] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [sortConfig, setSortConfig] = useState({ key: 'status', direction: 'ascending' });
   const [popupContent, setPopupContent] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        const documents = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        let applicationsRef;
+  
+        if (sessionStorage.getItem('role') !== "Admin") {
+          // Query the applications collection for documents matching the user's UID
+          const uid = sessionStorage.getItem('uid');
+          const applicationsQuery = query(collection(db, 'applications'),
+            or(
+              where('assignedqa', '==', uid),
+              where('teamleader', '==', uid),
+              where('teammembers', 'array-contains', uid)
+            )
+          );
+          const applicationsSnapshot = await getDocs(applicationsQuery);
+  
+          const applicationIds = applicationsSnapshot.docs.map(doc => doc.id);
+  
+          // Get teamleader, assignedqa, and teammembers values
+          const teamMembersData = applicationsSnapshot.docs.map(doc => ({
+            teamleader: doc.data().teamleader,
+            assignedqa: doc.data().assignedqa,
+            teammembers: doc.data().teammembers
+          }));
+  
+          // Flatten teammembers array
+          const teamMembersArray = teamMembersData.reduce((acc, val) => {
+            acc.push(...val.teammembers);
+            acc.push(val.teamleader);
+            acc.push(val.assignedqa);
+            return acc;
+          }, []);
+  
+          applicationsRef = query(collection(db, 'users'),
+            where('uid', 'in', teamMembersArray)
+          );
+        } else {
+          // If the role is Admin, query all documents in the users collection
+          applicationsRef = collection(db, 'users');
+        }
+  
+        const querySnapshot = await getDocs(applicationsRef);
+        const documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setData(documents);
+        console.log("Applications returned: ", documents);
       } catch (error) {
-        console.log('Error fetching data:', error);
+        console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   const requestSort = (key) => {
     let direction = 'ascending';
@@ -71,6 +113,8 @@ const Usermanagement = () => {
 
   return (
     <div className='user-management'>
+      <div className='component-title'> <PeopleAltIcon sx={{ fontSize: 60 }} style={{ marginRight: '10px' }}/> User Management <PeopleAltIcon sx={{ fontSize: 60 }} style={{ marginLeft: '10px' }}/></div>
+      <div className='user-management-table-div'>
       <table className='user-management-table'>
       <thead>
         <tr>
@@ -114,6 +158,7 @@ const Usermanagement = () => {
         ))}
       </tbody>
     </table>
+    </div>
 
         <Popup show={showPopup} handleClose={closePopup}>
           {popupContent && popupContent.content}

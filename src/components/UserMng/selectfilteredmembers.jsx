@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { db } from '../../config/firebase-config';
-import { collection, query, where, getDocs, getDoc } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, getDoc } from "firebase/firestore";
 
-const Selectmembers = ({handleClose}) => {
-  console.log("Application ID: ")
+const Selectfilteredmembers = ({handleClose, appId}) => {
   const handleCancel = () => {
     handleClose();
   };
@@ -15,19 +14,34 @@ const Selectmembers = ({handleClose}) => {
     // Fetch team leaders from Firestore
     const fetchDevelopers = async () => {
       try {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('role', '==', 'Developer'));
-        const snapshot = await getDocs(q);
-  
-        if (snapshot.empty) {
-          console.log('No documents found in the users collection.');
+        // (1) Get the document from the applications collection
+        const appDocRef = doc(db, 'applications', appId);
+        const appDocSnapshot = await getDoc(appDocRef);
+
+        if (!appDocSnapshot.exists()) {
+          console.log('No matching document for appId:', appId);
           return;
         }
-        
-        const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setTeamMembers(usersData);
 
-        snapshot.forEach(doc => {
+        // (2) Get the array of values from the teammembers field
+        const teamMembersArray = appDocSnapshot.data().teammembers;
+
+        // (3) Query the users collection for documents whose uid field matches teammembers array
+        const usersRef = collection(db, 'users');
+        const teamMembersQuery = query(usersRef, where('uid', 'in', teamMembersArray));
+        const teamMembersSnapshot = await getDocs(teamMembersQuery);
+
+        // (4) Get the documents of those who match
+        if (teamMembersSnapshot.empty) {
+          console.log('No matching documents in the users collection.');
+          return;
+        }
+
+        // Process the team members data
+        const teamMembersData = teamMembersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTeamMembers(teamMembersData);
+
+        teamMembersSnapshot.forEach(doc => {
           console.log('Document ID:', doc.id);
           console.log('Document data:', doc.data());
         });
@@ -98,4 +112,4 @@ const Selectmembers = ({handleClose}) => {
   )
 }
 
-export default Selectmembers
+export default Selectfilteredmembers
