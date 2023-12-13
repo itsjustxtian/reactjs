@@ -305,15 +305,7 @@ const EditProfile = ({ handleClose, profileId }) => {
               value={input.confirmpassword}
               onChange={(e) => inputHandler(e)}
               name='confirmpassword'
-            />
-            <div className='formbuttons'>
-            <button className='submit'> Submit </button>
-              <button className='cancel' id='text' onClick={handleCancel}>
-                <div id='text'> Cancel </div>
-              </button>
-              
-            </div>
-      
+            />           
           {showNewPassword && (
             <div className='sign-up-right'>
               <label>Confirm New Password:</label>
