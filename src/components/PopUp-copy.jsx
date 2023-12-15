@@ -2,11 +2,9 @@
 import React from 'react';
 
 const Popup = ({ handleClose, show, children }) => {
-  const overlayClassName = show ? 'overlay display-block' : 'overlay display-none';
-  const showHideClassName = show ? 'modal display-block' : 'modal display-none';
+  const showHideClassName = show ? 'display-block' : 'display-none';
 
   return (
-    
     <div className={showHideClassName}>
       <section className="modal-main">
           <div className='popup-content'>

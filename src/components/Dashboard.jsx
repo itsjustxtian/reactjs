@@ -32,6 +32,8 @@ const Dashboard = () => {
           applicationsQuery = query(collection(db, 'applications'), where('teamleader', '==', uid));
         } else if (role === 'Developer') {
           applicationsQuery = query(collection(db, 'applications'), where('teammembers', 'array-contains', uid));
+        } else if (role === 'Admin') {
+          applicationsQuery = query(collection(db, 'applications'));
         }
 
         const applicationsSnapshot = await getDocs(applicationsQuery);

@@ -8,11 +8,13 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { Avatar } from '@mui/material';
 import ViewApplications from '../ViewApplications';
 import Popup from '../PopUp';
+import Popup2 from '../PopUp-copy'
 import EditProfile from '../UserMng/EditProfile'
 
 /* const profileId = '9JkZB1M1WL1Ad9LFRMhw' */
-const ViewProfile = ({handleClose, profileId}) => {
+const ViewProfile = ({handleClose, profileId, userUID}) => {
   console.log('Received profile Id: ', profileId);
+  console.log('Received user UID: ', userUID);
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null);
   const [profileData, setProfileData] = useState(null);
@@ -37,7 +39,7 @@ const ViewProfile = ({handleClose, profileId}) => {
         }
 
         if (profileDoc.data().role === "Developer") {
-          const appQuery = query(collection(db, 'applications'), where('teammembers', 'array-contains', profileId))
+          const appQuery = query(collection(db, 'applications'), where('teammembers', 'array-contains', profileDoc.data().uid))
           const qaDoc = await getDocs(appQuery);
         
           // Create an array to store application data
@@ -89,6 +91,19 @@ const ViewProfile = ({handleClose, profileId}) => {
     fetchProfileData();
   }, [profileId]);
 
+  function formatDateFromTimestamp(timestampSeconds) {
+    // Convert seconds to milliseconds
+    const timestampMilliseconds = timestampSeconds * 1000;
+  
+    // Create a new Date object
+    const date = new Date(timestampMilliseconds);
+  
+    // Format the date as MM/DD/YYYY
+    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+  
+    return formattedDate;
+  }
+  
   if (!profileData) {
     return <div>Loading...</div>;
   }
@@ -104,87 +119,96 @@ const ViewProfile = ({handleClose, profileId}) => {
   const closePopup = () => {
     setShowPopup(false);
   };
+  console.log("Profile Data: ", profileData)
+  console.log("Application Data: ", applicationData)
   if (!profileData || applicationData === null) {
     return <div>Loading...</div>;
   }
   return (
     <div className='viewProfile'>
-          <div className='profile-picture'>
-            <Avatar
-              alt={profileData.lastname}
-              sx={{
-                width: 200,
-                height: 200,
-                border: '2px solid #000', // Set border width and color
-                borderRadius: '50%', // Make it a circular avatar
-              }}
-              src={profileData.profilePicture}
-            />
-          </div>
-          
-          <div className='appLabel'>
-            <div id= 'new-line1'> 
-              <label>
-              {profileData.lastname}, {profileData.firstname}
-              </label>
-            </div>
-
-            <div id= 'new-line'> 
-              <label>
-              {profileData.companyid}
-              </label>
-            </div>
-
-            <div id= 'new-line'> 
-              <label>
-              {profileData.email}
-              </label>
-            </div>
-
-            <div id= 'new-line2'> 
-              <label>
+      <div className='header'>
+        <div className='profile-picture'>
+          <Avatar
+            alt={profileData.lastname}
+            sx={{
+              width: 200,
+              height: 200,
+            }}
+            src={profileData.profilePicture}
+          />
+          <div id={profileData.status === 'Active' ? 'active' : 'inactive' }>
               {profileData.status}
-              </label>
-            </div>
+          </div>
+        </div>
+        
+        <div className='appLabel'>
+          <div id= 'employee-name'>
+              {profileData.lastname}, <div id='firstname'>{profileData.firstname}</div>
+          </div>
 
-            <div id= 'new-line3'> 
-              <label>
-              Assignments:
-              </label>
-              <div className='profile-applications-table'>
-                <table className='dashboard-table'>
-                  <thead>
-                    <tr>
-                      <th>
-                        Application
-                      </th>
-                      <th>
-                        Role
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {applicationData.map((row) => (
-                      <tr
-                        key={row.id} 
-                        id='rows'
-                        onClick={() => togglePopup(<ViewApplications handleClose={closePopup} appId={row.id}/>)}>
-                        <td>{row.applicationname}</td>
-                        <td>{profileData.role}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div id= 'company-id'>
+            {profileData.companyid}, {profileData.role}
+          </div>
+
+          <div id= 'email'> 
+            <label>
+            {profileData.email}
+            </label>
+          </div>
+          <div id='contact-number'>
+            Contact Number: {profileData.contactnumber}
+          </div>
+          <div id='birthdate'>
+            Birthdate: {formatDateFromTimestamp(profileData.birthdate.seconds)}
+          </div>
+          <div id='creation'>
+            Since {formatDateFromTimestamp(profileData.datecreated.seconds)}
+          </div>
+        </div>
+      </div>
+
+      <div id='label'>
+          Assignments:
+      </div>
+
+      <div className= 'assignment-area'> 
+        
+
+        <div className='profile-applications-table'>
+          <table className='dashboard-table'>
+            <thead>
+              <tr>
+                <th>
+                  Application
+                </th>
+                <th>
+                  Role
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {applicationData.map((row) => (
+                <tr
+                  key={row.id} 
+                  id='rows'
+                  onClick={() => togglePopup(<ViewApplications handleClose={closePopup} appId={row.id}/>)}>
+                  <td>{row.applicationname}</td>
+                  <td>{profileData.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
             
-          </div>
+
 
           <div className='formbuttons'>
+            {profileData.uid === sessionStorage.getItem('uid') && (
             <button className='edit-changes' onClick={() => togglePopup(<EditProfile handleClose={closePopup} profileId={profileId}/>)}>
               Edit Profile
-            </button>
+            </button>)}
             <button className='cancel' id='text'>
               <div id='text' onClick={handleCancel}> Close </div>
             </button>

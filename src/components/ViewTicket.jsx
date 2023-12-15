@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { query, collection, where, getDocs, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { db } from '../config/firebase-config';
+import { db, storage } from '../config/firebase-config';
 import EditTicket from './EditTicket';
 import Popup from './PopUp';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import { addDays, format } from 'date-fns'; // Import the date-fns library for date formatting
+import { ref } from 'firebase/storage';
 
 const ViewTicket = ({handleClose, ticketId}) => {
   console.log('Received ticket Id: ', ticketId);
@@ -179,13 +180,14 @@ useEffect(() => {
 
   // Function to extract filename from a URL
   const getFilenameFromURL = (url) => {
+    console.log("URL to be converted: ", url)
     const decodedURL = decodeURIComponent(url);
     const pathSegments = decodedURL.split('/');
     let filenameWithQuery = pathSegments[pathSegments.length - 1];
 
     // Remove query parameters if present
     const filenameWithoutQuery = filenameWithQuery.split('?')[0];
-
+    
     return filenameWithoutQuery;
   };
 
@@ -331,19 +333,21 @@ useEffect(() => {
 
   return (
     <div className='ViewTicket'>
-      <h2>Ticket ID: {ticketData.id}</h2>
-      <div className="new-line">
-        <label>Application: <strong>{applicationName ? applicationName : "Retrieving data..."}</strong></label>
+      <div className='center'>
+        <div className='ticket-title'>Ticket ID: {ticketData.id}</div>
       </div>
       <div className="new-line">
-        <label>Subject: <strong>{ticketData.subject}</strong></label>
+        <label>Application: <div className='emphasis'>{applicationName ? applicationName : "Retrieving data..."}</div></label>
+      </div>
+      <div className="new-line">
+        <label>Subject: <div className='emphasis'>{ticketData.subject}</div></label>
       </div>
       <div className="new-line">
         <label>
           Assigned Developer:
-          <strong>
+          <div className='emphasis'>
             {developers.length > 0 ? developers.join(', ') : 'No Team Members Identified.'}
-          </strong>
+          </div>
         </label>
       </div>
       <div className="new-line">
@@ -389,7 +393,7 @@ useEffect(() => {
           <ul>
             {ticketData.attachments.map((attachment, index) => (
               <li key={index}>
-                <a href={attachment} target="_blank" rel="noopener noreferrer">
+                <a href={attachment} target="_blank" rel="noopener noreferrer" style={{ color: 'white', textDecoration: 'none' }}>
                   {getFilenameFromURL(attachment)}
                 </a>
               </li>
@@ -400,7 +404,7 @@ useEffect(() => {
 
 
         <div className='formbuttons' style={{ textAlign: 'right' }}>
-          {sessionStorage.getItem('role') !== 'Developer' && (
+          {sessionStorage.getItem('role') !== 'Developer' && (ticketData.status !== 'Resolved') && (
             <button className='button' id='mark-as-resolved' onClick={() => resolveTicket(ticketId)}>
               Mark as Resolved
             </button>
@@ -426,7 +430,7 @@ useEffect(() => {
               Accept Ticket
             </button>
           )}
-          {sessionStorage.getItem('uid') === ticketData.author && (<button className='button' id='edit' onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')}/>)}>
+          {(sessionStorage.getItem('uid') === ticketData.author || sessionStorage.getItem('role') === "Admin") && (<button className='button' id='edit' onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')}/>)}>
             <div id='text'>Edit Ticket</div>
           </button>)}
           <button className='button' id='cancel'>

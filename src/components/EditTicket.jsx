@@ -1,8 +1,8 @@
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef, useEffect } from 'react';
 import { storage, db } from '../config/firebase-config';
-import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
-import { onSnapshot, addDoc, collection, doc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, uploadBytes, ref, listAll, deleteObject } from 'firebase/storage';
+import { onSnapshot, addDoc, collection, doc, getDocs, getDoc, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SelectApplication from './UserMng/SelectApplication';
@@ -11,7 +11,8 @@ import Selectmembers from './UserMng/selectmembers';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 
 const EditTicket = ({handleClose, ticketId, userId}) => {
-    //console.log('Passed data in Edit Ticket: ', ticketId, userId);
+    //console.log('Passed data in Edit Ticket: ', ticketId, userId)
+    const [loading, setLoading] = useState(true); // Added loading state
     const [data, setData] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedButton, setSelectedButton] = useState(null);
@@ -58,33 +59,16 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                       console.log("Developer document not found for ID ", selectedApplication);
                   }
 
-                setSelectedDevelopers(ticketDoc.data().assignDev);
+                //setSelectedDevelopers(ticketDoc.data().assignDev);
 
-                const developerDocs = [];
-                
-                for (const developerId of selectedDevelopers) {
-                    const devRef = doc(db, 'users', developerId);
-                    const devDoc = await getDoc(devRef);
-            
-                    if (devDoc.exists()) {
-                        //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
-                        developerDocs.push(devDoc.data());
-                        // Do something with the developer document
-                    } else {
-                        console.log("Developer document not found for ID ", developerId);
-                    }
-                }
-
-                setDevelopers(developerDocs);
-                //setSelectedApplication(applicationDoc);
-                //console.log("Returned documents for Assigned Developers: ", developers);
+                await getDevs(ticketDoc.data().assignDev);
 
                 setTags(ticketDoc.data().tags);
                 setSelectedSeverity(ticketDoc.data().severity);
                 setSelectedType(ticketDoc.data().type);
                 setFiles(ticketDoc.data().attachments);
 
-                // Extract filenames and URLs from download URLs
+                /*// Extract filenames and URLs from download URLs
                 const attachmentsData = ticketDoc.data().attachments.map((url) => {
                   const decodedURL = decodeURIComponent(url);
                   const pathSegments = decodedURL.split('/');
@@ -101,21 +85,59 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 const filenames = attachmentsData.map((attachment) => attachment.filename);
 
                 // Set the files state
+                setFiles(filenames);*/
+
+                // Fetch files from storage
+                const storageRef = ref(storage, `attachments/${ticketId}`);
+                const storageFiles = await listAll(storageRef);
+
+                // Extract filenames from storageFiles
+                const filenames = storageFiles.items.map((item) => item);
+                console.log("filenames: ", filenames)
+                // Set the files state
                 setFiles(filenames);
 
+                console.log("Files in useEffect:", files)
                 updateInputState(ticketDoc.data());
             } else {
               console.log("No Matching Documents.");
             }
+            setLoading(false);
           } catch (error) {
             console.error("Error fetching data: ", error);
             // Handle the error condition here
+            setLoading(false);
           }
         };
     
         fetchData();
         // Include dependencies in the array if needed (e.g., [ticketId])
       }, [ticketId]);
+      
+      const getDevs = async (devArray) => {
+        const developerDocs = [];
+                
+                for (const developerUid of devArray) {
+                  // Create a query to find the document with the matching 'uid' field
+                  const q = query(collection(db, 'users'), where('uid', '==', developerUid));
+                  const querySnapshot = await getDocs(q);
+          
+                  if (querySnapshot.docs.length > 0) {
+                    // Assuming there is only one document for each 'uid'
+                    const devDoc = querySnapshot.docs[0];
+                    console.log("Developer document for UID ", developerUid, ": ", devDoc.data());
+                    developerDocs.push(devDoc.data());
+                    // Do something with the developer document
+                  } else {
+                    console.log("Developer document not found for UID ", developerUid);
+                  }
+                }        
+
+                setDevelopers(developerDocs);
+                setSelectedDevelopers(developerDocs)
+                //setSelectedApplication(applicationDoc)
+                console.log("Returned documents for Assigned Developers: ", selectedDevelopers);
+      }
 
       const updateInputState = (fetchedData) => {
         setInput({
@@ -148,7 +170,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
 
         if (Array.isArray(userDetail) && userDetail.every((user) => user.id && user.firstname && user.lastname && user.role === "Developer")) {
             console.log('Selected Team Members (Developers) in CreateTicket:', userDetail);
-            setSelectedDevelopers(userDetail);
+            setDevelopers(userDetail);
           } else if(userDetail && userDetail.id && userDetail.applicationname) {
             console.log('Selected Application in EditTicket:', userDetail);
             setSelectedApplication(userDetail);
@@ -186,12 +208,14 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
       const handleFileInputChange = (e) => {
         const selectedFiles = e.target.files;
         setFiles([...files, ...Array.from(selectedFiles)]);
+        console.log("On File Change:", files);
       };
     
       const handleRemoveFile = (index) => {
         const updatedFiles = [...files];
         updatedFiles.splice(index, 1);
         setFiles(updatedFiles);
+        console.log("Updated Files after remove: ", files);
       };
     
       const handleRemoveApplication = () => {
@@ -199,13 +223,14 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
       }
     
       const handleRemoveMember = (memberToRemove) => {
+        console.log("Removing...", memberToRemove)
         // Create a new array excluding the member to be removed
-        const updatedMembers = selectedDevelopers.filter(
-          (member) => member.id !== memberToRemove.id
+        const updatedMembers = developers.filter(
+          (member) => member.uid !== memberToRemove.uid
         );
       
         // Update the state with the new array
-        setSelectedDevelopers(updatedMembers);
+        setDevelopers(updatedMembers);
       };
     
       const handleRemoveTag = (index) => {
@@ -236,14 +261,14 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
               const storageRef = storage;
       
               for (const selectedFile of files) {
-                const fileRef = ref(storageRef, `attachments/${selectedFile}`);
+                const fileRef = ref(storageRef, `attachments/${ticketId}/${selectedFile.name}`);
                 await uploadBytes(fileRef, selectedFile);
-                console.log('File uploaded successfully!');
-                console.log('Fileref: ', fileRef);
+                //console.log('File uploaded successfully!');
+                //console.log('Fileref: ', fileRef);
       
                 const downloadURL = await getDownloadURL(fileRef);
                 downloadURLs.push(downloadURL);
-                console.log("downloadURLs: ", downloadURLs, "downloadURL", downloadURL)
+                //console.log("downloadURLs: ", downloadURLs, "downloadURL", downloadURL)
               }
             }
       
@@ -281,7 +306,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 updatedData.subject = input.subject;
               }
       
-              const updatedDevelopers = selectedDevelopers.map((member) => member);
+              const updatedDevelopers = developers.map((member) => member.uid);
               if (!arraysEqual(updatedDevelopers, originalData.assignDev)) {
                 updatedData.assignDev = updatedDevelopers;
               }
@@ -312,9 +337,21 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
               // Perform the update only if there are changes
               if (Object.keys(updatedData).length > 0) {
                 await updateDoc(ticketRef, updatedData);
+
+                // Delete files not included in the updated files array
+                const filesToDelete = originalData.attachments.filter(originalFile => {
+                  const originalFilePath = originalFile.split('?')[0]; // Extracting the file path without the access token
+                  return !downloadURLs.some(updatedFile => updatedFile.startsWith(originalFilePath));
+                });
+                console.log("File to delete: ", filesToDelete)
+                for (const fileToDelete of filesToDelete) {
+                  const fileRefToDelete = ref(storage, fileToDelete);
+                  await deleteObject(fileRefToDelete);
+                  console.log('File deleted successfully:', fileToDelete);
+                }
               }
       
-              setInput({
+              /*setInput({
                 author: sessionStorage.getItem('uid'),
                 subject: '',
                 description: '',
@@ -330,7 +367,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
               setTags([]);
               document.querySelectorAll('input[type="radio"]').forEach((radio) => {
                 radio.checked = false;
-              });
+              });*/
       
               console.log('Ticket Updated Successfully!');
               setErrorMessage('Ticket Updated Successfully!');
@@ -345,6 +382,29 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
         }
       };
       
+      const deleteFolderContents = async (folderRef) => {
+        const files = await listAll(folderRef);
+        const deleteFilePromises = files.items.map(fileRef => deleteObject(fileRef));
+        await Promise.all(deleteFilePromises);
+      };
+      
+      const deleteHandler = async (e) => {
+        console.log("Delete Handler is called.");
+      
+        // Corrected: invoke `ref` on the storage instance
+        const folderRef = ref(storage, `attachments/${ticketId}`);
+      
+        // Delete all files within the folder
+        await deleteFolderContents(folderRef);
+      
+        // Corrected: delete the document using the `deleteDoc` function
+        await deleteDoc(doc(db, 'tickets', ticketId));
+      
+        console.log("Ticket and storage deleted.", ticketId, folderRef);
+        handleCancel();
+        window.location.reload();
+      };
+            
       // Helper function to check if two arrays are equal
       function arraysEqual(arr1, arr2) {
         return (
@@ -387,9 +447,9 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
         
             <div id='new-line'>
                 <label>Assigned Developer: </label>
-                <button id='add-icon' onClick={() => togglePopup('members')}>
+                {selectedApplication && (<button id='add-icon' onClick={() => togglePopup('members')}>
                     <PersonAddAlt1Icon/>
-                </button>
+                </button>)}
                 <div id='selectedMembers'>
                     {developers.map((member) => (
                         <div key={member.id} id='list'>
@@ -487,9 +547,9 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 <div>
                     <p>Selected Files:</p>
                     <ul id='selectedfiles'>
-                    {files.map((filename, index) => (
+                    {files.map((file, index) => (
                         <li key={index}>
-                        {filename}
+                        {file.name}
                         <ClearIcon
                             className='clear-icon'
                             onClick={() => handleRemoveFile(index)}
@@ -504,10 +564,12 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             <div className='error-message'>
             {errormessage}
             </div>
-
         </div>
 
         <div className='formbuttons'>
+            <button className='delete-ticket' id='text'>
+              <div id='text' onClick={deleteHandler}> Delete Ticket </div>
+            </button>
             <button className='save-changes' id='text'>
               <div id='text' onClick={submitHandler}> Save Changes </div>
             </button>

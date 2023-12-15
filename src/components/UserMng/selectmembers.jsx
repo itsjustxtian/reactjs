@@ -92,8 +92,8 @@ const Selectmembers = ({handleClose}) => {
           </button>
           <button className='cancel' id='text'>
               <div id='text' onClick={handleCancel}> Cancel </div>
-            </button>
-        </div> 
+          </button>
+      </div> 
     </div>
   )
 }
