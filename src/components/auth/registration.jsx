@@ -228,7 +228,7 @@ const Registration = ({handleClose}) => {
     return (
         <div className='sign-up-container'>
             <form onSubmit={submitHandler} autoComplete="off">
-                <h1>REGISTER NEW USER</h1>
+                <div id='component-title'>REGISTER NEW USER</div>
 
                 {/* Profile Picture Module */}
                 <div className='profile-picture-component'>
@@ -267,43 +267,52 @@ const Registration = ({handleClose}) => {
                     </div>
 
                     <div className='sign-up-left'>
-                        <label>Email: </label>
-                        <input
-                            type='email'
-                            placeholder='Email'
-                            value={input.email}
-                            onChange={(e) => inputHandler(e)}
-                            name='email'
-                        />
-
-                        <label>Contact Number: </label>
-                        <input
-                            type='tel'
-                            pattern='[0-9]*'
-                            placeholder='Contact Number'
-                            value={input.contactnumber}
-                            onChange={(e) => inputHandler(e)}
-                            name='contactnumber'
-                        />
+                        <div id='register-line'>
+                            <label>Email: </label>
+                            <input
+                                type='email'
+                                placeholder='Email'
+                                value={input.email}
+                                onChange={(e) => inputHandler(e)}
+                                name='email'
+                            />
+                        </div>
+                        
+                        <div id='register-line'>
+                            <label>Contact Number: </label>
+                            <input
+                                type='tel'
+                                pattern='[0-9]*'
+                                placeholder='Contact Number'
+                                value={input.contactnumber}
+                                onChange={(e) => inputHandler(e)}
+                                name='contactnumber'
+                            />
+                        </div>
                     </div>
 
                     <div className='sign-up-left'>
-                        <label>First Name: </label>
-                        <input
-                            type='text'
-                            placeholder='First name'
-                            value={input.firstname}
-                            onChange={(e) => inputHandler(e)}
-                            name='firstname'
-                        />
-                        <label>Last Name: </label>
-                        <input
-                            type='text'
-                            placeholder='Last Name'
-                            value={input.lastname}
-                            onChange={(e) => inputHandler(e)}
-                            name='lastname'
-                        />
+                        <div id='register-line'>
+                            <label>First Name: </label>
+                            <input
+                                type='text'
+                                placeholder='First name'
+                                value={input.firstname}
+                                onChange={(e) => inputHandler(e)}
+                                name='firstname'
+                            />
+                        </div>
+
+                        <div id='register-line'>
+                            <label>Last Name: </label>
+                            <input
+                                type='text'
+                                placeholder='Last Name'
+                                value={input.lastname}
+                                onChange={(e) => inputHandler(e)}
+                                name='lastname'
+                            />
+                        </div>
                     </div>
 
                     <div className='sign-up-left'>
