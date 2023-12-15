@@ -13,11 +13,10 @@
 }
 
 .modal-main {
-  background-color: #fefefe;
+  background-color: #E1ECEB;
   border-radius: 35px;
   box-shadow: 5px 10px 10px 5px #00000040;
   width: 80%;
-  max-width: 1215px;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -25,20 +24,27 @@
   padding: 20px;
 }
 
-.modal {
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+.popup-content {
+  width: 100%;
+}
+
+.popup-inner {
+  overflow-y: auto;
+  max-height: 100%; /* Allow the inner content to take the full height */
 }
 
 .display-block {
-  display: block;
+  display:block;
 }
 
 .display-none {
@@ -430,13 +436,30 @@ body, html {
   margin: 5px;
 }
 
+.sign-up-container #component-title {
+  font-size: 32px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3D5654;
+  color: white;
+  width: 100%;
+  border-radius: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 .sign-up-container label {
   margin: 5px;
 }
 
 .sign-up-container input {
   height: calc(15px + 2vmin);
-  background-color: #d9d9d9;
+  background-color: white;
   border-radius: 10px;
   border-color: transparent;
   font-family: 'Inter', sans-serif;
@@ -445,12 +468,33 @@ body, html {
   margin: 5px;
 }
 
+.sign-up-container .sign-up-left {
+  height: calc(15px + 2vmin);
+  border-radius: 10px;
+  border-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+  margin-bottom: 10px;
+}
+
 .sign-up-left {
   display: flex;
   width: 100%;
   flex-direction: row;
   align-content: flex-start;
   align-items: center;
+}
+
+.sign-up-left #register-line {
+  display: flex;
+  flex: 50%;
+  width: 100%;
+}
+
+.sign-up-left #register-line input {
+  width: 100%;
 }
 
 .sign-up-left label{
@@ -466,8 +510,8 @@ body, html {
 .profile-picture-component {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  margin-bottom: 50px;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
 .profile-picture-component > * {
@@ -519,6 +563,11 @@ body, html {
   background-color: #CADFDE;
 }
 
+.register-cancel-container #delete {
+  color: white;
+  background-color: red;
+}
+
 /* create ticket dapit*/
 
 
@@ -539,7 +588,7 @@ body, html {
 .CreateTicket textarea {
   width: calc(100% - 20px);
   border-radius: 20px;
-  background-color: #D9D9D9;
+  background-color: white;
   border-color: transparent;
   margin-top: 10px;
   resize: none;
@@ -625,7 +674,7 @@ body, html {
   margin-left: 10px;
   font-size: 18px; /* Adjust the font size of the placeholder text */
   border-radius: 20px; /* Adjust the border radius to make the edges curve */
-  background-color: #D9D9D9;
+  background-color: white;
   border-color: transparent;
   padding-left: 10px;
   padding-right: 10px;
@@ -678,17 +727,19 @@ body, html {
 }
 
 .CreateTicket .typanan #new-line-tags #tags label{
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
   padding: 2px;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 5px;
   border-radius: 20px;
   vertical-align: middle;
 }
 
 .CreateTicket .typanan #new-line-tags #tags label:hover {
-  background-color: #3D5654;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .CreateTicket .formbuttons .submit:hover{
@@ -705,18 +756,36 @@ body, html {
   display: flex;
 }
 
-.CreateTicket #selectedMembers label {
-  background-color: #D9D9D9;
+.CreateTicket label#selected {
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
   padding: 2px;
   margin-left: 5px;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 5px;
+  border-radius: 20px;
+}
+
+.CreateTicket label#selected:hover {
+  background-color: white;
+  color: black;
+}
+
+.CreateTicket #selectedMembers label {
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 5px;
   border-radius: 20px;
 }
 
 .CreateTicket #selectedMembers label:hover {
-  background-color: #3D5654;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .CreateTicket .typanan #selectedfiles {
@@ -725,14 +794,20 @@ body, html {
 
 .CreateTicket .typanan #selectedfiles li{
   width: fit-content;
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
   margin-top: 5px;
   padding: 2px;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 5px;
   border-radius: 20px;
 }
 
+.CreateTicket .typanan #selectedfiles li:hover{
+  background-color: white;
+  color: black;
+}
 
 /* View Application dapit */
 .viewApplications .rectangle {
@@ -746,6 +821,32 @@ body, html {
   top: 0;
 }
 
+.viewApplications .header {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  margin-bottom: 30px;
+  background-color: #3D5654;
+  border-radius: 30px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+}
+
+.viewApplications .header #component-title {
+  font-size: 32px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: black;
+  width: 100%;
+  border-radius: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  margin-bottom: 20px;
+}
+
 .viewApplications {
   padding: 10px;
 }
@@ -757,6 +858,18 @@ body, html {
 .viewApplications #new-line {
   display: flex;
   margin-top: 10px;
+}
+
+.viewApplications #new-line #label{
+  color: white;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.viewApplications #new-line #descriptionnn {
+  color: white;
+  margin-left: 50px;
+  font-size: 20px;
 }
 
 .viewApplications #new-line #icon{
@@ -786,13 +899,6 @@ body, html {
   margin-top: 20px;
 }
 
-.viewApplications #description-text label{
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.viewApplications .team-members {
-}
 
 .viewApplications .appLabel label{
   display: flex;
@@ -807,12 +913,16 @@ h1 {
   color: #333;
 }
 
-.viewApplications.formbuttons {
+.viewApplicationsbuttons {
   display: flex;
+  flex-direction: row;
+  align-content: flex-end;
   justify-content: flex-end;
+  margin-top: 30px;
+  align-items: flex-end;
 }
 
-.viewApplications .formbuttons .cancel{
+.viewApplicationsbuttons .edit-application{
   font-family: 'Inter', sans-serif;
   font-size: 20px;
   text-align: center;
@@ -821,7 +931,23 @@ h1 {
   display: flex;
   align-items: flex-end;
   margin-left: auto;
-  margin-top: 20px;
+
+  padding: 20px;
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.viewApplicationsbuttons .cancel{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: 10px;
 
   padding: 20px;
   background-color: #CADFDE;
@@ -830,16 +956,21 @@ h1 {
   cursor: pointer;
 }
 
-.viewApplications .formbuttons .cancel:hover{
-  background-color: #3D5654;
-  color: white;
+.viewApplications .ticket-history-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .ticket-history {
-  background-color: none;
+  background-color: white;
+  border-radius: 30px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  width: 80%;
+  padding: 10px;
 }
 
-.ticket-history .dashboard-table {
+.ticket-history table{
   width: 100%;
   border-collapse: collapse;
   overflow-x: scroll;
@@ -857,7 +988,11 @@ h1 {
 .ticket-history .dashboard-table th {
   padding-top: 20px;
   padding-bottom: 20px;
-  
+  font-size: 25px;
+}
+
+.ticket-history .dashboard-table td {
+  font-size: 20px;
 }
 
 .ticket-history .dashboard-table th:nth-child(1) { width: 30%; }
@@ -1075,17 +1210,97 @@ h1 {
   align-content: flex-start;
   align-items: center;
   column-gap: 35px;  
-
 }
 
-.sign-up-containerr .formbuttons {
+.edit-profile .avatar-component {
+  margin-bottom: 30px;
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-profile .new-line {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.edit-profile .new-line label{
+  color: black;
+  white-space: nowrap;
+}
+
+.edit-profile .new-line select{
+  width: 20%;
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  height: 40px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+}
+
+.edit-profile .new-line #firstcolumn{
+  flex:50%;
+  display: flex;
+  align-items: center;
+}
+
+.edit-profile .new-line #firstcolumn input{
+  width: 100%;
+}
+
+.edit-profile .new-line #secondcolumn {
+  flex:50%;
+  display: flex;
+  align-items: center;
+}
+
+.edit-profile .new-line #secondcolumn input {
+  width: 100%;
+}
+
+.edit-profile .new-line-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-profile .passwords-flex {
+  display: flex;
+}
+
+.edit-profile .passwords {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.edit-profile .for-new-passwords input{
+  display: flex;
+  width: 100%;
+}
+
+.edit-profile .new-line-password {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap;
+}
+
+
+.edit-profile .formbuttons {
   display: flex;
   justify-content: flex-start;
   margin-left: auto;
   align-items: center;
 }
 
-.sign-up-containerr .submit{
+.edit-profile .submit{
   font-family: 'Inter', sans-serif;
   font-size: medium;
   text-align: center;
@@ -1102,7 +1317,8 @@ h1 {
   cursor: pointer;
 }
 
-.sign-up-containerr .cancel{
+
+.edit-profile .cancel{
   font-family: 'Inter', sans-serif;
   font-size: medium;
   text-align: center;
@@ -1118,21 +1334,75 @@ h1 {
   border: none;
   cursor: pointer;
 }
-.sign-up-containerr {
+
+.edit-profile .npb-active{
+  font-family: 'Inter', sans-serif;
+  font-size: medium;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: #3D5654;
+  color: wheat;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-profile .npb-inactive{
+  font-family: 'Inter', sans-serif;
+  font-size: medium;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: #CADFDE;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-profile .delete{
+  font-family: 'Inter', sans-serif;
+  font-size: medium;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-profile {
   height: 100%;
   font-family: 'Inter', sans-serif;
   font-size: 18px;
   text-align: center;
-  margin: 5px;
+  margin: 25px;
 
 }
 
-.sign-up-containerr label {
+.edit-profile label {
   margin: 5px;
 }
 
-.sign-up-containerr input {
+.edit-profile input {
   height: calc(15px + 2vmin);
+  width: 100%;
   background-color: #d9d9d9;
   border-radius: 10px;
   border-color: transparent;
@@ -1246,7 +1516,6 @@ h1 {
   font-weight: bold;
   cursor: pointer;
 }
-
 
 .error-message {
   font-size: 20px;
@@ -1435,6 +1704,26 @@ h1 {
   margin-left: 20px;
 }
 
+.selection .formbuttons button.submit{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+  padding: 20px;
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.selection .formbuttons button.submit:hover{
+  background-color: #3D5654;
+  color: white;
+}
+
 .center {
   display: flex;
   flex-direction: column;
@@ -1548,53 +1837,108 @@ h1 {
   align-self: center; 
 }
 
-#selected {
-  margin-left: 10px;
-}
-
-#selected {
-  background-color: #D9D9D9;
-  padding: 2px;
-  margin-left: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-radius: 20px;
-}
-
-#selected:hover {
-  background-color: #3D5654;
-  color: white;
-}
-
 /* View Profile/Profile Screen */
 
-.viewProfile .profile-picture {
-  width: 200;
-  height: 200;
+.viewProfile .header {
+  display: flex;
+  align-items: center;
+  padding: 30px;
+  margin-bottom: 30px;
+  background-color: #3D5654;
+  border-radius: 30px;
+  box-shadow: 5px 10px 10px 5px #00000040;
 }
-
-
-
 
 .viewProfile {
   padding: 30px;
 }
 
-.viewProfile #new-line {
+.viewProfile .profile-picture {
   display: flex;
-  margin-top: 10px;
+  flex-direction: column;
+  margin-right: 30px;
 }
 
-.viewProfile #new-line1 label{
-  color: black;
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 40px;
-  left: 0;
-  top: 0;
-  line-height: normal;
-  letter-spacing: 0;
+.viewProfile .profile-picture #active {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
 }
+
+.viewProfile .profile-picture #inactive {
+  color: #D5A216;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+}
+
+.viewProfile .appLabel{
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.viewProfile #employee-name{
+  color: white;
+  display: flex;
+  text-transform: uppercase;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.viewProfile #employee-name #firstname{
+  display: flex;
+  text-transform: capitalize;
+  font-size: 28px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.viewProfile #company-id {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.viewProfile #email {
+  color: white;
+  font-size: 20px;
+  text-transform:lowercase;
+  margin-bottom: 30px;
+}
+
+.viewProfile #birthdate {
+  color: white;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.viewProfile #contact-number {
+  color: white;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.viewProfile #creation {
+  color: white;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.viewProfile .personal-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
 
 .viewProfile #new-line2 label{
   color: black;
@@ -1602,28 +1946,27 @@ h1 {
   font-weight: 550;
   margin-left: 90px;
 }
-.viewProfile #new-line3 label{
-  margin-top: 20px;
-  font-size: 28px;
-  font-weight: 700;
-  margin-left: 28px;
+.viewProfile .assignment-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.viewProfile #label {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
 .viewProfile #new-line4 label{
   font-size: 18px;
   margin-left: 80px;
 }
 
-.viewProfile .appLabel label{
-  display: flex;
-  white-space: nowrap;
-  align-items: center;
-  margin-left: 250px;
-  vertical-align: middle;
-  font-size: 18px;
-}
-
 .viewProfile .formbuttons {
   display: flex;
+  flex-direction: row;
+  align-content: flex-end;
+  justify-content: flex-end;
   margin-top: 30px;
   align-items: flex-end;
 }
@@ -1663,11 +2006,14 @@ h1 {
 }
 
 .viewProfile .profile-applications-table {
-  /*idk what to put here*/
   background-color: white;
+  border-radius: 30px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  width: 80%;
+  padding: 10px;
 }
 
-.profile-applications-table .dashboard-table {
+.profile-applications-table table{
   width: 100%;
   border-collapse: collapse;
   overflow-x: scroll;
@@ -1683,6 +2029,16 @@ h1 {
 
 .profile-applications-table .dashboard-table th {
   padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 25px;
+}
+
+.profile-applications-table .dashboard-table th {
+  padding-top: 20px;
+  font-size: 25px;
+}
+
+.profile-applications-table .dashboard-table td {
   font-size: 20px;
 }
 
@@ -1695,19 +2051,31 @@ h1 {
 /* View Ticket Design */
 
 .ViewTicket {
-  width: 100%;
+  margin: 30px;
   display: flex;
   flex-direction: column;
 }
 
-.ViewTicket h2 {
+.ViewTicket .ticket-title {
+  font-size: 28px;
+  width: fit-content;
+  font-weight: bold;
   display: flex;
+  align-items: center;
   justify-content: center;
-
+  background-color: #3d5654;
+  color: white;
+  border-radius: 30px;
+  margin-bottom: 50px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-shadow: 5px 10px 10px 5px #00000040;
 }
 
 .ViewTicket .new-line {
   margin-bottom: 20px;
+  font-size: 20px;
   display: flex;
 }
 
@@ -1716,29 +2084,31 @@ h1 {
   margin-right: 5px;
 }
 
-.ViewTicket label{
+.ViewTicket .emphasis {
+  margin-left: 20px;
+  font-weight: bold;
   font-size: 19px;
+}
+
+.ViewTicket label{
   margin-bottom: 0px;
   display: flex;
 }
 
 .ViewTicket label#description {
   font-size: 19px;
+  font-style: italic;
   margin-left: 40px;
 }
 
 .ViewTicket #type {
   margin-left: 20px;
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
   padding: 5px;
   padding-right: 10px;
   padding-left: 10px;
   border-radius: 20px;
-}
-
-.ViewTicket #type:hover {
-  background-color: #3D5654;
-  color: white;
 }
 
 .ViewTicket #critical-id {
@@ -1842,12 +2212,6 @@ h1 {
   border-radius: 20px;
 }
 
-
-.ViewTicket strong {
-  margin-left: 20px;
-  font-size: 19px;
-}
-
 .ViewTicket ul {
   display: flex;
   font-size: 19px;
@@ -1859,10 +2223,12 @@ h1 {
 
 .ViewTicket li {
   margin-right: 10px;
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
+  font-size: 20px;
   padding: 5px;
-  padding-right: 10px;
-  padding-left: 10px;
+  padding-right: 15px;
+  padding-left: 15px;
   border-radius: 20px;
 }
 
@@ -1978,10 +2344,30 @@ h1 {
   width: auto;
 }
 
+.edit-ticket #selected {
+  margin-left: 10px;
+}
+
+.edit-ticket #selected {
+  background-color: #3D5654;
+  font-weight: bold;
+  color: white;
+  padding: 2px;
+  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 20px;
+}
+
+.edit-ticket #selected:hover {
+  background-color: white;
+  color: black;
+}
+
 .edit-ticket textarea {
   width: calc(100% - 20px);
   border-radius: 20px;
-  background-color: #D9D9D9;
+  background-color: white;
   border-color: transparent;
   margin-top: 10px;
   resize: none;
@@ -2007,6 +2393,23 @@ h1 {
 
   padding: 20px;
   background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-ticket .delete-ticket{
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-start;
+  margin-right: auto;
+
+  padding: 20px;
+  background-color: red;
   color: white;
   border: none;
   cursor: pointer;
@@ -2065,7 +2468,7 @@ h1 {
   margin-left: 10px;
   font-size: 18px; /* Adjust the font size of the placeholder text */
   border-radius: 20px; /* Adjust the border radius to make the edges curve */
-  background-color: #D9D9D9;
+  background-color: white;
   border-color: transparent;
   padding-left: 10px;
   padding-right: 10px;
@@ -2119,17 +2522,19 @@ h1 {
 }
 
 .edit-ticket .typanan #new-line-tags #tags label{
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
   padding: 2px;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 5px;
   border-radius: 20px;
   vertical-align: middle;
 }
 
 .edit-ticket .typanan #new-line-tags #tags label:hover {
-  background-color: #3D5654;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .edit-ticket .formbuttons .save-changes:hover{
@@ -2148,7 +2553,9 @@ h1 {
 }
 
 .edit-ticket #selectedMembers label {
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
   padding: 2px;
   margin-left: 5px;
   padding-left: 10px;
@@ -2157,8 +2564,8 @@ h1 {
 }
 
 .edit-ticket #selectedMembers label:hover {
-  background-color: #3D5654;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .edit-ticket .typanan #selectedfiles {
@@ -2167,11 +2574,18 @@ h1 {
 
 .edit-ticket .typanan #selectedfiles li{
   width: fit-content;
-  background-color: #D9D9D9;
+  background-color: #3D5654;
+  color: white;
+  font-weight: bold;
   margin-top: 5px;
   padding: 2px;
   padding-left: 10px;
   padding-right: 10px;
   border-radius: 20px;
+}
 
+.edit-ticket .typanan #selectedfiles li:hover{
+  background-color: white;
+  color: black;
+  font-weight: bold;
 }

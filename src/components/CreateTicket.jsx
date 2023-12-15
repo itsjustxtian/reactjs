@@ -2,7 +2,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import React, { useState, useRef } from 'react';
 import { storage, db } from '../config/firebase-config';
 import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
-import { addDoc, collection } from 'firebase/firestore';
+import { setDoc, doc, addDoc, collection } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SelectApplication from './UserMng/SelectApplication';
@@ -124,7 +124,7 @@ const CreateTicket = ({ handleClose }) => {
   };
 
 
-  const submitHandler = async (e) => {
+  /*const submitHandler = async (e) => {
     e.preventDefault();
 
     try {
@@ -199,6 +199,85 @@ const CreateTicket = ({ handleClose }) => {
       setErrorMessage(error.message);
       console.log(errormessage);
     }
+  };*/
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      setErrorMessage('');
+      if (!selectedApplication) {
+        console.log("Some fields are emptyyyy.");
+        setErrorMessage('All fields are required to be filled.');
+        console.log(errormessage);
+        return;
+      } else {
+        let downloadURLs = []; // Array to store download URLs
+
+        let userData = {
+          author: sessionStorage.getItem('uid'),
+          application: selectedApplication.id,
+          subject: input.subject,
+          assignDev: selectedDevelopers.map(member => member.uid),
+          description: input.description,
+          tags: tags,
+          severity: input.severity,
+          status: 'Open',
+          type: input.type,
+          attachments: downloadURLs,
+          turnaroundtime: input.turnaroundtime
+        };
+
+        console.log('Data to be created:', userData);
+        const docRef = await addDoc(collection(db, 'tickets'), userData);
+        console.log("docRef value: ", docRef.id)
+
+        // Upload files to storage
+        if (files.length > 0) {
+          const storageRef = storage;
+
+          for (const selectedFile of files) {
+            const fileRef = ref(storageRef, `attachments/${docRef.id}/${selectedFile.name}`);
+            await uploadBytes(fileRef, selectedFile);
+            console.log('File uploaded successfully!');
+
+            // Get the download URL for the file
+            const downloadURL = await getDownloadURL(fileRef);
+
+            // Add the download URL to the array
+            downloadURLs.push(downloadURL);
+          }
+        }
+
+        setDoc(doc(db, 'tickets', docRef.id), userData);
+
+        setInput({
+          author: sessionStorage.getItem('uid'),
+          subject: '',
+          description: '',
+          severity: '',
+          type: '',
+          status: '',
+          attachments: [],
+        });
+
+        setFiles([]);
+        setSelectedApplication(null);
+        setSelectedDevelopers([]);
+        setTags([]);
+        document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+          radio.checked = false;
+        });
+
+        console.log('Creating new ticket', userData);
+        setErrorMessage('Creating new ticket Successful');
+        console.log(errormessage);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setErrorMessage(error.message);
+      console.log(errormessage);
+    }
   };
 
   const togglePopup = (button) => {
@@ -206,6 +285,91 @@ const CreateTicket = ({ handleClose }) => {
     setShowPopup((prevShowPopup) => !prevShowPopup);
   };
 
+  /*const submitHandler = async (e) => {
+    e.preventDefault();
+  
+    try {
+      setErrorMessage('');
+  
+      if (!selectedApplication) {
+        setErrorMessage('All fields are required to be filled.');
+        return;
+      } else {
+        let downloadURLs = [];
+        let ticketId;
+  
+        // Upload files to storage
+        if (files.length > 0) {
+          const storageRef = storage;
+  
+          for (const selectedFile of files) {
+            // Generate a unique ID for the ticket
+            const ticketDocRef = await addDoc(collection(db, 'tickets'), {
+              author: sessionStorage.getItem('uid'),
+              application: selectedApplication.id,
+              subject: input.subject,
+              assignDev: selectedDevelopers.map((member) => member.uid),
+              description: input.description,
+              tags: tags,
+              severity: input.severity,
+              status: 'Open',
+              type: input.type,
+              attachments: [],
+              turnaroundtime: input.turnaroundtime,
+            });
+  
+            // Get the generated ticket ID
+            ticketId = ticketDocRef.id;
+  
+            // Create a folder in storage using the ticket ID
+            const folderRef = ref(storageRef, `attachments/${ticketId}/`);
+            const fileRef = ref(folderRef, selectedFile.name);
+  
+            // Upload the file to the folder
+            await uploadBytes(fileRef, selectedFile);
+            console.log('File uploaded successfully!');
+  
+            // Get the download URL for the file
+            const downloadURL = await getDownloadURL(fileRef);
+  
+            // Add the download URL to the array
+            downloadURLs.push(downloadURL);
+          }
+        }
+  
+        // Update the ticket document with the attachment URLs
+        await setDoc(doc(db, 'tickets', ticketId), {
+          attachments: downloadURLs,
+        });
+  
+        setInput({
+          author: sessionStorage.getItem('uid'),
+          subject: '',
+          description: '',
+          severity: '',
+          type: '',
+          status: '',
+          attachments: [],
+        });
+  
+        setFiles([]);
+        setSelectedApplication(null);
+        setSelectedDevelopers([]);
+        setTags([]);
+        document
+          .querySelectorAll('input[type="radio"]')
+          .forEach((radio) => {
+            radio.checked = false;
+          });
+  
+        setErrorMessage('Creating new ticket Successful');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setErrorMessage(error.message);
+    }
+  };*/
+  
 
   const closePopup = (userDetail) => {
     setShowPopup(false);
@@ -254,9 +418,9 @@ const CreateTicket = ({ handleClose }) => {
         
         <div id='new-line'>
           <label>Assigned Developer: </label>
-          <button id='add-icon' onClick={() => togglePopup('members')}>
+          {selectedApplication && (<button id='add-icon' onClick={() => togglePopup('members')}>
             <PersonAddAlt1Icon/>
-          </button>
+          </button>)}
           <div id='selectedMembers'>
           {selectedDevelopers.map((member) => (
             <div key={member.id} id='list'>

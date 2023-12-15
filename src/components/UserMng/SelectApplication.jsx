@@ -70,7 +70,7 @@ const SelectApplication = ({handleClose}) => {
       };
 
   return (
-    <div>
+    <div className='selection'>
       Select Application:
 
       {applications.map(user => (

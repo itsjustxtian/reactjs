@@ -29,7 +29,7 @@ const Usermanagement = () => {
             )
           );
           const applicationsSnapshot = await getDocs(applicationsQuery);
-  
+          
           const applicationIds = applicationsSnapshot.docs.map(doc => doc.id);
   
           // Get teamleader, assignedqa, and teammembers values
@@ -38,7 +38,7 @@ const Usermanagement = () => {
             assignedqa: doc.data().assignedqa,
             teammembers: doc.data().teammembers
           }));
-  
+
           // Flatten teammembers array
           const teamMembersArray = teamMembersData.reduce((acc, val) => {
             acc.push(...val.teammembers);
@@ -149,7 +149,7 @@ const Usermanagement = () => {
           <tr
             id={row.status === 'Inactive' ? 'inactive-rows' : 'rows'}
             key={row.id} 
-            onClick={() => togglePopup(<ViewProfile handleClose={closePopup} profileId={row.id}/>, row.id)}>
+            onClick={() => togglePopup(<ViewProfile handleClose={closePopup} profileId={row.id} userUID={sessionStorage.getItem('uid')}/>, row.id, sessionStorage.getItem('uid'))}>
               <td>{row.companyid}</td>
               <td>{row.lastname + ', ' + row.firstname}</td>
               <td>{row.role}</td>

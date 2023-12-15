@@ -3,6 +3,7 @@ import { doc, collection, getDoc, getDocs, where, query, onSnapshot } from 'fire
 import { db } from '../config/firebase-config'
 import Popup from './PopUp';
 import Viewticket from './ViewTicket'
+import EditApplication from '../components/UserMng/EditApplication'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const ViewApplications = ({appId, handleClose}) => {
@@ -243,40 +244,38 @@ const ViewApplications = ({appId, handleClose}) => {
   return (
     <div className='viewApplications'>
       
-      <div className='applicationslabel'>
-        <div id= 'application-name'> 
-          <label>
+      <div className='header'>
+        <div id= 'component-title'>
           {applicationName}
-          </label>
         </div>
 
         <div id= 'new-line'> 
-          <label>
+          <div id='label'>
           Team Leader: {teamLeader}
-          </label>
+          </div>
         </div>
 
         <div id= 'new-line'> 
-          <label>
+          <div id='label'>
           Assign QA: {assignedqa}
-          </label>
+          </div>
         </div>
 
-        <div id= 'description-label'> 
-          <label>
-          <strong>Description:</strong>
-          </label>
+        <div id= 'new-line'> 
+          <div id='label'>
+            <strong>Description:</strong>
+          </div>
         </div>
 
-        <div id= 'description-text'> 
-          <label>
+        <div id= 'new-line'> 
+          <div id='descriptionnn'>
             {description}
-          </label>
+          </div>
         </div>
 
       </div>
 
-
+      <div className='ticket-history-area'>
       <div className='ticket-history'>
         <table className='dashboard-table'>
           <thead>
@@ -320,11 +319,15 @@ const ViewApplications = ({appId, handleClose}) => {
           </tbody>
         </table>
       </div>
+      </div>
 
-      <div className='formbuttons'>
+      <div className='viewApplicationsbuttons'>
+            <button className='edit-application' onClick={() => togglePopup(<EditApplication handleClose={closePopup} appId={appId}/>, closePopup, appId)}>
+              Edit Profile
+            </button>
           <button className='cancel' id='text'>
               <div id='text' onClick={handleCancel}> Close </div>
-            </button>
+          </button>
         </div> 
 
       <Popup show={showPopup} handleClose={closePopup}>
