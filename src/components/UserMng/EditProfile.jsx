@@ -4,11 +4,15 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
 import { storage, db } from '../../config/firebase-config';
 import { serverTimestamp, updateDoc, doc, getDoc, collection } from 'firebase/firestore';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { EmailAuthProvider, signInWithEmailAndPassword, reauthenticateWithCredential, getAuth, updateEmail, updatePassword } from 'firebase/auth';
 import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { query, getDocs, where } from 'firebase/firestore';
 
 const EditProfile = ({ handleClose, profileId }) => {
+  const auth = getAuth();
+  const [pwtoupdate, setPwToUpdate] = useState('');
+  const [originalEmail, setOriginalEmail] = useState(''); // State to store the original email
+  const [originalPassword, setOriginalPassword] = useState('');
   const [errormessage, setErrorMessage] = useState('');
   const [input, setInput] = useState({
     uid: '',
@@ -43,11 +47,14 @@ const EditProfile = ({ handleClose, profileId }) => {
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          setOriginalPassword(userData.password);
 
           // Create a new object without password and confirmpassword
           const { password, confirmpassword, ...userDataWithoutPassword } = userData;
 
-          console.log('userData:', userDataWithoutPassword);
+          // Store the original email in the state
+          setOriginalEmail(userData.email);
+          console.log("Original Email and Password: ", originalEmail, originalPassword)
 
           setInput(userDataWithoutPassword);
           setAvatar(userData.profilePicture || null);
@@ -100,7 +107,7 @@ const EditProfile = ({ handleClose, profileId }) => {
     setAvatar(URL.createObjectURL(selectedFile));
   };
 
-  const submitHandler = async (e) => {
+  /*const submitHandler = async (e) => {
     e.preventDefault();
   
     try {
@@ -173,7 +180,107 @@ const EditProfile = ({ handleClose, profileId }) => {
       console.error('Update error:', error);
       setErrorMessage(error.message);
     }
+  };*/
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      setErrorMessage('');
+
+      // Fetch user data from the database
+      const userRef = doc(db, 'users', profileId);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        console.error('User not found in the database');
+        return;
+      }
+
+      const userData = userDoc.data();
+
+      // Check if the entered password matches the old password in the database
+      if (input.password !== userData.password || input.confirmpassword !== userData.confirmpassword) {
+        setErrorMessage('Incorrect Password. Changes will not be saved.');
+        return;
+      }
+
+      // Check if the "New Password" fields match
+      if (showNewPassword && input.newpassword!== input.confirmnewpassword) {
+        setErrorMessage('New Password and Confirm New Password must match.');
+        return;
+      }
+
+
+      // If the "New Password" field is not blank and the "New Password" button is clicked
+      if (showNewPassword && input.newpassword.trim() !== '') {
+        // If conditions are met, update the password and confirmpassword fields
+        input.password = input.newpassword;
+        input.confirmpassword = input.newpassword;
+        // Clear the newpassword and confirmnewpassword fields to avoid storing them in the database
+        input.newpassword = '';
+        input.confirmnewpassword = '';
+      } else {
+        // If "New Password" is not being updated, ensure confirmpassword matches the old password
+        input.confirmpassword = input.password;
+      }
+
+
+      const updatedUserData = {
+        companyid: input.companyid,
+        email: input.email,
+        contactnumber: input.contactnumber,
+        firstname: input.firstname,
+        lastname: input.lastname,
+        birthdate: input.birthdate,
+        password: input.password, // Updated to use either the original or new password
+        confirmpassword: input.confirmpassword,
+        role: input.role,
+        status: input.status,
+      };
+
+      // Upload avatar to storage
+      if (file) {
+        const storageRef = storage;
+        const fileRef = ref(storageRef, `avatars/${file.name}`);
+        await storage.uploadBytes(fileRef, file);
+        const url = await getDownloadURL(fileRef);
+        updatedUserData.profilePicture = url;
+      }
+
+      // Update user details in the database
+      await updateDoc(doc(db, 'users', profileId), updatedUserData);
+
+      // Reauthenticate the user before updating sensitive information
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, originalPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+
+      // Update authentication credentials if new email is provided and it differs from the original email
+      if (input.email !== originalEmail) {
+        await updateEmail(auth.currentUser, input.email);
+      }
+
+      // Update authentication credentials if new password is provided
+      if (input.newpassword) {
+        await updatePassword(auth.currentUser, pwtoupdate);
+      }
+
+      console.log('Email:', auth.currentUser.email);
+      console.log('New Password:', input.password);
+      console.log('Original Password:', originalPassword);
+
+      console.log('User details and authentication updated successfully!');
+      setErrorMessage('User details and authentication updated successfully!');
+    } catch (error) {
+      console.error('Update error:', error);
+      setErrorMessage(error.message);
+      console.log('Email:', auth.currentUser.email);
+      console.log('Input Password:', input.password);
+      console.log('Original Password:', originalPassword);
+    }
   };
+
+
 
   const toggleNewPassword = () => {
     setShowNewPassword((prevShowNewPassword) => !prevShowNewPassword);
@@ -285,6 +392,39 @@ const EditProfile = ({ handleClose, profileId }) => {
               onChange={(date) => dateHandler(date)}
             />
           </div>
+
+          {sessionStorage.getItem('role') === "Admin" && (
+            <div className='new-line-select'>
+              <label>Role:</label>
+              <select
+                value={input.role}  // Add this line to reflect the current value
+                onChange={(e) => inputHandler(e)}
+                name='role'
+              >
+                <option value={"Developer"}> Developer </option>
+                <option value={"Quality Assurance"}> Quality Assurance </option>
+                <option value={"Team Leader"}> Team Leader </option>
+                <option value={"Admin"}> Admin </option>
+              </select>
+            </div>
+          )}
+
+          {sessionStorage.getItem('role') === "Admin" && (
+            <div className='new-line-select'>
+              <label>Status:</label>
+              <select
+                value={input.status}  // Add this line to reflect the current value
+                onChange={(e) => inputHandler(e)}
+                name='status'
+              >
+                <option value={"Active"}> Active </option>
+                <option value={"Inactive"}> Inactive </option>
+              </select>
+            </div>
+          )}
+
+          <div className='passwords'>
+            <div className='passwords-flex'>
           <div className='sign-up-right'>
             <label>Password:</label>
             <input
@@ -304,8 +444,23 @@ const EditProfile = ({ handleClose, profileId }) => {
               value={input.confirmpassword}
               onChange={(e) => inputHandler(e)}
               name='confirmpassword'
-            />           
+            /> 
+          </div>
+          </div>
+          
           {showNewPassword && (
+            <div className='passwords-flex'>
+            <div className='sign-up-right'>
+              <label>New Password:</label>
+              <input
+                autoComplete='off'
+                type='password'
+                placeholder='New Password'
+                value={input.newpassword}
+                onChange={(e) => inputHandler(e)}
+                name='newpassword'
+              />
+            </div>
             <div className='sign-up-right'>
               <label>Confirm New Password:</label>
               <input
@@ -317,7 +472,9 @@ const EditProfile = ({ handleClose, profileId }) => {
                 name='confirmnewpassword'
               />
             </div>
+            </div>
           )}
+          </div>
         </div>
 
         <div className='message-show'>{errormessage}</div>
@@ -335,7 +492,6 @@ const EditProfile = ({ handleClose, profileId }) => {
           </button>
           </div></div>
         </div>
-      </div>
   );
 };
 

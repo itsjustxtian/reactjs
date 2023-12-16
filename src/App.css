@@ -457,6 +457,21 @@ body, html {
   margin: 5px;
 }
 
+.new-line-select {
+  display: flex;
+}
+
+.new-line-select select {
+  height: calc(15px + 2vmin);
+  background-color: white;
+  border-radius: 10px;
+  border-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  margin: 5px;
+}
+
 .sign-up-container input {
   height: calc(15px + 2vmin);
   background-color: white;
@@ -467,6 +482,8 @@ body, html {
   text-align: center;
   margin: 5px;
 }
+
+
 
 .sign-up-container .sign-up-left {
   height: calc(15px + 2vmin);
@@ -1268,13 +1285,17 @@ h1 {
   flex-direction: column;
 }
 
+.original-passwords {
+  display: flex;
+  flex-direction: column;
+}
+
 .edit-profile .passwords-flex {
   display: flex;
 }
 
 .edit-profile .passwords {
   display: flex;
-  flex-direction: column;
   align-content: flex-start;
   justify-content: flex-start;
   align-items: flex-start;
