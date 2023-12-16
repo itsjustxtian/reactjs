@@ -195,11 +195,10 @@ const EditProfile = ({ handleClose, profileId }) => {
   ];
 
   return (
-    <div className='sign-up-containerr'>
-      <h1>Edit Profile</h1>
+    <div className='sign-up-container'>
+      <div className='component-title'>Update User Details</div>
       
       <div>
-        <h1>UPDATE USER DETAILS</h1>
 
         {/* Profile Picture Module */}
         <div className='profile-picture-component'>
