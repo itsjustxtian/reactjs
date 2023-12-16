@@ -228,7 +228,7 @@ const Registration = ({handleClose}) => {
     return (
         <div className='sign-up-container'>
             <form onSubmit={submitHandler} autoComplete="off">
-                <h1>REGISTER NEW USER</h1>
+                <div className='component-title'>REGISTER NEW USER</div>
 
                 {/* Profile Picture Module */}
                 <div className='profile-picture-component'>

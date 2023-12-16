@@ -848,6 +848,20 @@ body, html {
   box-shadow: 5px 10px 10px 5px #00000040;
 }
 
+.sign-up-container .component-title {
+  font-size: 32px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3d5654;
+  color: white;
+  border-radius: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+}
+
 .viewApplications .header #component-title {
   font-size: 32px;
   font-weight: bold;

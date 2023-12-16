@@ -205,7 +205,7 @@ const ViewProfile = ({handleClose, profileId, userUID}) => {
 
 
           <div className='formbuttons'>
-            {profileData.uid === sessionStorage.getItem('uid') && (
+            {(profileData.uid === sessionStorage.getItem('uid') || sessionStorage.getItem('role') === "Admin") && (
             <button className='edit-changes' onClick={() => togglePopup(<EditProfile handleClose={closePopup} profileId={profileId}/>)}>
               Edit Profile
             </button>)}

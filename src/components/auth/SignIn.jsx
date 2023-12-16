@@ -77,12 +77,12 @@ const SignIn = ({ onLogin }) => {
           </input>
         </div>
         
-        <div>
+        {/*<div>
           <a href="/forgot-password" 
           className='forgotpasswordlink'>
             Forgot Password
           </a>
-        </div>
+  </div>*/}
 
         <div className='space'></div>
 
