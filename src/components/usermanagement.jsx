@@ -57,7 +57,12 @@ const Usermanagement = () => {
   
         const querySnapshot = await getDocs(applicationsRef);
         const documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setData(documents);
+  
+        console.log("Documents:", documents);
+        console.log("Data after including current user:", data);
+
+  
+          setData(documents);
         console.log("Applications returned: ", documents);
       } catch (error) {
         console.error('Error fetching data:', error);

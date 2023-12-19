@@ -5,7 +5,7 @@ import Selectteamlead from '../UserMng/selectteamlead';
 import Selectqa from '../UserMng/selectqa';
 import Selectmembers from '../UserMng/selectmembers'
 import { db } from '../../config/firebase-config';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { query, where, getDocs, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const AddApplications = ({handleClose}) => {
@@ -76,7 +76,7 @@ const AddApplications = ({handleClose}) => {
       }));
   };
 
-  const handleSubmit = async(e) => {
+  /*const handleSubmit = async(e) => {
     e.preventDefault();
 
     // Now you can access detailed data in selectedTeamLead
@@ -126,7 +126,60 @@ const AddApplications = ({handleClose}) => {
       setErrorMessage(error.message);
       console.log(errormessage);
     }
+  };*/
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      setErrorMessage('');
+  
+      if (input.applicationname.trim() === '') {
+        setErrorMessage('Application name is required.');
+        return;
+      }
+  
+      // Query to check if an application with the same name already exists
+      const existingApplicationsQuery = query(
+        collection(db, 'applications'),
+        where('applicationname', '==', input.applicationname.trim())
+      );
+  
+      const existingApplicationsSnapshot = await getDocs(existingApplicationsQuery);
+  
+      if (!existingApplicationsSnapshot.empty) {
+        setErrorMessage('An application with the same name already exists.');
+        return;
+      }
+  
+      let appData = {
+        author: sessionStorage.getItem('uid'),
+        applicationname: input.applicationname.trim(),
+        teamleader: selectedTeamLead ? selectedTeamLead.uid : null,
+        assignedqa: selectedQa ? selectedQa.uid : null,
+        teammembers: selectedTeamMembers.map((member) => member.uid),
+        description: input.description,
+        datecreated: serverTimestamp(),
+      };
+  
+      await addDoc(collection(db, 'applications'), appData);
+  
+      setInput({
+        applicationname: '',
+        description: '',
+      });
+  
+      setSelectedTeamMembers([]);
+      handleRemoveqa(selectedQa);
+      handleRemovetl(selectedTeamLead);
+  
+      setErrorMessage('New Application Created Successfully!');
+    } catch (error) {
+      console.error('Creation error:', error);
+      setErrorMessage(error.message);
+    }
   };
+  
 
   return (
     <div className='add-application'>

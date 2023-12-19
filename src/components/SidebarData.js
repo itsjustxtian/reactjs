@@ -31,10 +31,10 @@ export const SidebarData = [
         activeIcon: <AppsIcon sx={{ fontSize: 50 }} />,
         link: "/view-all-applications",
       },
-      {
+      /*{
         title: "Suggestions Box",
         icon: <AssistantPhotoIcon />,
         activeIcon: <AssistantPhotoIcon sx={{ fontSize: 50 }} />,
         link: "/suggestions",
-      },
+      },*/
 ]

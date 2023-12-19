@@ -303,7 +303,7 @@ body, html {
   margin: 5px; /* Optional: Add some margin for spacing */
 }
 
-.forgotpasswordlink{
+.forgotpasswordlink {
   font-family: 'Inter', sans-serif;
   display: flex;
   align-items: flex-end;
@@ -311,6 +311,68 @@ body, html {
   margin-left: auto;
   font-size: 15px;
   color: black;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.forgotpasswordcomponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.forgotpasswordcomponent .forda-all {
+  display: flex;
+  align-items: center;
+}
+
+.forgotpasswordcomponent .component-title {
+  font-size: 32px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3D5654;
+  color: white;
+  width: 100%;
+  border-radius: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.forgotpasswordcomponent #cancel {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: 10px;
+
+  padding: 10px;
+  background-color: #CADFDE;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+
+.forgotpasswordcomponent #submit {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 20px;
+  padding: 10px;
+
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 .newuser {

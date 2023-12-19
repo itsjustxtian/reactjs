@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigateBeforeOutlined } from '@mui/icons-material';
 import Suggestions from './components/Suggestions';
+import forgotpassword from './components/auth/forgotpassword';
 
 function App() {
   const navigate = useNavigate();
