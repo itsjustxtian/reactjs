@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [userRole, setUserRole] = useState(null); // Added state to track user role
 
   useEffect(() => {
     const fetchData = async () => {
@@ -164,16 +165,18 @@ const Dashboard = () => {
 
   const getUserData = async (uid) => {
     const q = query(collection(db, 'users'), where('uid', '==', uid));
-  
+
     try {
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         sessionStorage.setItem('role', doc.data().role);
+        setUserRole(doc.data().role); // Set the user role in state
       });
     } catch (error) {
       console.error('Error getting documents:', error);
     }
   };
+
   
   const getApplicationName = async (appId) => {
     try {
@@ -426,7 +429,7 @@ const Dashboard = () => {
           />
 
         <div className='buttoncontainer'>
-          {sessionStorage.getItem('role') !== "Developer" && (<button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
+          {userRole !== "Developer" && (<button className='rectangle' onClick={() => togglePopup(<CreateTicket handleClose={closePopup}/>)}>
             <NoteAddIcon/>
             <label>Create Ticket</label>
           </button>)}
