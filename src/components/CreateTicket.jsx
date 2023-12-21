@@ -51,7 +51,7 @@ const CreateTicket = ({ handleClose }) => {
         ...prevInput,
         turnaroundtime: date,
     }));
-};
+  };
 
   const [input, setInput] = useState({
     author: sessionStorage.getItem('uid'),
@@ -206,9 +206,21 @@ const CreateTicket = ({ handleClose }) => {
 
     try {
       setErrorMessage('');
-      if (!selectedApplication) {
-        console.log("Some fields are emptyyyy.");
+      // Check if any of the required fields are empty
+      const requiredFields = ['subject', 'description', 'severity', 'type', 'turnaroundtime'];
+      const emptyFields = requiredFields.filter(field => !input[field]);
+
+      if (emptyFields.length > 0) {
         setErrorMessage('All fields are required to be filled.');
+        return;
+      }
+      
+      if (!selectedApplication) {
+        setErrorMessage('No application selected.');
+        console.log(errormessage);
+        return;
+      } else if (!selectedDevelopers) {
+        setErrorMessage('No Developers selected.');
         console.log(errormessage);
         return;
       } else {

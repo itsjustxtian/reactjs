@@ -9,9 +9,10 @@ import SelectApplication from './UserMng/SelectApplication';
 import Popup from './PopUp';
 import Selectmembers from './UserMng/selectmembers';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import DatePicker from 'react-datepicker';
 
-const EditTicket = ({handleClose, ticketId, userId}) => {
-    //console.log('Passed data in Edit Ticket: ', ticketId, userId)
+const EditTicket = ({handleClose, ticketId, userId, authorId}) => {
+    //console.log('Passed data in Edit Ticket: ', ticketId, userId, authorId)
     const [loading, setLoading] = useState(true); // Added loading state
     const [data, setData] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
@@ -30,6 +31,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
         severity: '',
         type: '',
         attachments: [],
+        turnaroundtime: null
       });
 
     useEffect(() => {
@@ -98,6 +100,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 setFiles(filenames);
 
                 console.log("Files in useEffect:", files)
+                console.log("Ticket data: ", ticketDoc.data())
                 updateInputState(ticketDoc.data());
             } else {
               console.log("No Matching Documents.");
@@ -140,6 +143,12 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
       }
 
       const updateInputState = (fetchedData) => {
+        // Convert nanoseconds and seconds to milliseconds
+        const milliseconds = fetchedData.turnaroundtime.seconds * 1000 + Math.floor(fetchedData.turnaroundtime.nanoseconds / 1e6);
+
+        // Create a new Date object using milliseconds
+        const dateObject = new Date(milliseconds);
+
         setInput({
           author: sessionStorage.getItem('uid'),
           subject: fetchedData.subject, // Use the fetched data or default to an empty string
@@ -147,6 +156,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
           severity: fetchedData.severity,
           type: fetchedData.type,
           attachments: fetchedData.attachments,
+          turnaroundtime: dateObject
         });
 
         console.log('Input state updated successfully:', input, "Existing selectedApplication: ", selectedApplication, "Existing selectedDevelopers: ", selectedDevelopers);
@@ -248,10 +258,16 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
       
         try {
           setErrorMessage('');
-          if (!selectedApplication) {
-            console.log('Some fields are emptyyyy.');
-            setErrorMessage('All fields are required to be filled.');
+          if (!selectedApplication || !input.subject || !input.description || !input.severity || !input.type) {
+            console.log('Some fields are empty.');
+            setErrorMessage('All fields except for tags and attachments are required to be filled.');
             console.log(errormessage);
+            return;
+          }
+    
+          // Check if turnaround date is greater than today
+          if (input.turnaroundtime && new Date(input.turnaroundtime) <= new Date()) {
+            setErrorMessage('Turnaround date must be greater than today.');
             return;
           } else {
             let downloadURLs = [];
@@ -413,15 +429,45 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
           arr2.every((value) => arr1.includes(value))
         );
       }
+
+      const dateHandler = (date) => {
+        setInput((prevInput) => ({
+          ...prevInput,
+          turnaroundtime: date.toLocaleDateString(),
+        }));
+      };
       
-      
+    
+      function isUserHasPermission(userId, authorId) {
+        console.log("Role: ", sessionStorage.getItem('role'), "UserId: ", userId, "AuthorId: ",authorId)
+        if (sessionStorage.getItem('role') === 'Admin' || userId === authorId) {
+          console.log("Has permission.")
+          return true;
+        } else {
+          console.log("No permission.")
+          return false;
+        }
+      }
+
+      function isDeveloper() {
+        if (sessionStorage.getItem('role') === 'Developer') {
+          console.log("Is Developer.")
+          return true;
+        } else {
+          console.log("No permission.")
+          return false;
+        }
+      }      
 
   return (
     <div className='edit-ticket'>
         <div className='typanan'>
             <div id='new-line'>
                 <label>Application: </label>
-                <button id='add-icon' onClick={() => togglePopup('application')}>
+                <button 
+                  id='add-icon'
+                  style={{ display: isUserHasPermission(userId, authorId) ? 'block' : 'none' }}
+                  onClick={() => togglePopup('application')}>
                     <AppRegistrationIcon/>
                 </button>
                 <label id='selected'>
@@ -429,6 +475,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                     {selectedApplication && (
                     <ClearIcon
                     className='clear-icon' 
+                    style={{ display: isUserHasPermission(userId, authorId) ? '' : 'none' }}
                     onClick={() => handleRemoveApplication(selectedApplication)}
                     />
                     )}
@@ -440,6 +487,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 <input
                     type="text" 
                     name="subject" 
+                    disabled={!isUserHasPermission(userId, authorId)}
                     value = {input.subject}
                     onChange={(e) => inputHandler(e)}
                 />
@@ -447,7 +495,11 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
         
             <div id='new-line'>
                 <label>Assigned Developer: </label>
-                {selectedApplication && (<button id='add-icon' onClick={() => togglePopup('members')}>
+                {selectedApplication && 
+                (<button 
+                  id='add-icon' 
+                  style={{ display: isUserHasPermission(userId, authorId) ? '' : 'none' }}
+                  onClick={() => togglePopup('members')}>
                     <PersonAddAlt1Icon/>
                 </button>)}
                 <div id='selectedMembers'>
@@ -457,6 +509,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                             {member.lastname + ', ' + member.firstname}
                             <ClearIcon
                             className='clear-icon'
+                            style={{ display: isUserHasPermission(userId, authorId) ? '' : 'none' }}
                             onClick={() => handleRemoveMember(member)}
                             />
                         </label>
@@ -466,11 +519,12 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             </div>
 
             <div id='new-line'>
-            <label>Description: </label>
+            <label>Description/Resolution: </label>
             </div>
             <textarea 
                 type="text"
                 name='description'
+                disabled={!(isUserHasPermission(userId, authorId) || isDeveloper())}
                 value = {input.description}
                 onChange={(e) => inputHandler(e)}
                 cols="30" 
@@ -482,6 +536,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                 <input
                     type="text"
                     name="tags"
+                    style={{ display: isUserHasPermission(userId, authorId) ? '' : 'none' }}
                     placeholder='Input tag then press Enter...'
                     onKeyUp={(e) => tagHandler(e)}
                 />
@@ -492,6 +547,7 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
                             {tag}
                             <ClearIcon
                             className='clear-icon'
+                            style={{ display: isUserHasPermission(userId, authorId) ? '' : 'none' }}
                             onClick={() => handleRemoveTag(index)}
                             />
                         </label>
@@ -501,30 +557,116 @@ const EditTicket = ({handleClose, ticketId, userId}) => {
             </div>
         
             <div id='new-line-radios'>
-            <label>Severity/Priority: </label>
-            <input type="radio" name="severity" value="Critical" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Critical'}/>
-            <label> Critical </label>
-            <input type="radio" name="severity" value="High" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'High'}/>
-            <label> High </label>
-            <input type="radio" name="severity" value="Medium" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Medium'}/>
-            <label> Medium </label>
-            <input type="radio" name="severity" value="Low" onChange={(e) => inputHandler(e, 'severity')} checked={selectedSeverity === 'Low'}/>
-            <label> Low </label>
+              <label>Severity/Priority: </label>
+              <input
+                type="radio"
+                name="severity"
+                value="Critical"
+                onChange={(e) => inputHandler(e, 'severity')}
+                checked={selectedSeverity === 'Critical'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Critical</label>
+
+              <input
+                type="radio"
+                name="severity"
+                value="High"
+                onChange={(e) => inputHandler(e, 'severity')}
+                checked={selectedSeverity === 'High'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>High</label>
+
+              <input
+                type="radio"
+                name="severity"
+                value="Medium"
+                onChange={(e) => inputHandler(e, 'severity')}
+                checked={selectedSeverity === 'Medium'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Medium</label>
+
+              <input
+                type="radio"
+                name="severity"
+                value="Low"
+                onChange={(e) => inputHandler(e, 'severity')}
+                checked={selectedSeverity === 'Low'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Low</label>
             </div>
+
         
             <div id='new-line-radios'>
-            <label>Type: </label>
-            <input type="radio" name="type" value="Functional" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Functional'}/>
-            <label> Functional </label>
-            <input type="radio" name="type" value="Performance" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Performance'}/>
-            <label> Performance </label>
-            <input type="radio" name="type" value="Usability" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Usability'}/>
-            <label> Usability </label>
-            <input type="radio" name="type" value="Compatibility" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Compatibility'}/>
-            <label> Compatibility </label>
-            <input type="radio" name="type" value="Security" onChange={(e) => inputHandler(e, 'type')} checked={selectedType === 'Security'}/>
-            <label> Security </label>
+              <label>Type: </label>
+              <input
+                type="radio"
+                name="type"
+                value="Functional"
+                onChange={(e) => inputHandler(e, 'type')}
+                checked={selectedType === 'Functional'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Functional</label>
+
+              <input
+                type="radio"
+                name="type"
+                value="Performance"
+                onChange={(e) => inputHandler(e, 'type')}
+                checked={selectedType === 'Performance'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Performance</label>
+
+              <input
+                type="radio"
+                name="type"
+                value="Usability"
+                onChange={(e) => inputHandler(e, 'type')}
+                checked={selectedType === 'Usability'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Usability</label>
+
+              <input
+                type="radio"
+                name="type"
+                value="Compatibility"
+                onChange={(e) => inputHandler(e, 'type')}
+                checked={selectedType === 'Compatibility'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Compatibility</label>
+
+              <input
+                type="radio"
+                name="type"
+                value="Security"
+                onChange={(e) => inputHandler(e, 'type')}
+                checked={selectedType === 'Security'}
+                disabled={!isUserHasPermission(userId, authorId)}
+              />
+              <label>Security</label>
             </div>
+
+
+            <div className='typanan'>
+              <div id='new-line'>
+                  <label>Turnaround Date:</label>
+                  <DatePicker
+                  dateFormat='yyyy/MM/dd'
+                  placeholderText='Select a Date'
+                  selected={input.turnaroundtime}
+                  disabled={!isUserHasPermission(userId, authorId)}
+                  onChange={(date) => dateHandler(date)}
+                  minDate={new Date()} // Set the minimum date to the current date
+                  />
+              </div>
+            </div>  
           
             <div id='selectedfiles'>
             <input

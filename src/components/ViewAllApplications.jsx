@@ -13,6 +13,7 @@ const ViewAllApplications = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchData = () => {
@@ -63,6 +64,25 @@ const ViewAllApplications = () => {
 
     fetchData();
   }, []);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filterData = () => {
+    const filteredData = data.filter((application) => {
+      const applicationName = application.applicationname || ''; // Handle null case
+      const teamLeader = application.teamleader || ''; // Handle null case
+      const assignedQA = application.assignedqa || ''; // Handle null case
+  
+      return (
+        applicationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        teamLeader.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        assignedQA.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+    return filteredData;
+  };
 
   const getTeamLeaderName = async (userid) => {
     try {
@@ -145,13 +165,16 @@ const ViewAllApplications = () => {
   };
 
   const sortedData = () => {
-    const sortableData = [...data];
+    const sortableData = filterData(); // Use filtered data for sorting
     if (sortConfig !== null) {
       sortableData.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
+        const valueA = a[sortConfig.key] || ''; // Treat null as an empty string
+        const valueB = b[sortConfig.key] || '';
+  
+        if (valueA < valueB) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
+        if (valueA > valueB) {
           return sortConfig.direction === 'ascending' ? 1 : -1;
         }
         return 0;
@@ -159,15 +182,28 @@ const ViewAllApplications = () => {
     }
     return sortableData;
   };
+ 
 
   return (
     <div className="View-All-Applications">
       <div className='component-title'> <WidgetsIcon sx={{ fontSize: 60 }} style={{ marginRight: '10px' }}/> REGISTERED APPLICATIONS <WidgetsIcon sx={{ fontSize: 60 }} style={{ marginLeft: '10px' }}/></div>
-      <div className='buttoncontainer'>
-        {sessionStorage.getItem('role') !== "Developer" && (<button onClick={() => togglePopup(<AddApplications handleClose={closePopup}/>)}>
-          <DashboardCustomizeIcon sx={{ fontSize: 30 }} style={{ marginRight: '10px' }}/> Add App
-        </button>)}
+      
+      <div className='search-and-create'>
+        <strong>Search: </strong>
+        <input
+            id='search-bar'
+            placeholder='Search Application/Team Leader/QA...'
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+
+        <div className='buttoncontainer'>
+          {sessionStorage.getItem('role') !== "Developer" && (<button onClick={() => togglePopup(<AddApplications handleClose={closePopup}/>)}>
+            <DashboardCustomizeIcon sx={{ fontSize: 30 }} style={{ marginRight: '10px' }}/> Add App
+          </button>)}
+        </div>
       </div>
+      
 
       <div className='applications-table-div'>
         <table>

@@ -32,9 +32,15 @@ export const SidebarData = [
         link: "/view-all-applications",
       },
       /*{
+        title: "Inbox",
+        icon: <MailIcon />,
+        activeIcon: <MailIcon sx={{ fontSize: 50 }} />,
+        link: "/inbox",
+      },*/
+      {
         title: "Suggestions Box",
         icon: <AssistantPhotoIcon />,
         activeIcon: <AssistantPhotoIcon sx={{ fontSize: 50 }} />,
         link: "/suggestions",
-      },*/
+      },
 ]

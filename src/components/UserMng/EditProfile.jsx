@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Avatar } from '@mui/material';
 import { storage, db } from '../../config/firebase-config';
-import { serverTimestamp, updateDoc, doc, getDoc, collection } from 'firebase/firestore';
+import { serverTimestamp, deleteDoc, updateDoc, doc, getDoc, collection } from 'firebase/firestore';
 import { EmailAuthProvider, signInWithEmailAndPassword, reauthenticateWithCredential, getAuth, updateEmail, updatePassword } from 'firebase/auth';
 import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { query, getDocs, where } from 'firebase/firestore';
@@ -34,6 +34,8 @@ const EditProfile = ({ handleClose, profileId }) => {
   const [avatar, setAvatar] = useState(null); // Changed from 'profilePicture' to 'avatar' for consistency
   const [file, setFile] = useState(null);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [data, setData] = useState(false);
+
 
   const handleCancel = () => {
     handleClose();
@@ -57,6 +59,7 @@ const EditProfile = ({ handleClose, profileId }) => {
           console.log("Original Email and Password: ", originalEmail, originalPassword)
 
           setInput(userDataWithoutPassword);
+          setData(userData);
           setAvatar(userData.profilePicture || null);
         }
       } catch (error) {
@@ -198,46 +201,124 @@ const EditProfile = ({ handleClose, profileId }) => {
       }
 
       const userData = userDoc.data();
-
-      // Check if the entered password matches the old password in the database
-      if (input.password !== userData.password || input.confirmpassword !== userData.confirmpassword) {
-        setErrorMessage('Incorrect Password. Changes will not be saved.');
+      // Check if any required field is empty
+      if (
+        !input.companyid ||
+        !input.email ||
+        !input.contactnumber ||
+        !input.firstname ||
+        !input.lastname ||
+        !input.birthdate
+      ) {
+        setErrorMessage('All fields are required to be filled.');
         return;
       }
 
-      // Check if the "New Password" fields match
-      if (showNewPassword && input.newpassword!== input.confirmnewpassword) {
-        setErrorMessage('New Password and Confirm New Password must match.');
-        return;
+      // Check if the company ID already exists for a different user
+      const companyIdQuery = query(collection(db, 'users'), where('companyid', '==', input.companyid));
+      const companyIdQuerySnapshot = await getDocs(companyIdQuery);
+
+      if (!companyIdQuerySnapshot.empty) {
+        const existingUser = companyIdQuerySnapshot.docs.find(doc => doc.id !== profileId && doc.data().companyid === input.companyid);
+        if (existingUser) {
+          setErrorMessage('Company ID already exists. Please choose a different one.');
+          return;
+        }
       }
 
+      // Check if the email already exists for a different user
+      const emailQuery = query(collection(db, 'users'), where('email', '==', input.email));
+      const emailQuerySnapshot = await getDocs(emailQuery);
 
-      // If the "New Password" field is not blank and the "New Password" button is clicked
-      if (showNewPassword && input.newpassword.trim() !== '') {
-        // If conditions are met, update the password and confirmpassword fields
-        input.password = input.newpassword;
-        input.confirmpassword = input.newpassword;
-        // Clear the newpassword and confirmnewpassword fields to avoid storing them in the database
-        input.newpassword = '';
-        input.confirmnewpassword = '';
+      if (!emailQuerySnapshot.empty) {
+        const existingUser = emailQuerySnapshot.docs.find(doc => doc.id !== profileId && doc.data().email === input.email);
+        if (existingUser) {
+          setErrorMessage('Email already exists. Please choose a different one.');
+          return;
+        }
+      }
+
+      let updatedUserData = [];
+
+      console.log("Role: ", sessionStorage.getItem('role'), "userData.uid: ", userData.uid, "sessionStorage.getItem('uid'): ", sessionStorage.getItem('uid'))
+
+      if (sessionStorage.getItem('role') === 'Admin' && userData.uid !== sessionStorage.getItem('uid')) {
+        //const adminUserRef = doc(db, 'users', sessionStorage.getItem('uid')); // Replace adminUid with the actual uid of the admin
+        const adminUserQuery = query(collection(db, 'users'), where('uid', '==', sessionStorage.getItem('uid')))
+        const adminUserQuerySnapshot = await getDocs(adminUserQuery);
+
+        if (!adminUserQuerySnapshot.empty) {
+          // Assuming there's only one document matching the query
+          const adminUserData = adminUserQuerySnapshot.docs[0];
+          const adminUserRef = doc(db, 'users', adminUserData.id);
+
+          const adminUserDoc = await getDoc(adminUserRef);
+          if (adminUserDoc.exists()) {
+            const adminUserData = adminUserDoc.data();
+            const adminPassword = adminUserData.password;
+
+            // Verify the entered password against the admin's password
+            if (input.password !== adminPassword) {
+              setErrorMessage('Admin password verification failed. Changes will not be saved.');
+              return;
+            }}
+
+        } else {
+          console.error('Admin user not found in the database');
+          return;
+        }
+
+        updatedUserData = {
+          companyid: input.companyid,
+          email: input.email,
+          contactnumber: input.contactnumber,
+          firstname: input.firstname,
+          lastname: input.lastname,
+          birthdate: input.birthdate,
+          //password: input.password, // Updated to use either the original or new password
+          //confirmpassword: input.confirmpassword,
+          role: input.role,
+          status: input.status,
+        };
       } else {
-        // If "New Password" is not being updated, ensure confirmpassword matches the old password
-        input.confirmpassword = input.password;
+        // Check if the entered password matches the old password in the database
+        if (input.password !== userData.password || input.confirmpassword !== userData.confirmpassword) {
+          setErrorMessage('Incorrect Password. Changes will not be saved.');
+          return;
+        }
+
+        // Check if the "New Password" fields match
+        if (showNewPassword && input.newpassword!== input.confirmnewpassword) {
+          setErrorMessage('New Password and Confirm New Password must match.');
+          return;
+        }
+
+        // If the "New Password" field is not blank and the "New Password" button is clicked
+        if (showNewPassword && input.newpassword.trim() !== '') {
+          // If conditions are met, update the password and confirmpassword fields
+          input.password = input.newpassword;
+          input.confirmpassword = input.newpassword;
+          // Clear the newpassword and confirmnewpassword fields to avoid storing them in the database
+          input.newpassword = '';
+          input.confirmnewpassword = '';
+        } else {
+          // If "New Password" is not being updated, ensure confirmpassword matches the old password
+          input.confirmpassword = input.password;
+        }
+
+        updatedUserData = {
+          companyid: input.companyid,
+          email: input.email,
+          contactnumber: input.contactnumber,
+          firstname: input.firstname,
+          lastname: input.lastname,
+          birthdate: input.birthdate,
+          password: input.password, // Updated to use either the original or new password
+          confirmpassword: input.confirmpassword,
+          role: input.role,
+          status: input.status,
+        };
       }
-
-
-      const updatedUserData = {
-        companyid: input.companyid,
-        email: input.email,
-        contactnumber: input.contactnumber,
-        firstname: input.firstname,
-        lastname: input.lastname,
-        birthdate: input.birthdate,
-        password: input.password, // Updated to use either the original or new password
-        confirmpassword: input.confirmpassword,
-        role: input.role,
-        status: input.status,
-      };
 
       // Upload avatar to storage
       if (file) {
@@ -248,6 +329,7 @@ const EditProfile = ({ handleClose, profileId }) => {
         updatedUserData.profilePicture = url;
       }
 
+      console.log("updatedUserData: ", updatedUserData)
       // Update user details in the database
       await updateDoc(doc(db, 'users', profileId), updatedUserData);
 
@@ -273,7 +355,7 @@ const EditProfile = ({ handleClose, profileId }) => {
       setErrorMessage('User details and authentication updated successfully!');
     } catch (error) {
       console.error('Update error:', error);
-      setErrorMessage(error.message);
+      //setErrorMessage(error.message);
       console.log('Email:', auth.currentUser.email);
       console.log('Input Password:', input.password);
       console.log('Original Password:', originalPassword);
@@ -300,6 +382,72 @@ const EditProfile = ({ handleClose, profileId }) => {
     '-',
     'Backspace',
   ];
+
+  const deleteHandler = async () => {
+    try {
+      setErrorMessage('');
+
+      if (!input.password || !input.confirmpassword){
+        setErrorMessage("Input your password to confirm deletion.")
+        return;
+      }
+
+      // Validation for non-admin users
+      if (
+        sessionStorage.getItem('uid') === profileId &&
+        sessionStorage.getItem('role') !== 'Admin'
+      ) {
+        const userQuery = query(collection(db, 'users'), where('uid', '==', profileId));
+        const userQuerySnapshot = await getDocs(userQuery);
+
+        if (userQuerySnapshot.empty) {
+          console.error('User not found in the database');
+          setErrorMessage('User not found in the database');
+          return;
+        }
+
+        const userData = userQuerySnapshot.docs[0].data();
+
+        // Check if the entered password matches the password in the database
+        if (input.password !== userData.password || input.confirmpassword !== userData.confirmpassword) {
+          console.error('Incorrect Password. Deletion will not be performed.');
+          setErrorMessage('Incorrect Password. Deletion will not be performed.');
+          return;
+        }
+      }
+
+      // Validation for admin users
+      if (sessionStorage.getItem('role') === 'Admin') {
+        const adminUserQuery = query(collection(db, 'users'), where('uid', '==', sessionStorage.getItem('uid')));
+        const adminUserQuerySnapshot = await getDocs(adminUserQuery);
+
+        if (adminUserQuerySnapshot.empty) {
+          console.error('Admin user not found in the database');
+          setErrorMessage('Admin user not found in the database');
+          return;
+        }
+
+        const adminUserData = adminUserQuerySnapshot.docs[0].data();
+
+        // Check if the entered password matches the admin's password
+        if (input.password !== adminUserData.password || input.confirmpassword !== adminUserData.confirmpassword) {
+          console.error('Admin password verification failed. Deletion will not be performed.');
+          setErrorMessage('Admin password verification failed. Deletion will not be performed.');
+          return;
+        }
+      }
+
+      // Delete the user document with the given profileId
+      await deleteDoc(doc(db, 'users', profileId));
+      console.log('User deleted successfully!');
+      setErrorMessage('User deleted successfully!');
+      handleClose(); // Close the modal or navigate away after deletion
+    } catch (error) {
+      console.error('Delete error:', error);
+      setErrorMessage(error.message);
+    }
+  };
+
 
   return (
     <div className='sign-up-container'>
@@ -351,6 +499,7 @@ const EditProfile = ({ handleClose, profileId }) => {
               value={input.email}
               onChange={(e) => inputHandler(e)}
               name='email'
+              disabled={data.uid !== sessionStorage.getItem('uid')}
             />
 
             <label>Contact Number: </label>
@@ -480,11 +629,16 @@ const EditProfile = ({ handleClose, profileId }) => {
         <div className='message-show'>{errormessage}</div>
 
         <div className='register-cancel-container'>
-          <button id='cancel' onClick={toggleNewPassword}>
+          { sessionStorage.getItem('uid') === data.uid && (<button id='cancel' onClick={toggleNewPassword}>
               New Password
-          </button>
+          </button>)}
+          
           <button id='register' type='submit' onClick={submitHandler}>
             Update
+          </button>
+
+          <button id='delete' onClick={deleteHandler}>
+            Delete
           </button>
           
           <button id='cancel' onClick={handleCancel}>

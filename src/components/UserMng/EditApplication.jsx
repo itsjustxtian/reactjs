@@ -171,10 +171,15 @@ const EditApplications = ({handleClose, appId}) => {
 
     try {
       setErrorMessage('');
-      if (input.applicationname === '') {
-        console.log("Some fields are empty.");
+      // Check if any required field is empty
+      if (
+        !input.applicationname.trim() ||
+        !selectedTeamLead ||
+        !selectedQa ||
+        selectedTeamMembers.length === 0 ||
+        !input.description.trim()
+      ) {
         setErrorMessage('All fields are required to be filled.');
-        console.log(errormessage);
         return;
       } else {
         let appData = {
@@ -189,8 +194,8 @@ const EditApplications = ({handleClose, appId}) => {
 
         await updateDoc(doc(db, 'applications', appId), appData);
 
-        console.log('Creating new application', appData);
-        setErrorMessage('New Application Created Successfully!');
+        console.log('Updating application:', appData);
+        setErrorMessage('Application Updated Successfully!');
         setTimeout(() => {
           // Reload the page after a 2-second delay
           window.location.reload();

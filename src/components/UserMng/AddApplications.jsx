@@ -134,8 +134,15 @@ const AddApplications = ({handleClose}) => {
     try {
       setErrorMessage('');
   
-      if (input.applicationname.trim() === '') {
-        setErrorMessage('Application name is required.');
+      // Check if any of the required fields are empty
+      if (
+        input.applicationname.trim() === '' ||
+        !selectedTeamLead ||
+        !selectedQa ||
+        selectedTeamMembers.length === 0 ||
+        input.description.trim() === ''
+      ) {
+        setErrorMessage('All fields are required.');
         return;
       }
   

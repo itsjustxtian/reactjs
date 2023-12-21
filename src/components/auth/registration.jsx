@@ -81,6 +81,16 @@ const Registration = ({handleClose}) => {
 
         try {
             setErrorMessage('');
+
+             // Check if any of the required fields are empty
+            const requiredFields = ['companyid', 'email', 'contactnumber', 'firstname', 'lastname', 'birthdate', 'password', 'confirmpassword'];
+            const emptyFields = requiredFields.filter(field => !input[field]);
+
+            if (emptyFields.length > 0) {
+                setErrorMessage('All fields are required to be filled.');
+                return;
+            }
+
             if(input.password !== input.confirmpassword){
                 console.log("Password and Confirm Password do not match.");
                 setErrorMessage("Password and Confirm Password do not match.");

@@ -12,6 +12,7 @@ const Usermanagement = () => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: 'status', direction: 'ascending' });
   const [popupContent, setPopupContent] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +72,71 @@ const Usermanagement = () => {
   
     fetchData();
   }, []);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  /*const filterData = () => {
+    const filteredData = data.filter((row) =>
+      row.companyid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (row.firstname + ' ' + row.lastname).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    return filteredData;
+  };*/
+
+  const filterData = () => {
+    const filteredData = data.filter((row) =>
+      (row.companyid && row.companyid.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      ((row.firstname + ' ' + row.lastname).toLowerCase().includes(searchTerm.toLowerCase()))
+    );
   
+  
+    // Custom sorting function
+    const customSort = (a, b) => {
+      // Move 'Inactive' rows to the bottom
+      if (a.status === 'Inactive' && b.status !== 'Inactive') {
+        return 1;
+      }
+      if (a.status !== 'Inactive' && b.status === 'Inactive') {
+        return -1;
+      }
+  
+      // Sort by numerical order of companyid
+      return a.companyid.localeCompare(b.companyid, undefined, { numeric: true });
+    };
+  
+    // Apply sorting function to the filtered data
+    const sortedData = [...filteredData].sort(customSort);
+  
+    return sortedData;
+  };
+  
+  const sortedAndFilteredData = () => {
+    const filteredData = data.filter((row) =>
+      row.companyid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (row.firstname + ' ' + row.lastname).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const sortableData = [...filteredData];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        // Use localeCompare for string comparison
+        if (typeof a[sortConfig.key] === 'string') {
+          return sortConfig.direction === 'ascending'
+            ? a[sortConfig.key].localeCompare(b[sortConfig.key])
+            : b[sortConfig.key].localeCompare(a[sortConfig.key]);
+        }
+        // For numeric values
+        return sortConfig.direction === 'ascending'
+          ? a[sortConfig.key] - b[sortConfig.key]
+          : b[sortConfig.key] - a[sortConfig.key];
+      });
+    }
+
+    return sortableData;
+  };
+
 
   const requestSort = (key) => {
     let direction = 'ascending';
@@ -88,7 +153,7 @@ const Usermanagement = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const sortedData = () => {
+  /*const sortedData = () => {
     const sortableData = [...data];
     if (sortConfig !== null) {
       sortableData.sort((a, b) => {
@@ -102,7 +167,27 @@ const Usermanagement = () => {
       });
     }
     return sortableData;
+  };*/
+
+  const sortedData = () => {
+    const sortableData = [...data];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        // Use localeCompare for string comparison
+        if (typeof a[sortConfig.key] === 'string') {
+          return sortConfig.direction === 'ascending'
+            ? a[sortConfig.key].localeCompare(b[sortConfig.key])
+            : b[sortConfig.key].localeCompare(a[sortConfig.key]);
+        }
+        // For numeric values
+        return sortConfig.direction === 'ascending'
+          ? a[sortConfig.key] - b[sortConfig.key]
+          : b[sortConfig.key] - a[sortConfig.key];
+      });
+    }
+    return sortableData;
   };
+
 
   const [showPopup, setShowPopup] = useState(false);
 
@@ -118,7 +203,26 @@ const Usermanagement = () => {
 
   return (
     <div className='user-management'>
-      <div className='component-title'> <PeopleAltIcon sx={{ fontSize: 60 }} style={{ marginRight: '10px' }}/> User Management <PeopleAltIcon sx={{ fontSize: 60 }} style={{ marginLeft: '10px' }}/></div>
+      <div className='component-title'>
+        <PeopleAltIcon 
+          sx={{ fontSize: 60 }} 
+          style={{ marginRight: '10px' }}/> 
+          User Management 
+        <PeopleAltIcon 
+          sx={{ fontSize: 60 }} 
+          style={{ marginLeft: '10px' }}/>
+      </div>
+
+      <div className='search-line'>
+        <strong>Search: </strong>
+          <input
+              id='search-bar'
+              placeholder='Search Company ID/Name...'
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+      </div>
+
       <div className='user-management-table-div'>
       <table className='user-management-table'>
       <thead>
@@ -150,7 +254,7 @@ const Usermanagement = () => {
         </tr>
       </thead>
       <tbody>
-       {sortedData().map((row) => (
+       {sortedAndFilteredData().map((row) => (
           <tr
             id={row.status === 'Inactive' ? 'inactive-rows' : 'rows'}
             key={row.id} 

@@ -18,6 +18,7 @@ const Suggestions = () => {
       // Add a new document with the suggestion text and a timestamp
       await addDoc(suggestionsCollection, {
         suggestion: suggestion,
+        read: 'Read',
         timestamp: new Date(),
       });
 
@@ -40,12 +41,9 @@ const Suggestions = () => {
 
   return (
     <div className="suggestions-container">
-      <div className="suggestions-header">
-        <p className="bold-text">Got any suggestions? Let us know</p>
-      </div>
+        <h1>Got any suggestions? Let us know</h1>
       <div className="suggestions-form-container">
         <textarea
-          className="suggestions-textarea"
           placeholder="Type your suggestion here..."
           value={suggestion}
           onChange={(e) => setSuggestion(e.target.value)}

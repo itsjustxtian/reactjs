@@ -8,6 +8,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import { addDays, format } from 'date-fns'; // Import the date-fns library for date formatting
 import { ref } from 'firebase/storage';
+import AddCommentIcon from '@mui/icons-material/AddComment';
+import Comments from './Comments';
 
 const ViewTicket = ({handleClose, ticketId}) => {
   console.log('Received ticket Id: ', ticketId);
@@ -107,6 +109,18 @@ useEffect(() => {
         try {
           if (ticketDoc.exists()) {
             setTicketData({ id: ticketDoc.id, ...ticketDoc.data() });
+
+              // Check if turnaround time has passed
+              const hasTurnaroundTimePassed =
+              ticketData.turnaroundtime &&
+              ticketData.turnaroundtime.seconds * 1000 < Date.now();
+
+              // Update status to "Lapsed" if turnaround time has passed
+              if (hasTurnaroundTimePassed) {
+                await updateDoc(ticketRef, {
+                  status: 'Lapsed',
+                });
+              }
 
             if (!ticketDoc.data().application) {
               setApplicationName('No Application Identified.');
@@ -216,6 +230,8 @@ useEffect(() => {
         return 'closed-id';
       case 'Resolved':
         return 'resolved-id';
+      case 'Lapsed':
+        return 'lapsed-id';
       default:
         return ''; // Default case or handle any other severity values
     }
@@ -351,11 +367,22 @@ useEffect(() => {
         </label>
       </div>
       <div className="new-line">
-        <label>Description:</label>
+        <label>Description/Resolution:</label>
       </div>
       <div className='new-line'>
         <label id='description'>{ticketData.description}</label>
       </div>
+      {/*<div className='new-line'>
+        <label> Comments: </label>
+        <button 
+          id='comments-button' 
+          title='Click to View Comments'
+          onClick={() => togglePopup(<Comments handleClose={closePopup} ticketId={ticketId}/>)}>
+          <AddCommentIcon
+            sx={{color: '#3D5654', fontSize:'28px'}}
+          />
+        </button>
+      </div>*/}
       <div className="new-line">
         <label>
           Severity:
@@ -365,7 +392,6 @@ useEffect(() => {
       <div className="new-line">
         <label>Status:
           <div id={getStatusId(ticketData.status)}>{ticketData.status}</div>
-          <div></div>
         </label>
       </div>
       <div className="new-line">
@@ -404,12 +430,12 @@ useEffect(() => {
 
 
         <div className='formbuttons' style={{ textAlign: 'right' }}>
-          {sessionStorage.getItem('role') !== 'Developer' && (ticketData.status !== 'Resolved') && (
+          {sessionStorage.getItem('role') !== 'Developer' && (ticketData.status !== 'Resolved' && ticketData.status !== 'Lapsed') && (
             <button className='button' id='mark-as-resolved' onClick={() => resolveTicket(ticketId)}>
               Mark as Resolved
             </button>
           )}
-          {sessionStorage.getItem('role') !== 'Developer' && (ticketData.status !== 'Open' && ticketData.status !== 'In Progress') && (
+          {sessionStorage.getItem('role') !== 'Developer' && (ticketData.status !== 'Open' && ticketData.status !== 'In Progress' && ticketData.status !== 'Lapsed') && (
             <button className='button' id='reopen' onClick={() => reopenTicket(ticketId)}>
               Reopen
             </button>
@@ -430,8 +456,12 @@ useEffect(() => {
               Accept Ticket
             </button>
           )}
-          {(sessionStorage.getItem('uid') === ticketData.author || sessionStorage.getItem('role') === "Admin") && (<button className='button' id='edit' onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')}/>)}>
-            <div id='text'>Edit Ticket</div>
+          {(sessionStorage.getItem('uid') === ticketData.author || sessionStorage.getItem('role') === "Admin" || sessionStorage.getItem('role') === "Developer") && 
+          (<button 
+            className='button' 
+            id='edit' 
+            onClick={() => togglePopup(<EditTicket handleClose={closePopup} ticketId={ticketId} userId={sessionStorage.getItem('uid')} authorId={ticketData.author}/>)}>
+              <div id='text'>Edit Ticket</div>
           </button>)}
           <button className='button' id='cancel'>
               <div id='text' onClick={handleCancel}> Close </div>

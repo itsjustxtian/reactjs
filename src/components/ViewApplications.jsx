@@ -88,22 +88,30 @@ const ViewApplications = ({appId, handleClose}) => {
             setTeamMembers(["No Team Members Identified."]);
           } else {
             const developerDocs = [];
-                
-                for (const developerId of appDoc.data().teammembers) {
-                    const devRef = doc(db, 'users', developerId);
-                    const devDoc = await getDoc(devRef);
-            
-                    if (devDoc.exists()) {
-                        //console.log("Developer document for ID ", developerId, ": ", devDoc.data());
-                        developerDocs.push(devDoc.data().firstname + " " + devDoc.data().lastname);
-                        // Do something with the developer document
-                    } else {
-                        console.log("Developer document not found for ID ", developerId);
-                    }
-                  }
-                console.log("Developers: ", developerDocs)
-                setTeamMembers(developerDocs)
+          
+            for (const developerId of appDoc.data().teammembers) {
+              try {
+                const devRef = query(collection(db, 'users'), where('uid', '==', developerId));
+                const devSnapshot = await getDocs(devRef);
+          
+                if (!devSnapshot.empty) {
+                  // Access the team member name field from the first document in the result
+                  const teamMemberName =
+                    devSnapshot.docs[0].data().lastname +
+                    ', ' +
+                    devSnapshot.docs[0].data().firstname; // Adjust the field name accordingly
+                  developerDocs.push(teamMemberName);
+                } else {
+                  console.log("Team Member document not found for ID ", developerId);
+                }
+              } catch (error) {
+                console.log("Error fetching Team Member data:", error);
+              }
             }
+          
+            console.log("Developers: ", developerDocs);
+            setTeamMembers(developerDocs);
+          }
 
 
           if (!appDoc.data().description) {
@@ -251,15 +259,31 @@ const ViewApplications = ({appId, handleClose}) => {
 
         <div id= 'new-line'> 
           <div id='label'>
-          Team Leader: {teamLeader}
+            Team Leader: <div id='value'>{teamLeader}</div>
           </div>
         </div>
 
         <div id= 'new-line'> 
           <div id='label'>
-          Assign QA: {assignedqa}
+          Assigned QA: <div id='value'>{assignedqa}</div>
           </div>
         </div>
+
+        <div id='new-line'>
+          <div id='label'>
+            Team Members:
+            <ul id='value'>
+              {teamMembers && teamMembers.length > 0 ? (
+                teamMembers.map((member, index) => (
+                  <li key={index}>{member}</li>
+                ))
+              ) : (
+                <li>No Team Members Identified.</li>
+              )}
+            </ul>
+          </div>
+        </div>
+
 
         <div id= 'new-line'> 
           <div id='label'>

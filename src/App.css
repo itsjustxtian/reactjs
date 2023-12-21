@@ -408,6 +408,24 @@ body, html {
   justify-content: center;
 }
 
+.dashboard .search-and-create {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.dashboard .search-and-create strong {
+  font-size: 24px;
+}
+
+.dashboard .search-and-create input {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .buttoncontainer{
   display: flex;
   justify-content: flex-end;
@@ -418,8 +436,20 @@ body, html {
 .dashboard .buttoncontainer{
   display: flex;
   justify-content: flex-end;
-  margin-left: auto;
-  margin-top: 30px;
+  white-space: nowrap;
+}
+
+.dashboard #search-bar {
+  display: flex;
+  font-size: 20px;
+  justify-content: flex-start;
+  height: 45px;
+  width: 30%;
+  border-radius: 15px;
+  border: none;
+  margin-left: 20px;
+  margin-right: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
 }
 
 .buttoncontainer .rectangle {
@@ -954,9 +984,17 @@ body, html {
 }
 
 .viewApplications #new-line #label{
+  display: flex;
   color: white;
   font-weight: bold;
   font-size: 25px;
+}
+
+.viewApplications #new-line #value{
+  color: white;
+  font-weight:lighter;
+  font-size: 25px;
+  margin-left: 20px;
 }
 
 .viewApplications #new-line #descriptionnn {
@@ -1108,6 +1146,11 @@ h1 {
   font-weight: bold;
 }
 
+.ticket-history .dashboard-table tr#lapsed-row {
+  color: #FF0000;
+  cursor: pointer;
+}
+
 .ticket-history .dashboard-table td#open-ticket {
   color: #00FF00;
 }
@@ -1117,6 +1160,10 @@ h1 {
 }
 
 .ticket-history .dashboard-table td#closed-ticket {
+  color: #FF0000;
+}
+
+.ticket-history .dashboard-table td#lapsed-status {
   color: #FF0000;
 }
 
@@ -1154,6 +1201,28 @@ h1 {
   border-radius: 30px;
   padding-top: 10px;
   padding-bottom: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+}
+
+.user-management .search-line {
+ display: flex; 
+ align-items: center;
+ font-size: 28px;
+ margin-top: 30px;
+}
+
+.user-management #search-bar {
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 20px;
+  justify-content: flex-start;
+  height: 45px;
+  width: 30%;
+  border-radius: 15px;
+  border: none;
+  margin-left: 20px;
+  margin-right: 10px;
   box-shadow: 5px 10px 10px 5px #00000040;
 }
 
@@ -1543,6 +1612,37 @@ h1 {
   box-shadow: 5px 10px 10px 5px #00000040;
 }
 
+.View-All-Applications .search-and-create {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.View-All-Applications .search-and-create strong {
+  font-size: 24px;
+}
+
+.View-All-Applications .search-and-create input {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.View-All-Applications #search-bar {
+  display: flex;
+  font-size: 20px;
+  justify-content: flex-start;
+  height: 45px;
+  width: 40%;
+  border-radius: 15px;
+  border: none;
+  margin-left: 20px;
+  margin-right: 10px;
+  box-shadow: 5px 10px 10px 5px #00000040;
+}
+
 .View-All-Applications .buttoncontainer {
   display: flex;
   white-space: nowrap;
@@ -1846,6 +1946,8 @@ h1 {
   box-shadow: 5px 10px 10px 5px #00000040;
 }
 
+
+
 .ticket-table {
   height: 100%;
   width: 90%;
@@ -1908,6 +2010,11 @@ h1 {
 
 .ticket-table .dashboard-table tr#resolved-row:hover {
   font-weight: bold;
+}
+
+.ticket-table .dashboard-table tr#lapsed-row {
+  color: #FF0000;
+  cursor: pointer;
 }
 
 .ticket-table .dashboard-table td#open-ticket {
@@ -2181,6 +2288,12 @@ h1 {
   margin-right: 5px;
 }
 
+.ViewTicket button#comments-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
 .ViewTicket .emphasis {
   margin-left: 20px;
   font-weight: bold;
@@ -2299,6 +2412,17 @@ h1 {
 }
 
 .ViewTicket #resolved-id {
+  color: white;
+  font-weight: bold;
+  margin-left: 20px;
+  background-color: #8D99AE;
+  padding: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 20px;
+}
+
+.ViewTicket #lapsed-id {
   color: white;
   font-weight: bold;
   margin-left: 20px;
@@ -2685,4 +2809,179 @@ h1 {
   background-color: white;
   color: black;
   font-weight: bold;
+}
+
+.comments-popup {
+  height: 80vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
+
+.comments-popup .comments-history{
+  height: 100%;
+  padding-bottom: 30px;
+  overflow-y:scroll;
+}
+
+.comments-popup .comment-others {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.comments-popup .comment-others p{
+  font-style: normal;
+  font-size: 18px;
+}
+
+.comments-popup .comment-others label{
+  font-style: italic;
+  font-size: 12px;
+}
+
+.comments-popup .comment-others strong{
+  font-style: normal;
+  margin-left: 5px;
+}
+
+.comments-popup textarea{
+  width: 100%;
+  border-radius: 20px;
+  resize: none;
+  padding: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+}
+
+.comments-popup .comments-box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.comments-popup button {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  
+}
+
+.suggestions-container {
+  width: 100%;
+  margin: 30px;
+}
+
+.suggestions-container h1 {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+.suggestions-form-container {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin-top: 10px;
+}
+
+.suggestions-form-container textarea {
+  width: 100%;
+  height: 300px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  resize: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.suggestions-submit {
+  font-family: 'Inter', sans-serif;
+  font-size: medium;
+  text-align: center;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+
+  padding: 20px;
+  background-color: #18B3A7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.suggestions-submit:hover {
+  background-color: #156e63;
+}
+
+.inbox-container {
+  margin: 30px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.inbox-container .list-of-suggestions {
+  background-color: white;
+  flex: 40%;
+  width: 100%;
+  overflow-y: scroll;
+  padding: 10px;
+}
+
+.inbox-container .viewed-message {
+  background-color: green;
+  flex: 60%;
+  width: 100%;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  padding: 10px;
+}
+
+.inbox-container .component-name {
+  display: flex;
+  justify-content: center;
+}
+
+.inbox-container .suggestion-message {
+  margin-bottom: 5px;
+  width: 100%;
+  height: 50px;
+  border-left: transparent;
+  border-right: transparent;
+  background-color: #CADFDE;
+  padding: 5px;
+  overflow: hidden;
+  /*white-space: nowrap; /* Prevent text from wrapping */
+  text-overflow: ellipsis; /* Display ellipsis for overflowing text */
+  box-sizing: border-box; /* Include padding and border in the box model */
+}
+
+.inbox-container .suggestion-message-unread {
+  margin-bottom: 5px;
+  width: 100%;
+  height: 50px;
+  font-weight: bold;
+  border-left: transparent;
+  border-right: transparent;
+  background-color: #CADFDE;
+  padding: 5px;
+  overflow: hidden;
+  /*white-space: nowrap; /* Prevent text from wrapping */
+  text-overflow: ellipsis; /* Display ellipsis for overflowing text */
+  box-sizing: border-box; /* Include padding and border in the box model */
 }
